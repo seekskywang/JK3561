@@ -379,7 +379,7 @@
               <MiscControls>--diag_suppress=870 --no-multibyte-chars</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\Libraries\Core\CM3\CoreSupport;..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x;..\Libraries\Drivers\include;..\User;..\Libraries\BoardSupport;..\User\UseDisp;..\User\Globalvalue;..\Libraries\Drivers\include;..\User\Include;..\User\Fat;..\User\Host;..\User\MassStorage;..\User\rtc</IncludePath>
+              <IncludePath>..\Libraries\Core\CM3\CoreSupport;..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x;..\Libraries\Drivers\include;..\User;..\Libraries\BoardSupport;..\User\UseDisp;..\User\Globalvalue;..\Libraries\Drivers\include;..\User\Include;..\User\Fat;..\User\Host;..\User\MassStorage;..\User\rtc;..\User\FATFS_V0.08A\src</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -592,6 +592,21 @@
               <FileName>rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\rtc\rtc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FATFS_V0.08A</GroupName>
+          <Files>
+            <File>
+              <FileName>diskio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\FATFS_V0.08A\src\diskio.c</FilePath>
+            </File>
+            <File>
+              <FileName>ff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\FATFS_V0.08A\src\ff.c</FilePath>
             </File>
           </Files>
         </Group>

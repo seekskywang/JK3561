@@ -31,3 +31,6 @@
 .\output\test.o: ..\Libraries\Drivers\include\lpc177x_8x_uart.h
 .\output\test.o: ..\Libraries\Drivers\include\lpc177x_8x_gpio.h
 .\output\test.o: ..\User\open.h
+.\output\test.o: ..\User\FATFS_V0.08A\src\ff.h
+.\output\test.o: ..\User\FATFS_V0.08A\src\integer.h
+.\output\test.o: ..\User\FATFS_V0.08A\src\ffconf.h

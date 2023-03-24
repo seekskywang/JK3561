@@ -26,6 +26,8 @@
 ".\output\usbhost_lpc17xx.o"
 ".\output\usbhost_ms.o"
 ".\output\rtc.o"
+".\output\diskio.o"
+".\output\ff.o"
 --strict --scatter ".\Output\project.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

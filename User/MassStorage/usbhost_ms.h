@@ -37,7 +37,7 @@
 #define    MASS_STORAGE_CLASS            0x08
 #define    MASS_STORAGE_SUBCLASS_SCSI    0x06
 #define    MASS_STORAGE_PROTOCOL_BO      0x50
-
+extern  uint32_t  MS_BlkSize;
 #define    INQUIRY_LENGTH                36
 /*
 **************************************************************************************************************

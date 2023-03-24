@@ -16,6 +16,12 @@
 #include "debug_frmwrk.h"
 #include "lpc177x_8x_gpio.h"
 #include "open.h"
+#include "ff.h"
+
+FATFS fs;         /* Work area (file system object) for logical drive */
+FIL fsrc;         /* file objects */   
+FRESULT res;
+UINT br;
 const char *PASSWORD="12345689";
 const uint8_t USB_dISPVALUE[][9]=
 {
@@ -215,7 +221,7 @@ void Power_Process(void)
 //	EEPROM_Init();
 
 	Host_Init();               /* Initialize the lpc17xx host controller                                    */
-     Host_EnumDev();       /* Enumerate the device connected                                            */
+//     Host_EnumDev();       /* Enumerate the device connected                                            */
 //    if (rc == OK) {
 //		/* Initialize the mass storage and scsi interfaces */
 //        rc = MS_Init( &blkSize, &numBlks, inquiryResult );
@@ -322,7 +328,8 @@ void Power_Process(void)
 //测试程序
 void Test_Process(void)
 {
-
+	char newfile[30];
+	char filename[30];
 	static vu16 j;
 	Button_Page_Typedef Button_Page;
 //	Main_Second_TypeDed Main_Second;//主参数和幅参赛的序号
@@ -681,18 +688,41 @@ void Test_Process(void)
         *(UserBuffer+27)='\0';
 			return_flag=0;
             
-            strcpy((char *)send_usbbuff,(char *)timebuff);
-            strcat((char *)send_usbbuff,(char *)"   ");
-            strcat((char *)send_usbbuff,(char *)UserBuffer);
-            if(Save_Res.Sys_Setvalue.u_flag)
-            {
-                Write_Usbdata ( send_usbbuff,38);//27
-            }
-            else
-            {
-                usb_oenflag=0;
-            
-            }
+			strcpy((char *)send_usbbuff,(char *)timebuff);
+			strcat((char *)send_usbbuff,(char *)"   ");
+			strcat((char *)send_usbbuff,(char *)UserBuffer);
+			if(Save_Res.Sys_Setvalue.u_flag)
+			{
+				strcpy(filename,"0:/"); 
+				strcat(filename,(char*)Save_Res.Sys_Setvalue.textname); 
+				strcat(filename,(char*)".TXT");
+		 //     
+				res = f_open( &fsrc , filename ,  FA_WRITE);
+		//		fdw = FILE_Open((uint8_t *)filename, RDWR);
+				if (res == 0) 
+				{
+					usb_oenflag=1;
+					f_lseek(&fsrc,fsrc.fsize);
+		//			bytes_written = FILE_Write(fdw, buffer, num);//MAX_BUFFER_SIZE);
+
+					res = f_write(&fsrc, &send_usbbuff, 38, &br);     
+					f_close(&fsrc); 
+		//			usb_oenflag=1;
+
+		//			bytes_written = FILE_Write(fdw, buffer, num);//MAX_BUFFER_SIZE);
+
+		//			FILE_Close(fdw);
+								
+				} 
+				else
+					usb_oenflag=0;
+//					Write_Usbdata ( send_usbbuff,38);//27
+			}
+			else
+			{
+					usb_oenflag=0;
+			
+			}
 // 			if(Save_Res.Sys_Setvalue.uart)
 // 				UARTPuts( LPC_UART3, sendtest);
 	
@@ -808,27 +838,67 @@ void Test_Process(void)
 //					Savetoeeprom();
 				break;
 				case Key_F5:
-                    if(Save_Res.Sys_Setvalue.u_flag)
-                    {
-                        Host_Init();               /* Initialize the lpc17xx host controller                                    */
-                        rc = Host_EnumDev();       /* Enumerate the device connected                                            */
-                        if (rc == OK) {
-                            /* Initialize the mass storage and scsi interfaces */
-                            rc = MS_Init( &blkSize, &numBlks, inquiryResult );
-                            if (rc == OK) {
-                                rc = FAT_Init();   /* Initialize the FAT16 file system */   
-														if(Save_Res.Sys_Setvalue.lanage )
-															Write_Usbdata ( "Times   Resistance		Voltage		Sorting\r\n" ,27);	
-														else
-															Write_Usbdata ( "时间     电阻		电压		分选\r\n" ,27);	
-								if (rc == OK)
-								{
-									usb_oenflag=1; 
-								}								
-                    
-                            } 
-                        } 
-                    }
+					if(Save_Res.Sys_Setvalue.u_flag)
+					{
+						Host_Init();
+						//rc = Host_EnumDev();       /* Enumerate the device connected                                            */
+						do{res=Host_EnumDev();j++;
+			
+						}
+						while(res!=0&&j<50);
+						if(res==0)
+							usb_oenflag=1;
+						else
+							usb_oenflag=0;
+						if(usb_oenflag)	
+						{
+							res=f_mount(0,&fs);
+							Host_DelayMS(20);
+					//		res=f_mkdir("0:/jk");
+					//        #ifdef ZC5520 
+							strcpy(newfile,"0:/"); 
+							strcat(newfile,(char*)Save_Res.Sys_Setvalue.textname); 
+							strcat(newfile,(char*)".TXT");
+							res = f_open( &fsrc , newfile , FA_CREATE_NEW | FA_WRITE);//FA_CREATE_NEW | FA_WRITE);	
+							if(Save_Res.Sys_Setvalue.lanage )
+								res = f_write(&fsrc,  "Times   Resistance		Voltage		Sorting\r\n", sizeof( "Times   Resistance		Voltage		Sorting\r\n"), &br);
+							else
+								res = f_write(&fsrc,  "时间     电阻		电压		分选\r\n", sizeof( "时间     电阻		电压		分选\r\n"), &br);							
+							
+					//        #else
+					//            res = f_open( &fsrc , "0:/ZC/ZC2683A.xls" , FA_CREATE_NEW | FA_WRITE);//FA_CREATE_NEW | FA_WRITE);
+					//        #endif
+
+							if ( res == FR_OK )
+							{ 
+					//			f_lseek(&fsrc,fsrc.fsize);
+					//			res = f_write(&fsrc, "编号	电压	电阻	时间	分选\t\n", sizeof("编号	电压	电阻	时间	分选\t\n"), &br);     
+								f_close(&fsrc); 
+							}
+							
+						}
+					}
+//                    if(Save_Res.Sys_Setvalue.u_flag)
+//                    {
+//                        Host_Init();               /* Initialize the lpc17xx host controller                                    */
+//                        rc = Host_EnumDev();       /* Enumerate the device connected                                            */
+//                        if (rc == OK) {
+//                            /* Initialize the mass storage and scsi interfaces */
+//                            rc = MS_Init( &blkSize, &numBlks, inquiryResult );
+//                            if (rc == OK) {
+//                                rc = FAT_Init();   /* Initialize the FAT16 file system */   
+//														if(Save_Res.Sys_Setvalue.lanage )
+//															Write_Usbdata ( "Times   Resistance		Voltage		Sorting\r\n" ,27);	
+//														else
+//															Write_Usbdata ( "时间     电阻		电压		分选\r\n" ,27);	
+//								if (rc == OK)
+//								{
+//									usb_oenflag=1; 
+//								}								
+//                    
+//                            } 
+//                        } 
+//                    }
 
 				break;
 				case Key_Disp:
