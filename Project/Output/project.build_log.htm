@@ -1,0 +1,77 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.37.0.0
+Copyright (C) 2022 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 Microsoft, Microsoft, LIC=03C6R-KIDXE-2Z1W4-FI5SL-E8BHU-R7F4D
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.37.0.0
+Toolchain Path:  E:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.37.0.0
+Dialog DLL:      DARMP1.DLL V1.28.1.0
+Target DLL:      Segger\JL2CM3.dll V2.99.42.0
+Dialog DLL:      TARMP1.DLL V1.27.1.0
+ 
+<h2>Project:</h2>
+F:\2520B\Project\project.uvproj
+Project File Date:  02/03/2023
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'Open1788'
+compiling test.c...
+..\User\EX_SDRAM/EX_SDRAM.H(55): warning:  #47-D: incompatible redefinition of macro "SDRAM_SIZE"  (declared at line 31)
+  #define SDRAM_SIZE               0x4000000    // 512Mbit
+..\User\Test\test.c(168): warning:  #223-D: function "RecHandle" declared implicitly
+          RecHandle();
+..\User\Test\test.c(99): warning:  #177-D: variable "addr"  was declared but never referenced
+        uint16_t addr;
+..\User\Test\test.c(100): warning:  #177-D: variable "crc1"  was declared but never referenced
+        static uint16_t crc1;
+..\User\Test\test.c(341): warning:  #177-D: variable "lock_flag"  was declared but never referenced
+        vu8 lock_flag=0;
+..\User\Test\test.c(345): warning:  #177-D: variable "sendtest"  was declared but never referenced
+      vu8 sendtest[5] ={1,2,3,4,5};
+..\User\Test\test.c(3898): warning:  #177-D: variable "i"  was declared but never referenced
+        vu8 i;
+..\User\Test\test.c(5226): warning:  #550-D: variable "bytes_written"  was set but never used
+      uint32_t  bytes_written;
+..\User\Test\test.c: 8 warnings, 0 errors
+compiling debug_frmwrk.c...
+..\Libraries\Drivers\source\debug_frmwrk.c(492): warning:  #223-D: function "vsprintf" declared implicitly
+      vsprintf((char *)buffer, (char const *)format, vArgs);
+..\Libraries\Drivers\source\debug_frmwrk.c(490): warning:  #177-D: variable "tmp"  was declared but never referenced
+              char      *tmp;
+..\Libraries\Drivers\source\debug_frmwrk.c(677): warning:  #177-D: variable "rxbuf"  was declared but never referenced
+        uint8_t *rxbuf;
+..\Libraries\Drivers\source\debug_frmwrk.c(864): warning:  #223-D: function "memcpy" declared implicitly
+        memcpy(buf, _pBuf, _ucLen);
+..\Libraries\Drivers\source\debug_frmwrk.c(881): warning:  #177-D: variable "dat"  was declared but never referenced
+      static uint8_t Status,dat;
+..\Libraries\Drivers\source\debug_frmwrk.c(882): warning:  #177-D: variable "rxbuf"  was declared but never referenced
+      uint8_t *rxbuf;
+..\Libraries\Drivers\source\debug_frmwrk.c(1110): warning:  #550-D: variable "reg"  was set but never used
+      uint16_t reg;
+..\Libraries\Drivers\source\debug_frmwrk.c(1111): warning:  #550-D: variable "value"  was set but never used
+        uint16_t value;
+..\Libraries\Drivers\source\debug_frmwrk.c(726): warning:  #177-D: function "MODS_SendAckErr"  was declared but never referenced
+  static void MODS_SendAckErr(uint8_t _ucErrCode)
+..\Libraries\Drivers\source\debug_frmwrk.c(746): warning:  #177-D: function "MODS_SendAckOk"  was declared but never referenced
+  static void MODS_SendAckOk(void)
+..\Libraries\Drivers\source\debug_frmwrk.c: 10 warnings, 0 errors
+linking...
+Program Size: Code=77422 RO-data=428658 RW-data=328 ZI-data=21456  
+FromELF: creating hex file...
+".\Output\project.axf" - 0 Error(s), 18 Warning(s).
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>
