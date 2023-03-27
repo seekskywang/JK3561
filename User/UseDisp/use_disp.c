@@ -818,8 +818,8 @@ const uint8_t	Set_testitem_E[][9+1]=
 };
 const uint8_t Sys_Sys[][20+1]=
 {
-	{"ÒÇÆ÷ÐÍºÅ  jk2520B"},
-	{"Èí¼þ°æ±¾  Ver:2.2"},
+	{"ÒÇÆ÷ÐÍºÅ  jk3561"},
+	{"Èí¼þ°æ±¾  Ver:1.0"},
 	{"Ó²¼þ°æ±¾  Ver:1.0"},
 	{"ÒÇÆ÷±àºÅ"},
 //	{"ÕËºÅ    "},
@@ -830,8 +830,8 @@ const uint8_t Sys_Sys[][20+1]=
 
 const uint8_t Sys_Sys_E[][20+1]=
 {
-	{"INST MODEL: jk2520B "},
-	{"SOFT VER:   Ver:2.3"},
+	{"INST MODEL: jk3561 "},
+	{"SOFT VER:   Ver:1.0"},
 	{"HARD VER:   Ver:1.0"},
 	{"SERIALNO:"},
 
@@ -839,8 +839,8 @@ const uint8_t Sys_Sys_E[][20+1]=
 
 const uint8_t Sys_Sys1[][20+1]=
 {
-	{"ÒÇÆ÷ÐÍºÅ    2520B"},
-	{"Èí¼þ°æ±¾  Ver:2.3"},
+	{"ÒÇÆ÷ÐÍºÅ    3561"},
+	{"Èí¼þ°æ±¾  Ver:1.0"},
 	{"Ó²¼þ°æ±¾  Ver:1.0"},
 	{"ÒÇÆ÷±àºÅ"},
 //	{"ÕËºÅ    "},
@@ -851,8 +851,8 @@ const uint8_t Sys_Sys1[][20+1]=
 
 const uint8_t Sys_Sys1_E[][20+1]=
 {
-	{"INST MODEL: 2520B "},
-	{"SOFT VER:   Ver:2.3"},
+	{"INST MODEL: 3561 "},
+	{"SOFT VER:   Ver:1.0"},
 	{"HARD VER:   Ver:1.0"},
 	{"SERIALNO:"},
 
@@ -4488,7 +4488,7 @@ void Disp_Testvalue(int8_t chosen,int32_t eee )
 				Colour.Fword=LCD_COLOR_BLUE;
 			else
 				Colour.Fword=LCD_COLOR_WHITE;
-		V_BCD_Int(eee);
+//		V_BCD_Int(eee);
 		if(Test_Unit.V_Neg)
 		{
 			WriteString_Big(100,92+55 ," ");
@@ -4519,6 +4519,9 @@ void Disp_Testvalue(int8_t chosen,int32_t eee )
 //		if(eee > 30 || eee < -30)
 //		{
 ////			WriteString_Big(100+32,92+55 ,DispBuf);
+		if(Test_Dispvalue.Main_valuebuff[0] == '-')
+			WriteString_Big(100,92+55 ,(uint8_t *)" 0.00000");
+		else
 			WriteString_Big(100,92+55 ,Test_Dispvalue.Secondvaluebuff);
 			
 //		}else{

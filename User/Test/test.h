@@ -46,6 +46,7 @@ void Test_Comp(All_Compvalue_Typedef *pt);
 Sort_TypeDef Disp_Set_CompNum(Disp_Coordinates_Typedef *Coordinates);
 int32_t BCDtoInt(int8_t *pt);
 int32_t VBCDtoInt(int8_t *pt);
+void IntToBCD(u32 r,u8 dot,u8 len,char *pt);
 int8_t V_Test_Comp(double value);//电压比较
 int8_t R_Test_Comp(double value);//电阻比较
 void Comp_prompt(int8_t value);//比较提示

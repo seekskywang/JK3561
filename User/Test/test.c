@@ -744,7 +744,7 @@ void Test_Process(void)
 			*(UserBuffer+25)='\r';
 			*(UserBuffer+26)='\n';
         *(UserBuffer+27)='\0';
-			return_flag=0;
+//			return_flag=0;
             
 			strcpy((char *)send_usbbuff,(char *)timebuff);
 			strcat((char *)send_usbbuff,(char *)"   ");
@@ -3930,13 +3930,16 @@ u8 Uart_Process(void)
 						{
 							Test_Dispvalue.Main_valuebuff[i]=ComBuf.rec.buf[1+i];
 		//					Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[8+i];
-							
+//							Test_Dispvalue.Rvaluebuff[i] = ComBuf.rec.buf[1+i];
 						}
+						
+						
 						for(i=0;i<8;i++)
 						{
 							Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[7+i];
-							
+//							Test_Dispvalue.Vvaluebuff[i] = ComBuf.rec.buf[7+i];							
 						}
+//						Test_Dispvalue.Test_V = VBCDtoInt((int8_t *)Test_Dispvalue.Vvaluebuff);
 						if(ComBuf.rec.buf[7]=='-')
 							Test_Unit.V_Neg=0;
 						else
@@ -3948,6 +3951,19 @@ u8 Uart_Process(void)
 							Test_Dispvalue.Unit[0]=0;
 						
 						Test_Dispvalue.Rangedisp=ComBuf.rec.buf[15];
+						
+//						//滤波
+//						if(Test_Dispvalue.rfcount <10)
+//						{
+//							Test_Dispvalue.rfcount ++;
+//							Test_Dispvalue.Test_R += BCDtoInt((int8_t *)Test_Dispvalue.Rvaluebuff);
+//						}else{
+//							Test_Dispvalue.rfcount = 0;
+//							Test_Dispvalue.Test_R /= 10;
+//							IntToBCD(Test_Dispvalue.Test_R,Test_Dispvalue.Dot[0],6,Test_Dispvalue.Main_valuebuff);
+//							Test_Dispvalue.Test_R = 0;	
+//							
+//						}
 					break;
 				}
 					
@@ -4829,6 +4845,8 @@ Sort_TypeDef Disp_NumKeyboard_Set(Disp_Coordinates_Typedef *Coordinates )
 	return Sort_set;
 
 }
+
+
 //电阻设置
 Sort_TypeDef Disp_Set_Num(Disp_Coordinates_Typedef *Coordinates)
 {
@@ -4848,12 +4866,343 @@ Sort_TypeDef Disp_Set_Num(Disp_Coordinates_Typedef *Coordinates)
 	return Sort_num;
 
 }
+
+Sort_TypeDef Disp_NumKeyboard_SetV(Disp_Coordinates_Typedef *Coordinates )
+{
+	vu8 While_flag=1;
+	vu8 Disp_buff[10];
+	vu8 key,i;
+	vu8 dispflag=1;
+	vu8 dot_num=0,dot_num1=0;
+//	vu8 page=0;
+	vu32 keynum=0;
+	vu8 key_count=0;
+//	vu32 Num[6]={1,10,100,1e3,1e4,1e5};
+	Sort_TypeDef   Sort_set;
+	Sort_set.Dot=0;
+	Sort_set.Num=0;
+	Sort_set.Unit=0;
+	Sort_set.Num=0;
+	for(i=0;i<6;i++)
+	Disp_buff[i]=' ';
+	Disp_buff[7]=0;
+	
+	while(While_flag)
+	{
+		key=HW_KeyScsn();
+		if(key==0xff)
+		{
+			keynum=0;
+		}
+		else
+			keynum++;
+		if(keynum==KEY_NUM)
+		{
+			dispflag=1;
+            Key_Beep();
+			switch(key)
+			{
+				case Key_F1:
+					
+					Sort_set.Unit=0;
+					
+					While_flag=0;
+					if(key_count<VNUM_LENTH)
+					{
+						if(dot_num==0)
+						{
+							if(key_count>0)
+							{
+								Disp_buff[key_count]='.';
+								dot_num1=key_count;
+								key_count++;
+							
+							
+							}
+							dot_num++;
+						}
+					
+					}
+						
+					
+					Sort_set.Updata_flag=1;
+					
+				break;
+				case Key_F2:
+					Sort_set.Unit=1;
+					
+					While_flag=0;
+					if(key_count<VNUM_LENTH)
+					{
+						if(dot_num==0)
+						{
+							if(key_count>0)
+							{
+								Disp_buff[key_count]='.';
+								dot_num1=key_count;
+								key_count++;
+							
+							
+							}
+							dot_num++;
+						}
+					
+					}
+						
+					
+					Sort_set.Updata_flag=1;
+					
+				break;
+				case Key_F3:
+					
+				break;
+				case Key_F4:
+					
+				break;
+				case Key_F5:
+					
+				break;
+				case Key_Disp:
+					SetSystemStatus(SYS_STATUS_TEST);
+					While_flag=0;
+					Sort_set.Updata_flag=0;
+				break;
+				case Key_SETUP:
+					While_flag=0;
+					Sort_set.Updata_flag=0;
+				SetSystemStatus(SYS_STATUS_SETUPTEST);
+				break;
+				case Key_FAST:
+				break;
+				case Key_LEFT:
+				break;
+				case Key_RIGHT:
+				break;
+				case Key_UP:
+				break;
+				case Key_DOWN:
+				break;
+				case Key_NUM1:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='1';
+						
+						
+							
+						
+						key_count++;
+							
+					}
+				break;
+				case Key_NUM2:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='2';
+						key_count++;
+					}
+				break;
+				case Key_NUM3:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='3';
+						key_count++;
+					}
+				break;
+				case Key_NUM4:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='4';
+						key_count++;
+					}
+					
+				break;
+				case Key_NUM5:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='5';
+						key_count++;
+					}
+				break;
+				case Key_NUM6:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='6';
+						key_count++;
+					}
+				break;
+				case Key_NUM7:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='7';
+						key_count++;
+					}
+				break;
+				case Key_NUM8:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='8';
+						key_count++;
+					}
+				break;
+				case Key_NUM9:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='9';
+						key_count++;
+					}
+				break;
+				case Key_NUM0:
+					if(key_count<VNUM_LENTH)
+					{
+						Disp_buff[key_count]='0';
+						key_count++;
+					}
+				break;
+				case Key_DOT:
+					
+					if(key_count<VNUM_LENTH&&key_count>0)
+					{
+						if(dot_num==0)
+						{
+							if(key_count>0)
+							{
+								Disp_buff[key_count]='.';
+								dot_num1=key_count;
+								key_count++;
+							
+							
+							}
+							dot_num++;
+						}
+					}
+//					else 
+//					{
+//						if(Disp_buff[key_count]==0)
+//							Disp_buff[key_count]='-';
+//						else if(Disp_buff[key_count]=='-')
+//							Disp_buff[key_count]='+';
+//						else
+//							Disp_buff[key_count]='-';
+//						key_count++;
+//							
+//					
+//					
+//					
+//					
+//					}
+				break;
+				case Key_BACK:
+					if(key_count>0)
+					{	key_count--;
+						Disp_buff[key_count]=' ';
+						if(dot_num1==key_count)
+						{
+							dot_num=0;
+							dot_num1=0;
+							
+						}
+					
+					}
+					else
+					{
+						if(Disp_buff[key_count]==0)
+								Disp_buff[key_count]='-';
+							else if(Disp_buff[key_count]=='-')
+								Disp_buff[key_count]='+';
+							else
+								Disp_buff[key_count]='-';
+							key_count++;
+					}
+				break;
+				case Key_LOCK:
+				break;
+				case Key_BIAS:
+				break;
+				case Key_REST:
+				break;
+				case Key_TRIG:
+				break;
+				default:
+				break;
+					
+			}
+		
+		
+		}
+		if(dispflag)
+		{
+			dispflag=0;
+			LCD_DrawRect( Coordinates->xpos, Coordinates->ypos,Coordinates->xpos+Coordinates->lenth , Coordinates->ypos+16 , Red );
+			Colour.Fword=White;
+			Colour.black=Red;
+			WriteString_16(Coordinates->xpos, Coordinates->ypos, Disp_buff,  0);
+			//dispflag=0;
+		}
+	
+	}
+	for(i=key_count;i<VNUM_LENTH;i++)
+		Disp_buff[i]='0';
+	for(i=0;i<VNUM_LENTH;i++)
+	{
+		if(Disp_buff[0]>='0'&&(Disp_buff[0]<='9'))
+		{
+			if(Disp_buff[i]>='0'&&(Disp_buff[i]<='9'))
+			{
+			
+				if(dot_num1>i)
+				{
+					Sort_set.Num*=10;
+					Sort_set.Num+=Disp_buff[i]-'0';
+				
+				}
+				else
+				{
+					Sort_set.Num*=10;
+					Sort_set.Num+=Disp_buff[i]-'0';
+				
+				
+				}
+			}
+			
+			
+			//Sort_set.Num+=(Disp_buff[key_count-1]-'0');
+		
+		
+		}
+	
+	
+	
+	}
+	Sort_set.Dot=dot_num1;
+//	if(Disp_buff[0]>='0'&&(Disp_buff[0]<'9'))
+//		{
+//			if(Disp_buff[key_count-1]!='.')		
+//			{
+//				Sort_set.Num*=Num[key_count-dot_num-1];
+//				Sort_set.Num+=(Disp_buff[key_count-1]-'0');//*Num[key_count-dot_num-1];
+//				
+//			}				
+//			//*(Disp_buff[key_count-1]-'0'))+=Num[key_count-dot_num-1];
+//			else
+//			{
+//			
+//			}
+//		
+//		
+//		}
+//			
+//		else 
+//			;//(Disp_buff[key_count-1]-'0')*Sort_set.Num+=Num[key_count-dot_num-2];
+	return Sort_set;
+
+}
+
 //电压设置
 Sort_TypeDef Disp_Set_CompNum(Disp_Coordinates_Typedef *Coordinates)
 {
 	Sort_TypeDef Sort_num,Sort_num1;
 	Disp_button_Num_Freq();
-	Sort_num=Disp_NumKeyboard_Set(Coordinates);
+	Sort_num=Disp_NumKeyboard_SetV(Coordinates);
 	Sort_num1=Input_Set_Cov(&Sort_num);
 	if(Sort_num1.Updata_flag==0)
 	{
@@ -5237,17 +5586,17 @@ int32_t BCDtoInt(int8_t *pt)
 	u32 value=0;
 	u8 i,j=0;
 	u8 dot=0;
-	if(*(pt+2)=='-')
+	if(*(pt)=='-')
 	{
 		value=0xfffffff;
 		return value;
 	}
 	for(i=0;i<6;i++)
 	{
-		if(*(pt+1+i)>='0')
+		if(*(pt+i)>='0')
 		{
 			value*=10;
-			value+=*(pt+1+i)-'0';
+			value+=*(pt+i)-'0';
 			j++;
 			
 		}
@@ -5255,14 +5604,38 @@ int32_t BCDtoInt(int8_t *pt)
 			dot=5-i;
 	
 	}
-	if(Test_Dispvalue.Unit[0])
-		value*=1e6;
-	else
-		value*=1e3;
-	value/=pow(10,dot);
+	Test_Dispvalue.Dot[0] = dot;
+//	if(Test_Dispvalue.Unit[0])
+//		value*=1e6;
+//	else
+//		value*=1e3;
+//	value/=pow(10,dot);
 	
 	return value;
 }
+
+//电阻BCD转换为INT
+void IntToBCD(u32 r,u8 dot,u8 len,char *pt)
+{
+	u8 i=len;
+	do
+	{
+		i--;
+		if(i != dot-1)
+		{
+			*(pt+i) = r%10+0x30;
+			r/=10;
+		}else{
+			*(pt+i) = '.';
+		}				
+	}while(i!=0);
+//	if(Test_Dispvalue.Unit[0])
+//		value*=1e6;
+//	else
+//		value*=1e3;
+//	value/=pow(10,dot);
+}
+
 //电压BCD转换为INT
 int32_t VBCDtoInt(int8_t *pt)
 {
