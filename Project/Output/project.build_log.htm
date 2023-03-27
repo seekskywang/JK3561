@@ -27,6 +27,82 @@ Project File Date:  03/24/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Open1788'
+compiling main.c...
+..\User\EX_SDRAM/EX_SDRAM.H(55): warning:  #47-D: incompatible redefinition of macro "SDRAM_SIZE"  (declared at line 31)
+  #define SDRAM_SIZE               0x4000000    // 512Mbit
+..\User\main.c(107): warning:  #177-D: variable "rc"  was declared but never referenced
+        uint8_t key,rc;
+..\User\main.c: 2 warnings, 0 errors
+compiling timer.c...
+compiling lpc177x_8x_lcd.c...
+..\User\EX_SDRAM/EX_SDRAM.H(55): warning:  #47-D: incompatible redefinition of macro "SDRAM_SIZE"  (declared at line 31)
+  #define SDRAM_SIZE               0x4000000    // 512Mbit
+..\User\hzk.h(1100): warning:  #375-D: declaration requires a typedef name
+  };
+..\User\LCD\lpc177x_8x_lcd.c(52): warning:  #177-D: variable "pDst"  was declared but never referenced
+        unsigned long *pDst = (unsigned long *)LCD_VRAM_BASE_ADDR;
+..\User\LCD\lpc177x_8x_lcd.c(513): warning:  #177-D: variable "i"  was declared but never referenced
+      uint16_t i,j;
+..\User\LCD\lpc177x_8x_lcd.c(760): warning:  #177-D: variable "usIndex"  was declared but never referenced
+        uint16_t usIndex=0;
+..\User\LCD\lpc177x_8x_lcd.c: 5 warnings, 0 errors
+compiling TouchPanel.c...
+..\User\EX_SDRAM/EX_SDRAM.H(55): warning:  #47-D: incompatible redefinition of macro "SDRAM_SIZE"  (declared at line 31)
+  #define SDRAM_SIZE               0x4000000    // 512Mbit
+..\User\TouchPanel\TouchPanel.c(373): warning:  #223-D: function "LCD_SetPoint" declared implicitly
+    LCD_SetPoint(Xpos,Ypos,Blue);     /* Center point */
+..\User\TouchPanel\TouchPanel.c: 2 warnings, 0 errors
+compiling use_disp.c...
+..\User\EX_SDRAM/EX_SDRAM.H(55): warning:  #47-D: incompatible redefinition of macro "SDRAM_SIZE"  (declared at line 31)
+  #define SDRAM_SIZE               0x4000000    // 512Mbit
+..\User\UseDisp\use_disp.c(1687): warning:  #175-D: subscript out of range
+        if(SaveData.Limit_Tab.Comp_Value[9].high.Num!=0)
+..\User\UseDisp\use_disp.c(1689): warning:  #175-D: subscript out of range
+                Hex_Format(SaveData.Limit_Tab.Comp_Value[9].high.Num, 
+..\User\UseDisp\use_disp.c(1690): warning:  #175-D: subscript out of range
+                        SaveData.Limit_Tab.Comp_Value[9].high.Dot , 6 , 1);//加单位//加单位
+..\User\UseDisp\use_disp.c(1715): warning:  #175-D: subscript out of range
+        if(SaveData.Limit_Tab.Comp_Value[9].high.Num!=0)
+..\User\UseDisp\use_disp.c(1717): warning:  #175-D: subscript out of range
+                        Hex_Format(SaveData.Limit_Tab.Comp_Value[9].low.Num, 
+..\User\UseDisp\use_disp.c(1718): warning:  #175-D: subscript out of range
+                        SaveData.Limit_Tab.Comp_Value[9].low.Dot , 6 , 1);//加单位
+..\User\UseDisp\use_disp.c(3090): warning:  #177-D: variable "Black_Select"  was declared but never referenced
+        vu32 Black_Select;
+..\User\UseDisp\use_disp.c(4474): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
+                        WriteString_Big(100+32,92 ,Test_Dispvalue.Main_valuebuff);
+..\User\UseDisp\use_disp.c(4480): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
+                        WriteString_Big(100+32,92 ,Test_Dispvalue.Main_valuebuff);
+..\User\UseDisp\use_disp.c(4495): warning:  #223-D: function "Plc_PosV" declared implicitly
+                        Plc_PosV();
+..\User\UseDisp\use_disp.c(4514): warning:  #223-D: function "Plc_PosV" declared implicitly
+                                Plc_PosV();
+..\User\UseDisp\use_disp.c(4516): warning:  #223-D: function "Plc_NegV" declared implicitly
+                                Plc_NegV();
+..\User\UseDisp\use_disp.c(4522): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
+                        WriteString_Big(100,92+55 ,Test_Dispvalue.Secondvaluebuff);
+..\User\UseDisp\use_disp.c(4563): warning:  #223-D: function "UARTPuts" declared implicitly
+        UARTPuts( LPC_UART0, Send_buff);
+..\User\UseDisp\use_disp.c(4574): warning:  #223-D: function "UARTPuts" declared implicitly
+        UARTPuts( LPC_UART0, Send_buff);
+..\User\UseDisp\use_disp.c(4607): warning:  #223-D: function "UARTPuts" declared implicitly
+        UARTPuts( LPC_UART0, Send_buff);
+..\User\UseDisp\use_disp.c(4620): warning:  #223-D: function "UARTPuts" declared implicitly
+        UARTPuts( LPC_UART0, Send_buff);
+..\User\UseDisp\use_disp.c(4634): warning:  #223-D: function "UARTPuts" declared implicitly
+        UARTPuts( LPC_UART3, buff);
+..\User\UseDisp\use_disp.c(4626): warning:  #177-D: variable "Send_buff"  was declared but never referenced
+        vu8 Send_buff[10]={0xAB,0X00,0xbf};
+..\User\UseDisp\use_disp.c(4665): warning:  #223-D: function "UARTPuts" declared implicitly
+        UARTPuts( LPC_UART0, Send_buff);
+..\User\UseDisp\use_disp.c(4702): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
+        WriteString_16(52,200 ,Test_Dispvalue.Main_valuebuff,1);//
+..\User\UseDisp\use_disp.c(4703): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
+        WriteString_16(312,200 ,Test_Dispvalue.Secondvaluebuff,1);//
+..\User\UseDisp\use_disp.c(4868): warning:  #177-D: variable "pt"  was declared but never referenced
+        vu8 *pt;
+..\User\UseDisp\use_disp.c: 24 warnings, 0 errors
+compiling key.c...
 compiling test.c...
 ..\User\EX_SDRAM/EX_SDRAM.H(55): warning:  #47-D: incompatible redefinition of macro "SDRAM_SIZE"  (declared at line 31)
   #define SDRAM_SIZE               0x4000000    // 512Mbit
@@ -59,11 +135,38 @@ compiling test.c...
 ..\User\Test\test.c(5378): warning:  #550-D: variable "bytes_written"  was set but never used
       uint32_t  bytes_written;
 ..\User\Test\test.c: 15 warnings, 0 errors
+compiling GlobalValue.c...
+compiling debug_frmwrk.c...
+..\Libraries\Drivers\source\debug_frmwrk.c(492): warning:  #223-D: function "vsprintf" declared implicitly
+      vsprintf((char *)buffer, (char const *)format, vArgs);
+..\Libraries\Drivers\source\debug_frmwrk.c(490): warning:  #177-D: variable "tmp"  was declared but never referenced
+              char      *tmp;
+..\Libraries\Drivers\source\debug_frmwrk.c(677): warning:  #177-D: variable "rxbuf"  was declared but never referenced
+        uint8_t *rxbuf;
+..\Libraries\Drivers\source\debug_frmwrk.c(864): warning:  #223-D: function "memcpy" declared implicitly
+        memcpy(buf, _pBuf, _ucLen);
+..\Libraries\Drivers\source\debug_frmwrk.c(881): warning:  #177-D: variable "dat"  was declared but never referenced
+      static uint8_t Status,dat;
+..\Libraries\Drivers\source\debug_frmwrk.c(882): warning:  #177-D: variable "rxbuf"  was declared but never referenced
+      uint8_t *rxbuf;
+..\Libraries\Drivers\source\debug_frmwrk.c(923): warning:  #177-D: variable "sendunit"  was declared but never referenced
+        static vu32 sendunit;
+..\Libraries\Drivers\source\debug_frmwrk.c(1112): warning:  #550-D: variable "reg"  was set but never used
+      uint16_t reg;
+..\Libraries\Drivers\source\debug_frmwrk.c(1113): warning:  #550-D: variable "value"  was set but never used
+        uint16_t value;
+..\Libraries\Drivers\source\debug_frmwrk.c(726): warning:  #177-D: function "MODS_SendAckErr"  was declared but never referenced
+  static void MODS_SendAckErr(uint8_t _ucErrCode)
+..\Libraries\Drivers\source\debug_frmwrk.c(746): warning:  #177-D: function "MODS_SendAckOk"  was declared but never referenced
+  static void MODS_SendAckOk(void)
+..\Libraries\Drivers\source\debug_frmwrk.c: 11 warnings, 0 errors
+compiling usbhost_lpc17xx.c...
+compiling rtc.c...
 linking...
 Program Size: Code=86142 RO-data=428682 RW-data=416 ZI-data=22624  
 FromELF: creating hex file...
-".\Output\project.axf" - 0 Error(s), 15 Warning(s).
-Build Time Elapsed:  00:00:01
+".\Output\project.axf" - 0 Error(s), 59 Warning(s).
+Build Time Elapsed:  00:00:07
 </pre>
 </body>
 </html>

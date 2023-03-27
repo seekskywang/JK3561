@@ -5270,7 +5270,7 @@ int32_t VBCDtoInt(int8_t *pt)
 	
 	u8 i,j=0;
 	u8 dot=0;
-	for(i=0;i<5;i++)
+	for(i=1;i<8;i++)
 	{
 		if(*(pt+1+i)>='0')
 		{
@@ -5280,7 +5280,7 @@ int32_t VBCDtoInt(int8_t *pt)
 			
 		}
 		else
-			dot=4-i;
+			dot=6-i;
 		
 	
 	}

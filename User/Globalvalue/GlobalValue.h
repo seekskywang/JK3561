@@ -389,8 +389,8 @@ typedef struct
 	vu8 Rangedisp;
 	char Main_valuebuff[10];
 	char Secondvaluebuff[10];
-	vu8 Vmvaluebuff[10];
-	vu8 Imvaluebuff[10];
+	char Rvaluebuff[10];
+	char Vvaluebuff[10];
 	vu8 Dot[4];
 	vu8 Unit[4];
 	vu32 Test_V;
