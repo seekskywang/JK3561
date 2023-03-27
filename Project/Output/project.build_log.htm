@@ -22,66 +22,14 @@ Dialog DLL:      TARMP1.DLL V1.27.1.0
  
 <h2>Project:</h2>
 F:\JK3561\Project\project.uvproj
-Project File Date:  03/24/2023
+Project File Date:  03/27/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Open1788'
-compiling use_disp.c...
-..\User\EX_SDRAM/EX_SDRAM.H(55): warning:  #47-D: incompatible redefinition of macro "SDRAM_SIZE"  (declared at line 31)
-  #define SDRAM_SIZE               0x4000000    // 512Mbit
-..\User\UseDisp\use_disp.c(1687): warning:  #175-D: subscript out of range
-        if(SaveData.Limit_Tab.Comp_Value[9].high.Num!=0)
-..\User\UseDisp\use_disp.c(1689): warning:  #175-D: subscript out of range
-                Hex_Format(SaveData.Limit_Tab.Comp_Value[9].high.Num, 
-..\User\UseDisp\use_disp.c(1690): warning:  #175-D: subscript out of range
-                        SaveData.Limit_Tab.Comp_Value[9].high.Dot , 6 , 1);//加单位//加单位
-..\User\UseDisp\use_disp.c(1715): warning:  #175-D: subscript out of range
-        if(SaveData.Limit_Tab.Comp_Value[9].high.Num!=0)
-..\User\UseDisp\use_disp.c(1717): warning:  #175-D: subscript out of range
-                        Hex_Format(SaveData.Limit_Tab.Comp_Value[9].low.Num, 
-..\User\UseDisp\use_disp.c(1718): warning:  #175-D: subscript out of range
-                        SaveData.Limit_Tab.Comp_Value[9].low.Dot , 6 , 1);//加单位
-..\User\UseDisp\use_disp.c(3090): warning:  #177-D: variable "Black_Select"  was declared but never referenced
-        vu32 Black_Select;
-..\User\UseDisp\use_disp.c(4474): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-                        WriteString_Big(100+32,92 ,Test_Dispvalue.Main_valuebuff);
-..\User\UseDisp\use_disp.c(4480): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-                        WriteString_Big(100+32,92 ,Test_Dispvalue.Main_valuebuff);
-..\User\UseDisp\use_disp.c(4495): warning:  #223-D: function "Plc_PosV" declared implicitly
-                        Plc_PosV();
-..\User\UseDisp\use_disp.c(4514): warning:  #223-D: function "Plc_PosV" declared implicitly
-                                Plc_PosV();
-..\User\UseDisp\use_disp.c(4516): warning:  #223-D: function "Plc_NegV" declared implicitly
-                                Plc_NegV();
-..\User\UseDisp\use_disp.c(4525): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-                        WriteString_Big(100,92+55 ,Test_Dispvalue.Secondvaluebuff);
-..\User\UseDisp\use_disp.c(4566): warning:  #223-D: function "UARTPuts" declared implicitly
-        UARTPuts( LPC_UART0, Send_buff);
-..\User\UseDisp\use_disp.c(4577): warning:  #223-D: function "UARTPuts" declared implicitly
-        UARTPuts( LPC_UART0, Send_buff);
-..\User\UseDisp\use_disp.c(4610): warning:  #223-D: function "UARTPuts" declared implicitly
-        UARTPuts( LPC_UART0, Send_buff);
-..\User\UseDisp\use_disp.c(4623): warning:  #223-D: function "UARTPuts" declared implicitly
-        UARTPuts( LPC_UART0, Send_buff);
-..\User\UseDisp\use_disp.c(4637): warning:  #223-D: function "UARTPuts" declared implicitly
-        UARTPuts( LPC_UART3, buff);
-..\User\UseDisp\use_disp.c(4629): warning:  #177-D: variable "Send_buff"  was declared but never referenced
-        vu8 Send_buff[10]={0xAB,0X00,0xbf};
-..\User\UseDisp\use_disp.c(4668): warning:  #223-D: function "UARTPuts" declared implicitly
-        UARTPuts( LPC_UART0, Send_buff);
-..\User\UseDisp\use_disp.c(4705): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-        WriteString_16(52,200 ,Test_Dispvalue.Main_valuebuff,1);//
-..\User\UseDisp\use_disp.c(4706): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-        WriteString_16(312,200 ,Test_Dispvalue.Secondvaluebuff,1);//
-..\User\UseDisp\use_disp.c(4871): warning:  #177-D: variable "pt"  was declared but never referenced
-        vu8 *pt;
-..\User\UseDisp\use_disp.c: 24 warnings, 0 errors
-linking...
-Program Size: Code=86822 RO-data=428682 RW-data=416 ZI-data=22624  
-FromELF: creating hex file...
-".\Output\project.axf" - 0 Error(s), 24 Warning(s).
-Build Time Elapsed:  00:00:01
+After Build - User command #1: E:\Keil_v5\ARM\ARMCC\bin\fromelf.exe --bin  -o ..\shengji\update.bin Output\project.axf
+".\Output\project.axf" - 0 Error(s), 0 Warning(s).
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

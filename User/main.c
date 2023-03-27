@@ -107,22 +107,35 @@ int main(void)
 	uint8_t key,rc;
 	char buff[10];
 	uint32_t cclk = CLKPWR_GetCLK(CLKPWR_CLKTYPE_CPU);
+	NVIC_EnableIRQ(MCI_IRQn);
+	__enable_irq();
 	softswitch=0;
 	SysTick_Config(cclk/1000 - 1); 
 	GPIO_IntCmd(0, 1<<19, 1);//p0_19 ÏÂ½µÑØÖÐ¶Ï
 	NVIC_SetPriority(GPIO_IRQn, 1);
 	NVIC_EnableIRQ(GPIO_IRQn);
-    Delay(100);
-	EEPROM_Init();
+//    Delay(100);
+	
 	HW_keyInt();
-    RTC_INT();
 	GPIO_Led_Configuration();
-    GPIO_Plc_Configuration();
-    Beep_on();
+	debug_frmwrk_init();
+	softswitch=0;
+	
+	EEPROM_Init();
+	RTC_INT();
+
+  HW_keyInt();
+	GPIO_Led_Configuration();  
+	
+//    GPIO_Plc_Configuration();
+//    Beep_on();
 //    GPIO_Plc_Configuration();
     
-    debug_frmwrk_init();
-	softswitch=0;
+//    debug_frmwrk_init();
+	
+//	Delay(200);
+//	Delay(200);
+	Delay(200);
     SDRAM_Init();
     GLCD_Ctrl (FALSE);
     GLCD_Init (LogoPic.pPicStream, NULL);

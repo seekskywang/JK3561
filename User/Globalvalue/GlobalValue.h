@@ -400,7 +400,7 @@ typedef struct
 	vu8 vfcount;
 	double Rdata;
 	double Vdata;
-
+	vu8 openflag;
 
 }Test_Dispvalue_TypeDef;
 extern Test_Dispvalue_TypeDef Test_Dispvalue; 

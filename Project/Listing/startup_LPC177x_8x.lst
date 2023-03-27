@@ -56,9 +56,9 @@ ARM Macro Assembler    Page 1
    35 00000200         ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
    36 00000200         ; </h>
    37 00000200         
-   38 00000200 00000000 
+   38 00000200 00001800 
                        Heap_Size
-                               EQU              0x00000000
+                               EQU              0x00001800
    39 00000200         
    40 00000200                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
 3
@@ -71,16 +71,16 @@ ARM Macro Assembler    Page 2
 
    42 00000000         Heap_Mem
                                SPACE            Heap_Size
-   43 00000000         __heap_limit
-   44 00000000         
-   45 00000000         
-   46 00000000                 PRESERVE8
-   47 00000000                 THUMB
-   48 00000000         
-   49 00000000         
-   50 00000000         ; Vector Table Mapped to Address 0 at Reset
-   51 00000000         
-   52 00000000                 AREA             RESET, DATA, READONLY
+   43 00001800         __heap_limit
+   44 00001800         
+   45 00001800         
+   46 00001800                 PRESERVE8
+   47 00001800                 THUMB
+   48 00001800         
+   49 00001800         
+   50 00001800         ; Vector Table Mapped to Address 0 at Reset
+   51 00001800         
+   52 00001800                 AREA             RESET, DATA, READONLY
    53 00000000                 EXPORT           __Vectors
    54 00000000         
    55 00000000 00000000 
@@ -181,33 +181,29 @@ ARM Macro Assembler    Page 3
   114 000000E4         
   115 000000E4         
   116 000000E4                 IF               :LNOT::DEF:NO_CRP
-  117 000000E4                 AREA             |.ARM.__at_0x02FC|, CODE, READO
-NLY
-  118 00000000 FFFFFFFF 
-                       CRP_Key DCD              0xFFFFFFFF
-  119 00000004                 ENDIF
-  120 00000004         
-  121 00000004         
-  122 00000004                 AREA             |.text|, CODE, READONLY
+  119                          ENDIF
+  120 000000E4         
+  121 000000E4         
+  122 000000E4                 AREA             |.text|, CODE, READONLY
   123 00000000         
   124 00000000         
   125 00000000         ; Reset Handler
   126 00000000         
+  127 00000000         Reset_Handler
+                               PROC
+  128 00000000                 EXPORT           Reset_Handler             [WEAK
+]
 
 
 
 ARM Macro Assembler    Page 4 
 
 
-  127 00000000         Reset_Handler
-                               PROC
-  128 00000000                 EXPORT           Reset_Handler             [WEAK
-]
   129 00000000                 IMPORT           SystemInit
   130 00000000                 IMPORT           __main
-  131 00000000 4809            LDR              R0, =SystemInit
+  131 00000000 4806            LDR              R0, =SystemInit
   132 00000002 4780            BLX              R0
-  133 00000004 4809            LDR              R0, =__main
+  133 00000004 4806            LDR              R0, =__main
   134 00000006 4700            BX               R0
   135 00000008                 ENDP
   136 00000008         
@@ -258,16 +254,16 @@ ARM Macro Assembler    Page 4
   171 00000014 E7FE            B                .
   172 00000016                 ENDP
   173 00000016         PendSV_Handler
+                               PROC
+  174 00000016                 EXPORT           PendSV_Handler            [WEAK
+]
+  175 00000016 E7FE            B                .
 
 
 
 ARM Macro Assembler    Page 5 
 
 
-                               PROC
-  174 00000016                 EXPORT           PendSV_Handler            [WEAK
-]
-  175 00000016 E7FE            B                .
   176 00000018                 ENDP
   177 00000018         SysTick_Handler
                                PROC
@@ -323,16 +319,16 @@ ARM Macro Assembler    Page 5
 ]
   205 0000001A                 EXPORT           EINT3_IRQHandler          [WEAK
 ]
+  206 0000001A                 EXPORT           ADC_IRQHandler            [WEAK
+]
+  207 0000001A                 EXPORT           BOD_IRQHandler            [WEAK
+]
 
 
 
 ARM Macro Assembler    Page 6 
 
 
-  206 0000001A                 EXPORT           ADC_IRQHandler            [WEAK
-]
-  207 0000001A                 EXPORT           BOD_IRQHandler            [WEAK
-]
   208 0000001A                 EXPORT           USB_IRQHandler            [WEAK
 ]
   209 0000001A                 EXPORT           CAN_IRQHandler            [WEAK
@@ -388,16 +384,16 @@ ARM Macro Assembler    Page 6
   243 0000001A         RTC_IRQHandler
   244 0000001A         EINT0_IRQHandler
   245 0000001A         EINT1_IRQHandler
+  246 0000001A         EINT2_IRQHandler
+  247 0000001A         EINT3_IRQHandler
+  248 0000001A         ADC_IRQHandler
+  249 0000001A         BOD_IRQHandler
 
 
 
 ARM Macro Assembler    Page 7 
 
 
-  246 0000001A         EINT2_IRQHandler
-  247 0000001A         EINT3_IRQHandler
-  248 0000001A         ADC_IRQHandler
-  249 0000001A         BOD_IRQHandler
   250 0000001A         USB_IRQHandler
   251 0000001A         CAN_IRQHandler
   252 0000001A         DMA_IRQHandler
@@ -427,40 +423,25 @@ ARM Macro Assembler    Page 7
   276 0000001C         ; User Initial Stack & Heap
   277 0000001C         
   278 0000001C                 IF               :DEF:__MICROLIB
-  285 0000001C         
-  286 0000001C                 IMPORT           __use_two_region_memory
-  287 0000001C                 EXPORT           __user_initial_stackheap
-  288 0000001C         __user_initial_stackheap
-  289 0000001C         
-  290 0000001C 4804            LDR              R0, =  Heap_Mem
-  291 0000001E 4905            LDR              R1, =(Stack_Mem + Stack_Size)
-  292 00000020 4A03            LDR              R2, = (Heap_Mem +  Heap_Size)
-  293 00000022 4B05            LDR              R3, = Stack_Mem
-  294 00000024 4770            BX               LR
-  295 00000026         
-  296 00000026 00 00           ALIGN
-  297 00000028         
-  298 00000028                 ENDIF
-  299 00000028         
-  300 00000028         
-  301 00000028                 END
+  279 0000001C         
+  280 0000001C                 EXPORT           __initial_sp
+  281 0000001C                 EXPORT           __heap_base
+  282 0000001C                 EXPORT           __heap_limit
+  283 0000001C         
+  284 0000001C                 ELSE
+  298                          ENDIF
+  299 0000001C         
+  300 0000001C         
+  301 0000001C                 END
               00000000 
-              00000000 
-              00000000 
-              00000200 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\output\startup_lpc177x_8x.d -o.\output\startup_lpc177x_8x.o -IE:
 \Keil_v5\ARM\RV31\INC -IE:\Keil_v5\ARM\CMSIS\Include -IE:\Keil_v5\ARM\INC\NXP\L
-PC177x_8x --predefine="__UVISION_VERSION SETA 537" --list=.\listing\startup_lpc
-
-
-
-ARM Macro Assembler    Page 8 
-
-
-177x_8x.lst ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\startup\arm\star
-tup_LPC177x_8x.s
+PC177x_8x --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 5
+37" --predefine="NO_CRP SETA 1" --predefine="Define SETA 1" --predefine="HEAP_S
+IZE SETA 0x1800" --list=.\listing\startup_lpc177x_8x.lst ..\Libraries\Core\CM3\
+DeviceSupport\NXP\LPC177x_8x\startup\arm\startup_LPC177x_8x.s
 
 
 
@@ -483,11 +464,8 @@ Symbol: Stack_Mem
       At line 30 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\sta
 rtup\arm\startup_LPC177x_8x.s
    Uses
-      At line 291 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-      At line 293 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-
+      None
+Comment: Stack_Mem unused
 __initial_sp 00000200
 
 Symbol: __initial_sp
@@ -497,7 +475,9 @@ rtup\arm\startup_LPC177x_8x.s
    Uses
       At line 55 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\sta
 rtup\arm\startup_LPC177x_8x.s
-Comment: __initial_sp used once
+      At line 280 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
+artup\arm\startup_LPC177x_8x.s
+
 3 symbols
 
 
@@ -521,11 +501,8 @@ Symbol: Heap_Mem
       At line 42 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\sta
 rtup\arm\startup_LPC177x_8x.s
    Uses
-      At line 290 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-      At line 292 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-
+      None
+Comment: Heap_Mem unused
 __heap_base 00000000
 
 Symbol: __heap_base
@@ -533,17 +510,19 @@ Symbol: __heap_base
       At line 41 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\sta
 rtup\arm\startup_LPC177x_8x.s
    Uses
-      None
-Comment: __heap_base unused
-__heap_limit 00000000
+      At line 281 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
+artup\arm\startup_LPC177x_8x.s
+Comment: __heap_base used once
+__heap_limit 00001800
 
 Symbol: __heap_limit
    Definitions
       At line 43 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\sta
 rtup\arm\startup_LPC177x_8x.s
    Uses
-      None
-Comment: __heap_limit unused
+      At line 282 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
+artup\arm\startup_LPC177x_8x.s
+Comment: __heap_limit used once
 4 symbols
 
 
@@ -570,31 +549,6 @@ rtup\arm\startup_LPC177x_8x.s
       At line 53 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\sta
 rtup\arm\startup_LPC177x_8x.s
 Comment: __Vectors used once
-2 symbols
-
-
-
-ARM Macro Assembler    Page 1 Alphabetic symbol ordering
-Relocatable symbols
-
-.ARM.__at_0x02FC 00000000
-
-Symbol: .ARM.__at_0x02FC
-   Definitions
-      At line 117 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-   Uses
-      None
-Comment: .ARM.__at_0x02FC unused
-CRP_Key 00000000
-
-Symbol: CRP_Key
-   Definitions
-      At line 118 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-   Uses
-      None
-Comment: CRP_Key unused
 2 symbols
 
 
@@ -1292,24 +1246,14 @@ rtup\arm\startup_LPC177x_8x.s
       At line 184 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
 artup\arm\startup_LPC177x_8x.s
 
-__user_initial_stackheap 0000001C
-
-Symbol: __user_initial_stackheap
-   Definitions
-      At line 288 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-   Uses
-      At line 287 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-Comment: __user_initial_stackheap used once
-54 symbols
+53 symbols
 
 
 
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Absolute symbols
 
-Heap_Size 00000000
+Heap_Size 00001800
 
 Symbol: Heap_Size
    Definitions
@@ -1318,9 +1262,7 @@ rtup\arm\startup_LPC177x_8x.s
    Uses
       At line 42 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\sta
 rtup\arm\startup_LPC177x_8x.s
-      At line 292 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-
+Comment: Heap_Size used once
 Stack_Size 00000200
 
 Symbol: Stack_Size
@@ -1330,9 +1272,7 @@ rtup\arm\startup_LPC177x_8x.s
    Uses
       At line 30 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\sta
 rtup\arm\startup_LPC177x_8x.s
-      At line 291 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-
+Comment: Stack_Size used once
 2 symbols
 
 
@@ -1360,14 +1300,5 @@ artup\arm\startup_LPC177x_8x.s
       At line 133 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
 artup\arm\startup_LPC177x_8x.s
 Comment: __main used once
-__use_two_region_memory 00000000
-
-Symbol: __use_two_region_memory
-   Definitions
-      At line 286 in file ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\st
-artup\arm\startup_LPC177x_8x.s
-   Uses
-      None
-Comment: __use_two_region_memory unused
-3 symbols
-407 symbols in table
+2 symbols
+403 symbols in table

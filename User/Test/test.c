@@ -211,7 +211,8 @@ void Power_Process(void)
 	Turnon_backlight();
 	if(Save_Res.open == 1)
 	{
-		lcd_image((uint8_t *)gImage_open);
+		DrawLogo(140,160);
+//		lcd_image((uint8_t *)gImage_open);
 	}
 	
 	
@@ -5359,7 +5360,10 @@ int8_t V_Test_Comp(double value)
 {
 	vu8 res;	
 	static double data,upper,lower;
-	data = value;
+	if(Test_Dispvalue.openflag == 0)
+		data = value;
+	else
+		data = 0;
 	upper = ((double)Save_Res.Set_Data.V_high.Num)/((double)pow(10,Save_Res.Set_Data.V_high.Dot));
 	lower = ((double)Save_Res.Set_Data.V_low.Num)/((double)pow(10,Save_Res.Set_Data.V_low.Dot));
 	

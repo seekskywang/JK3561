@@ -105,4 +105,5 @@ void Disp_Sys_Item1(void);
 void Disp_Debug_Reference(Button_Page_Typedef* Button_Page,float ddd,float eee);
 int16_t Debug_Value(Sort_TypeDef *Debug_value);
 void Disp_Usbflag(uint8_t flag);
+void DrawLogo(uint16_t x,uint16_t y);
 #endif
