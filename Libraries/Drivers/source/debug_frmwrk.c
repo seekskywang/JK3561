@@ -922,36 +922,38 @@ static uint8_t MODS_ReadRegValue(uint16_t reg_addr, uint8_t *reg_value)
     uint16_t value;
 	static vu32 sendunit;
 	static vu32 sendrvalue;
-	
-	switch(Test_Unit.Res_dot)
-	{
-		case 0:
-		{
-			if(rwatch > 30000000)
-			{
-					sendrvalue = 0xffffffff;
-					sendunit = 1;
-			}else{
-					sendrvalue = rwatch;
-					sendunit = 0;
-			}
-                
-			
-		}break;
-		case 1:
-		{
-            if(rwatch > 30000000)
-            {
-                sendrvalue = 0xffffffff;
-				sendunit = 1;
-            }else{
-                sendrvalue = rwatch/1000;
-                sendunit = 1;
-            }			
-		}break;
-		
-	}
+	static vu32 sendvvalue;
+//	switch(Test_Unit.Res_dot)
+//	{
+//		case 0:
+//		{
+//			if(rwatch > 30000000)
+//			{
+//					sendrvalue = 0xffffffff;
+//					sendunit = 1;
+//			}else{
+//					sendrvalue = rwatch;
+//					sendunit = 0;
+//			}
+//                
+//			
+//		}break;
+//		case 1:
+//		{
+//			if(rwatch > 30000000)
+//			{
+//					sendrvalue = 0xffffffff;
+//					sendunit = 1;
+//			}else{
+//					sendrvalue = rwatch/1000;
+//					sendunit = 1;
+//			}			
+//		}break;
+//		
+//	}
 //	lock = 1;
+	sendrvalue = (u32)(Test_Dispvalue.Rdata*10000);
+	sendvvalue = (u32)(Test_Dispvalue.Vdata*100000);
 	switch (reg_addr)									/* ??????? */
 	{
         case SLAVE_REG_P00:
@@ -969,27 +971,27 @@ static uint8_t MODS_ReadRegValue(uint16_t reg_addr, uint8_t *reg_value)
 			{
 				vwatch = 0;
 			}
-            value = (vu16)(vwatch >> 16);
+            value = (vu16)(sendvvalue >> 16);
 			break;
 		case SLAVE_REG_P03: 
 // 			value = (u16)(Test_Value_V.res);
-			if(vflag == 1)
-			{
-				vwatch = 0;
-			}
-            value = (vu16)(vwatch);
+//			if(vflag == 1)
+//			{
+//				vwatch = 0;
+//			}
+            value = (vu16)(sendvvalue);
 			break;
 
 		case SLAVE_REG_P04:
-			if(vflag == 1 || vwatch == 0)
-			{
-				value = 1;
-			}else{
+//			if(vflag == 1 || vwatch == 0)
+//			{
+//				value = 1;
+//			}else{
 				value = Test_Unit.V_Neg;		/* ??????? */
-			}
+//			}
 			break;
 		case SLAVE_REG_P05:
-			value = sendunit;
+			value = Test_Dispvalue.Unit[0];
 			break;
 		case SLAVE_REG_P06:
 			value = 0;							/* ??????? */

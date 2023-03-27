@@ -34,3 +34,4 @@
 .\output\test.o: ..\User\FATFS_V0.08A\src\ff.h
 .\output\test.o: ..\User\FATFS_V0.08A\src\integer.h
 .\output\test.o: ..\User\FATFS_V0.08A\src\ffconf.h
+.\output\test.o: E:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h

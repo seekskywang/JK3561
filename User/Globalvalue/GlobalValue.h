@@ -86,7 +86,7 @@
 
 #define KEY_NUM				(3)	//按键灵敏度
 
-#define NUM_LENTH 			(5)//显示长度
+#define NUM_LENTH 			(6)//显示长度
 #define NUM_FREQ 			(33+4)//显示长度
 #define DEBUG_RANGE			(5+2)
 
@@ -387,15 +387,16 @@ typedef struct
 	Sort_TypeDef Vmvalue;
 	Sort_TypeDef Imvalue;
 	vu8 Rangedisp;
-	vu8 Main_valuebuff[10];
-	vu8 Secondvaluebuff[10];
+	char Main_valuebuff[10];
+	char Secondvaluebuff[10];
 	vu8 Vmvaluebuff[10];
 	vu8 Imvaluebuff[10];
 	vu8 Dot[4];
 	vu8 Unit[4];
 	vu32 Test_V;
 	vu32 Test_R;
-	
+	double Rdata;
+	double Vdata;
 
 
 }Test_Dispvalue_TypeDef;

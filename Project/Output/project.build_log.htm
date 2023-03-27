@@ -27,7 +27,42 @@ Project File Date:  03/24/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Open1788'
-".\Output\project.axf" - 0 Error(s), 0 Warning(s).
+compiling test.c...
+..\User\EX_SDRAM/EX_SDRAM.H(55): warning:  #47-D: incompatible redefinition of macro "SDRAM_SIZE"  (declared at line 31)
+  #define SDRAM_SIZE               0x4000000    // 512Mbit
+..\User\Test\test.c(189): warning:  #127-D: expected a statement
+  }
+..\User\Test\test.c(107): warning:  #177-D: variable "addr"  was declared but never referenced
+        uint16_t addr;
+..\User\Test\test.c(108): warning:  #177-D: variable "crc1"  was declared but never referenced
+        static uint16_t crc1;
+..\User\Test\test.c(470): warning:  #223-D: function "RecHandle" declared implicitly
+                                RecHandle();
+..\User\Test\test.c(904): warning:  #188-D: enumerated type mixed with another type
+                                                do{res=Host_EnumDev();j++;
+..\User\Test\test.c(393): warning:  #177-D: variable "lock_flag"  was declared but never referenced
+        vu8 lock_flag=0;
+..\User\Test\test.c(397): warning:  #177-D: variable "sendtest"  was declared but never referenced
+      vu8 sendtest[5] ={1,2,3,4,5};
+..\User\Test\test.c(399): warning:  #177-D: variable "numBlks"  was declared but never referenced
+      uint32_t  numBlks, blkSize;
+..\User\Test\test.c(399): warning:  #177-D: variable "blkSize"  was declared but never referenced
+      uint32_t  numBlks, blkSize;
+..\User\Test\test.c(400): warning:  #177-D: variable "inquiryResult"  was declared but never referenced
+        uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
+..\User\Test\test.c(400): warning:  #177-D: variable "rc"  was declared but never referenced
+        uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
+..\User\Test\test.c(4031): warning:  #177-D: variable "i"  was declared but never referenced
+        vu8 i;
+..\User\Test\test.c(4835): warning:  #177-D: variable "Sort_num1"  was declared but never referenced
+        Sort_TypeDef Sort_num,Sort_num1;
+..\User\Test\test.c(5378): warning:  #550-D: variable "bytes_written"  was set but never used
+      uint32_t  bytes_written;
+..\User\Test\test.c: 15 warnings, 0 errors
+linking...
+Program Size: Code=86142 RO-data=428682 RW-data=416 ZI-data=22624  
+FromELF: creating hex file...
+".\Output\project.axf" - 0 Error(s), 15 Warning(s).
 Build Time Elapsed:  00:00:01
 </pre>
 </body>

@@ -17,6 +17,7 @@
 #include "lpc177x_8x_gpio.h"
 #include "open.h"
 #include "ff.h"
+#include <stdlib.h>
 
 FATFS fs;         /* Work area (file system object) for logical drive */
 FIL fsrc;         /* file objects */   
@@ -42,6 +43,7 @@ vu32 rwatch;
 vu32 vwatch;
 vu32 testwatch[500];
 vu8 u3sendflag;
+vu32 uartresdelay;
 vu32 Tick_10ms=0;
 vu32 OldTick;
 vu8 g_mods_timeout;
@@ -171,8 +173,9 @@ void MODS_Poll(void)
 //    }else{
 //        usartocflag = 1;
         u3sendflag = 1;
-        RecHandle();
-        u3sendflag = 0;
+				uartresdelay = 5;
+//        RecHandle();
+//        u3sendflag = 0;
 //    }
 							
 	
@@ -182,7 +185,7 @@ err_ret:
 	memcpy(g_tPrint.RxBuf, g_tModS.RxBuf, g_tModS.RxCount);
 #endif
 	
- 	g_tModS.RxCount = 0;					/* 必须清零计数器，方便下次帧同歿*/
+// 	g_tModS.RxCount = 0;					/* 必须清零计数器，方便下次帧同歿*/
 }
 
 void Power_Process(void)
@@ -325,6 +328,48 @@ void Power_Process(void)
 	
 }
 
+void string_to_float(char *string, double *data)
+{
+	unsigned int i=0,j=0,k=0;
+	unsigned char flag=0;  			//判断正负号的标志
+	unsigned char flag_dot=1; 	//判断小数点的标志
+	double num=0;     					//临时存储计算结果的变量
+	
+	for(i=0;*(string+i)!=0x00;i++) //循环直到字符串结尾
+	{
+		if(*(string+i)>='0'&&*(string+i)<='9'&&flag_dot==1)  //如果当前字符为数字且在小数点之前
+		{
+			if(j==0) num = num*pow(10,j)+(double)(*(string+i)-'0');     //运算并存储中间计算结果
+			else     num = num*pow(10,1)+(double)(*(string+i)-'0');
+			j++;
+		}
+		else if(*(string+i)>='0'&&*(string+i)<='9'&&flag_dot==0) //如果当前字符为数字且在小数点之后
+		{
+			num = num+(double)(*(string+i)-'0')*pow(0.1,j+1);     //运算并存储中间计算结果
+			j++;
+		}
+		else if(*(string+i)=='.')                               //读到了小数点则将对应标志位数值改变
+		{
+			flag_dot=0;
+			j=0;
+		}
+		else if(*(string+i)=='-')                              //读到减号同样改变对应标志位的值
+		{
+			flag = 1;
+		}
+		else if(*(string+i)==',')                             //读完一个数据，重置标志位，记录最终计算结果
+		{
+			*(data+k) = num*pow(-1,flag);
+			flag = 0;
+			flag_dot=1;
+			j=0;
+			k++;
+			num = 0;
+		}
+	}
+	*(data+k) = num*pow(-1,flag);                            //补上最后一个数
+}
+
 //测试程序
 void Test_Process(void)
 {
@@ -405,22 +450,33 @@ void Test_Process(void)
 		
 		Colour.black=LCD_COLOR_TEST_MID;
 		
-		if((Save_Res.Set_Data.trip==1&&trip_flag==1) || powerontest == 1)//单次触发
+		if((Save_Res.Set_Data.trip==1&&trip_flag==1) || powerontest == 1/* || u3sendflag == 1*/)//单次触发
 		{
-			if(powerontest == 1)
-			{
-				delayMs(1,1000);
-			}
+//			if(powerontest == 1)
+//			{
+//				delayMs(1,1000);
+//			}
 			powerontest = 0;
 			Send_Request();
 			trip_flag=0;
 			return_flag=1;
-			delayMs(1,500);
+//			delayMs(1,500);
 		}
 		Uart_Process();
-		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
-       
-		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
+		if(u3sendflag == 1)
+		{
+			if(uartresdelay == 0)
+			{
+				RecHandle();
+				u3sendflag = 0;
+				g_tModS.RxCount = 0;
+			}else{
+				uartresdelay --;
+			}
+		}
+//		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
+//       
+//		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
 		
         if(nodisp_v_flag)
             eee=0;
@@ -429,7 +485,7 @@ void Test_Process(void)
 			switch(Uart_Send_Flag)
 			{
 				case 0:
-					if(Save_Res.Set_Data.trip==0 && u3sendflag ==0)
+					if(Save_Res.Set_Data.trip==0/* && u3sendflag ==0*/)
 					{
 						Send_Request();
 						return_flag=1;
@@ -472,9 +528,11 @@ void Test_Process(void)
 		
 		}
 				//校正
-		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
-       
-		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
+		string_to_float((char *)Test_Dispvalue.Main_valuebuff,&Test_Dispvalue.Rdata);
+		string_to_float((char *)Test_Dispvalue.Secondvaluebuff,&Test_Dispvalue.Vdata);
+//		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
+//       
+//		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
 		
 		if(clear_flag)//清零
 		{
@@ -536,18 +594,18 @@ void Test_Process(void)
 //			Save_Res.Debug_Value[Test_Dispvalue.Rangedisp+1].ad_value);
 //		}
 		
-        if(ddd>32000000)
-		{
-           nodisp_v_flag=1;
-			stable_counter = 0;
-			j = 0;
-        }else{
-            nodisp_v_flag=0;
-		}
-		if(Test_Unit.V_dot==3)
-			eee=Debug_Res(eee,Save_Res.Debug_Value[5].standard,Save_Res.Debug_Value[5].ad_value);
-		else
-			eee=Debug_Res(eee,Save_Res.Debug_Value[6].standard,Save_Res.Debug_Value[6].ad_value);
+//        if(ddd>32000000)
+//		{
+//           nodisp_v_flag=1;
+//			stable_counter = 0;
+//			j = 0;
+//        }else{
+//            nodisp_v_flag=0;
+//		}
+//		if(Test_Unit.V_dot==3)
+//			eee=Debug_Res(eee,Save_Res.Debug_Value[5].standard,Save_Res.Debug_Value[5].ad_value);
+//		else
+//			eee=Debug_Res(eee,Save_Res.Debug_Value[6].standard,Save_Res.Debug_Value[6].ad_value);
 		
 		if(nodisp_v_flag)
             eee=0;
@@ -555,14 +613,14 @@ void Test_Process(void)
 		//分选比较打开
 		if(Save_Res.Set_Data.V_comp && Save_Res.Set_Data.dispvr != 2)//电压比较
 		{
-			chosen=V_Test_Comp(eee);
+			chosen=V_Test_Comp(Test_Dispvalue.Vdata);
 			
 		
 		
 		}
 		if(Save_Res.Set_Data.Res_comp && Save_Res.Set_Data.dispvr != 1)//电阻比较打开
 		{
-			chosen1=R_Test_Comp(ddd);
+			chosen1=R_Test_Comp(Test_Dispvalue.Rdata);
 	//			if(R_Test_Comp(ddd)==ALL_PASS)
 	//				;
 		
@@ -731,7 +789,8 @@ void Test_Process(void)
 //		if(timer1_counter > 0)
 //        {
             Tick_10ms ++;
-            MODS_Poll();
+		if(u3sendflag == 0)
+      MODS_Poll();
 //            timer1_counter = 0;
 //        }
 		//	Test_Comp(&Comp_Change);
@@ -1427,7 +1486,7 @@ void Setup_Process(void)
 							
 							break;
 						case 7+1:
-							if(Save_Res.Set_Data.Range < 6)
+							if(Save_Res.Set_Data.Range < 7)
 								Save_Res.Set_Data.Range++;
 							Uart_Send_Flag=2;
 							break;
@@ -1691,7 +1750,7 @@ void Setup_Process(void)
 					case 4+1:
 						Coordinates.xpos=LIST1+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*4;
-						Coordinates.lenth=76;
+						Coordinates.lenth=76+8;
 						Save_Res.Set_Data.Res_low=Disp_Set_Num(&Coordinates);
 						
 						break;
@@ -1705,13 +1764,13 @@ void Setup_Process(void)
 					case 9+1:
 						Coordinates.xpos=LIST2+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*3;
-						Coordinates.lenth=76;
+						Coordinates.lenth=76+8;
 						Save_Res.Set_Data.Nominal_Res=Disp_Set_Num(&Coordinates);
 						break;
 					case 10+1:
 						Coordinates.xpos=LIST2+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*4;
-						Coordinates.lenth=76;
+						Coordinates.lenth=76+8;
 						Save_Res.Set_Data.High_Res=Disp_Set_Num(&Coordinates);
 						break;
 					case 11+1:
@@ -3557,8 +3616,8 @@ void Use_DebugProcess(void)
 			
 			timer0_counter=0;
 		}
-		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
-		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
+//		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
+//		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
 		if(!Test_Dispvalue.Rangedisp)
 			{
 				if(Test_Dispvalue.Main_valuebuff[0]=='-')
@@ -3878,6 +3937,10 @@ u8 Uart_Process(void)
 							Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[7+i];
 							
 						}
+						if(ComBuf.rec.buf[7]=='-')
+							Test_Unit.V_Neg=0;
+						else
+							Test_Unit.V_Neg=1;
 						//Test_Dispvalue.Test_R=
 						if(ComBuf.rec.buf[16])
 							Test_Dispvalue.Unit[0]=1;
@@ -4772,16 +4835,17 @@ Sort_TypeDef Disp_Set_Num(Disp_Coordinates_Typedef *Coordinates)
 	Sort_TypeDef Sort_num,Sort_num1;
 	Disp_button_Num_time();
 	Sort_num=Disp_NumKeyboard_Set(Coordinates);
-	Sort_num1=Time_Set_Cov(&Sort_num);
-	if(Sort_num1.Updata_flag==0)
-	{
-		Sort_num1.Dot=0;
-		Sort_num1.Num=0;
-		Sort_num1.Unit=0;
-	
-	}
+	Sort_num.Dot = 5- Sort_num.Dot;
+//	Sort_num1=Time_Set_Cov(&Sort_num);
+//	if(Sort_num1.Updata_flag==0)
+//	{
+//		Sort_num1.Dot=0;
+//		Sort_num1.Num=0;
+//		Sort_num1.Unit=0;
+//	
+//	}
 		
-	return Sort_num1;
+	return Sort_num;
 
 }
 //电压设置
@@ -4942,32 +5006,50 @@ void Set_daot(vu8 *buff,vu8 dot)
 
 
 }
-int8_t V_Test_Comp(int32_t value)
+int8_t V_Test_Comp(double value)
 {
-	vu8 data;
+	vu8 res;	
+	static double data,upper,lower;
+	data = value;
+	upper = ((double)Save_Res.Set_Data.V_high.Num)/((double)pow(10,Save_Res.Set_Data.V_high.Dot));
+	lower = ((double)Save_Res.Set_Data.V_low.Num)/((double)pow(10,Save_Res.Set_Data.V_low.Dot));
 	
-	if(value>Save_Res.Set_Data.V_high.mid_data)
-		data=VH_FAIL;
-	else if(value<Save_Res.Set_Data.V_low.mid_data || negvalm == 1)
-		data=VL_FAIL;
+	if(data>upper)
+		res=VH_FAIL;
+	else if(data<lower)
+		res=VL_FAIL;
 	else
-		data=ALL_PASS;
-	return data;
+		res=ALL_PASS;
+	return res;
+//	if(value>Save_Res.Set_Data.V_high.mid_data)
+//		data=VH_FAIL;
+//	else if(value<Save_Res.Set_Data.V_low.mid_data || negvalm == 1)
+//		data=VL_FAIL;
+//	else
+//		data=ALL_PASS;
+//	return data;
 		
 
 
 }
-int8_t R_Test_Comp(int32_t value)
+int8_t R_Test_Comp(double value)
 {
-	vu8 data;
+	vu8 res;	
+	static double data,upper,lower;
+	data = value*1000*((double)pow(1000,Test_Dispvalue.Unit[0]));
+	upper = (((double)Save_Res.Set_Data.High_Res.Num)/((double)pow(10,Save_Res.Set_Data.High_Res.Dot)))
+		*1000*((double)pow(1000,Save_Res.Set_Data.High_Res.Unit));
+	lower = (((double)Save_Res.Set_Data.Res_low.Num)/((double)pow(10,Save_Res.Set_Data.Res_low.Dot)))
+		*1000*((double)pow(1000,Save_Res.Set_Data.Res_low.Unit));
 	
-	if(value>Save_Res.Set_Data.High_Res.mid_data)
-		data=RH_FAIL;
-	else if(value<Save_Res.Set_Data.Res_low.mid_data)
-		data=RL_FAIL;
+	
+	if(data>upper)
+		res=RH_FAIL;
+	else if(data<lower)
+		res=RL_FAIL;
 	else
-		data=ALL_PASS;
-	return data;
+		res=ALL_PASS;
+	return res;
 
 }
 void Comp_prompt(int8_t value)

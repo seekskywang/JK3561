@@ -429,23 +429,25 @@ const uint8_t LevleButton_Tip[][7+1]=  //频率选择时候的下面的提示符号
 const uint8_t User_Range[][10+1]=
 {
     {"自动  "},
-    {"10 mΩ "},
-    {"100mΩ "},
-    {"1Ω    "},
-    {"10Ω   "},
-    {"100Ω  "},
-		{"1000Ω "},
+		{"3 mΩ "},
+    {"30 mΩ "},
+    {"300mΩ "},
+    {"3Ω    "},
+    {"30Ω   "},
+    {"300Ω  "},
+		{"3000Ω "},
 };
 
 const uint8_t Auto_Range[][10+1]=
 {
 		{"        "},
-    {"(10mΩ )"},
-    {"(100mΩ)"},
-    {"(1Ω   )"},
-    {"(10Ω  )"},
-    {"(100Ω )"},
-		{"(1000Ω)"},
+		{"(3mΩ )"},
+    {"(30mΩ )"},
+    {"(300mΩ)"},
+    {"(3Ω   )"},
+    {"(30Ω  )"},
+    {"(300Ω )"},
+		{"(3000Ω)"},
 };
 
 const uint8_t RangeButton_Tip[][7+1]=  //频率选择时候的下面的提示符号
@@ -2290,12 +2292,12 @@ void Disp_Test_value(Button_Page_Typedef* Button_Page)
 	}
 		
 
-	Hex_Format(Save_Res.Set_Data.High_Res.Num , Save_Res.Set_Data.High_Res.Dot , 4 , 0);
+	Hex_Format(Save_Res.Set_Data.High_Res.Num , Save_Res.Set_Data.High_Res.Dot , 5 , 0);
 	WriteString_16(LIST1+88, FIRSTLINE+SPACE1, DispBuf,  0);
 	if(Save_Res.Set_Data.High_Res.Unit)	
-		WriteString_16(LIST1+90+8*6, FIRSTLINE+SPACE1, " Ω",  0);
+		WriteString_16(LIST1+90+8*7, FIRSTLINE+SPACE1, " Ω",  0);
 	else
-		WriteString_16(LIST1+90+8*6, FIRSTLINE+SPACE1, "mΩ",  0);
+		WriteString_16(LIST1+90+8*7, FIRSTLINE+SPACE1, "mΩ",  0);
 
 //电阻下限
 	Black_Select=(Button_Page->index==3)?1:0;
@@ -2310,12 +2312,12 @@ void Disp_Test_value(Button_Page_Typedef* Button_Page)
 	}
 
 	
-	Hex_Format(Save_Res.Set_Data.Res_low.Num , Save_Res.Set_Data.Res_low.Dot , 4 , 0);
+	Hex_Format(Save_Res.Set_Data.Res_low.Num , Save_Res.Set_Data.Res_low.Dot , 5 , 0);
 	WriteString_16(LIST1+88, FIRSTLINE+SPACE1*2, DispBuf,  0);
 	if(Save_Res.Set_Data.Res_low.Unit)	
-		WriteString_16(LIST1+90+8*6, FIRSTLINE+SPACE1*2, " Ω",  0);
+		WriteString_16(LIST1+90+8*7, FIRSTLINE+SPACE1*2, " Ω",  0);
 	else
-		WriteString_16(LIST1+90+8*6, FIRSTLINE+SPACE1*2, "mΩ",  0);
+		WriteString_16(LIST1+90+8*7, FIRSTLINE+SPACE1*2, "mΩ",  0);
 //量程
 	Black_Select=(Button_Page->index==4)?1:0;
 	if(Black_Select)
@@ -2489,14 +2491,14 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 	}
 	
 	
-	Hex_Format(Save_Res.Set_Data.Res_low.Num , Save_Res.Set_Data.Res_low.Dot , 4 , 0);
+	Hex_Format(Save_Res.Set_Data.Res_low.Num , Save_Res.Set_Data.Res_low.Dot , 5 , 0);
 	
 	LCD_DrawRect( LIST1+88, FIRSTLINE+SPACE1*4-2,SELECT_1END , FIRSTLINE+SPACE1*5 -4, Colour.black ) ;
 	WriteString_16(LIST1+88, FIRSTLINE+SPACE1*4, DispBuf,  0);
 	if(Save_Res.Set_Data.Res_low.Unit)	//Res_low
-		WriteString_16(LIST1+90+8*6, FIRSTLINE+SPACE1*4, " Ω",  0);
+		WriteString_16(LIST1+90+8*7, FIRSTLINE+SPACE1*4, " Ω",  0);
 	else
-		WriteString_16(LIST1+90+8*6, FIRSTLINE+SPACE1*4, "mΩ",  0);
+		WriteString_16(LIST1+90+8*7, FIRSTLINE+SPACE1*4, "mΩ",  0);
 		
 	
 //电压比较	
@@ -2594,14 +2596,14 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 	}
 	
 	
-	Hex_Format(Save_Res.Set_Data.Nominal_Res.Num , Save_Res.Set_Data.Nominal_Res.Dot , 4 , 0);
+	Hex_Format(Save_Res.Set_Data.Nominal_Res.Num , Save_Res.Set_Data.Nominal_Res.Dot , 5 , 0);
 	
 	LCD_DrawRect( LIST2+88, FIRSTLINE+SPACE1*3-2,SELECT_2END , FIRSTLINE+SPACE1*4 -4, Colour.black ) ;
 	WriteString_16(LIST2+88, FIRSTLINE+SPACE1*3, DispBuf,  0);
 	if(Save_Res.Set_Data.Nominal_Res.Unit)	
-		WriteString_16(LIST2+90+8*6, FIRSTLINE+SPACE1*3, " Ω",  0);
+		WriteString_16(LIST2+90+8*7, FIRSTLINE+SPACE1*3, " Ω",  0);
 	else
-		WriteString_16(LIST2+90+8*6, FIRSTLINE+SPACE1*3, "mΩ",  0);
+		WriteString_16(LIST2+90+8*7, FIRSTLINE+SPACE1*3, "mΩ",  0);
 		
 	
 
@@ -2618,14 +2620,14 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 		Colour.black=LCD_COLOR_TEST_MID;
 	}
 	
-	Hex_Format(Save_Res.Set_Data.High_Res.Num , Save_Res.Set_Data.High_Res.Dot , 4 , 0);
+	Hex_Format(Save_Res.Set_Data.High_Res.Num , Save_Res.Set_Data.High_Res.Dot , 5 , 0);
 	
 	LCD_DrawRect( LIST2+88, FIRSTLINE+SPACE1*4-2,SELECT_2END , FIRSTLINE+SPACE1*5 -4, Colour.black ) ;
 	WriteString_16(LIST2+88, FIRSTLINE+SPACE1*4, DispBuf,  0);
 	if(Save_Res.Set_Data.High_Res.Unit)	
-		WriteString_16(LIST2+90+8*6, FIRSTLINE+SPACE1*4, " Ω",  0);
+		WriteString_16(LIST2+90+8*7, FIRSTLINE+SPACE1*4, " Ω",  0);
 	else
-		WriteString_16(LIST2+90+8*6, FIRSTLINE+SPACE1*4, "mΩ",  0);
+		WriteString_16(LIST2+90+8*7, FIRSTLINE+SPACE1*4, "mΩ",  0);
 		
 	
 //电压标称
