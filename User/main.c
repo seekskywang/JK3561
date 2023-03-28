@@ -38,6 +38,7 @@
 #include "lpc177x_8x_eeprom.h"
 #include "usbhost_main.h"
 #include "rtc/rtc.h"
+#include "lpc177x_8x_gpdma.h"
 //#include  "image.h"
 
 /** @defgroup GPIO_LedBlinky	GPIO Blinky
@@ -119,6 +120,7 @@ int main(void)
 	HW_keyInt();
 	GPIO_Led_Configuration();
 	debug_frmwrk_init();
+	lpc1788_DMA_Init();
 	softswitch=0;
 	
 	EEPROM_Init();

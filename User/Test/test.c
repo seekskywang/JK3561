@@ -418,7 +418,7 @@ void Test_Process(void)
 	Delay_Key();
 //	uart_count=0;
 	clear_flag=0;
-	Send_UartStart();//开始时的串口发送数据
+//	Send_UartStart();//开始时的串口发送数据
 	while(GetSystemStatus()==SYS_STATUS_TEST)
 	{
         if(Rtc_intflag)

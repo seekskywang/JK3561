@@ -11,6 +11,8 @@
 #include "timer.h"
 #include <math.h>
 #include "lpc177x_8x_rtc.h"
+#include "debug_frmwrk.h"
+#include "lpc177x_8x_gpdma.h"
 extern vu8 nodisp_v_flag;
 vu8 negvalm;
 const uint8_t Num_1[][9]=
@@ -4616,14 +4618,12 @@ void Send_UartStart(void)
 }
 void Send_Request(void)
 {
-	vu8 Send_buff[10]={0xAB,0X00,0xbf,0};
-	
-//	Send_buff[3]=ord->Ordel;
-//	Send_buff[4]=ord->name;
-//	Send_buff[5]=0X80;//Ð£ÑéºÍ 
-//	Send_buff[6]=0XBF;
-//	Send_buff[7]=0;
-	UARTPuts( LPC_UART0, Send_buff);
+//	vu8 Send_buff[10]={0xAB,0X00,0xbf,0};
+	ComBuf.send.buf[0] = 0xAB;
+	ComBuf.send.buf[1] = 0x00;
+	ComBuf.send.buf[2] = 0xbf;
+	DMASendInit();
+//	UARTPuts( LPC_UART0, Send_buff);
 	//_printf("s%",(const)Send_buff);
 
 }

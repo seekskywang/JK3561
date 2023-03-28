@@ -116,7 +116,8 @@ extern "C"
 /** @defgroup GPDMA_Private_Macros GPDMA Private Macros
  * @{
  */
-
+extern const uint8_t GPDMA_LUTPerWid[];
+extern const uint8_t GPDMA_LUTPerBurst[];
 /* --------------------- BIT DEFINITIONS -------------------------------------- */
 /*********************************************************************//**
  * Macro defines for DMA Interrupt Status register
@@ -388,6 +389,9 @@ Status GPDMA_Setup(GPDMA_Channel_CFG_Type *GPDMAChannelConfig);
 IntStatus GPDMA_IntGetStatus(GPDMA_Status_Type type, uint8_t channel);
 void GPDMA_ClearIntPending(GPDMA_StateClear_Type type, uint8_t channel);
 void GPDMA_ChannelCmd(uint8_t channelNum, FunctionalState NewState);
+
+void lpc1788_DMA_Init(void);
+void DMASendInit(void);
 //void GPDMA_IntHandler(void);
 
 /**

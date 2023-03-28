@@ -503,7 +503,8 @@ void  _printf (const  char *format, ...)
 void debug_frmwrk_init(void)
 {
 	UART_CFG_Type UARTConfigStruct;
-
+	UART_FIFO_CFG_Type UARTFIFOConfigStruct;
+	
 #if (USED_UART_DEBUG_PORT == 0)
 	/*
 	 * Initialize UART0 pin connect
@@ -559,9 +560,15 @@ void debug_frmwrk_init(void)
 
 	// Initialize DEBUG_UART_PORT peripheral with given to corresponding parameter
 	UART_Init(DEBUG_UART_PORT, &UARTConfigStruct);//|UART_INTCFG_THRE
-	UART_IntConfig(LPC_UART0,UART_INTCFG_RBR,ENABLE);
-	//NVIC_SetPriority(UART0_IRQn, ((0x01<<3)|0x01));//??UART2?????
-	 NVIC_EnableIRQ(UART0_IRQn);
+	
+	UART_FIFOConfigStructInit(&UARTFIFOConfigStruct);
+	UARTFIFOConfigStruct.FIFO_DMAMode = ENABLE;
+	UART_FIFOConfig(DEBUG_UART_PORT, &UARTFIFOConfigStruct);
+	NVIC_DisableIRQ(UART0_IRQn);
+	 
+//	UART_IntConfig(LPC_UART0,UART_INTCFG_RBR,ENABLE);
+//	//NVIC_SetPriority(UART0_IRQn, ((0x01<<3)|0x01));//??UART2?????
+//	 NVIC_EnableIRQ(UART0_IRQn);
 	// Enable UART Transmit
 	UART_TxCmd(DEBUG_UART_PORT, ENABLE);
 

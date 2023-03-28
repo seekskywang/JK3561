@@ -10,7 +10,7 @@ I (..\Libraries\Core\CM3\CoreSupport\core_cmFunc.h)(0x5029ACB3)
 I (..\Libraries\Drivers\include\lpc_types.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\system_LPC177x_8x.h)(0x5029ACB3)
 I (..\User\timer.h)(0x5996F7D3)
-F (..\User\main.c)(0x642130D4)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\main.o --omf_browse .\output\main.crf --depend .\output\main.d)
+F (..\User\main.c)(0x642159BC)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\main.o --omf_browse .\output\main.crf --depend .\output\main.d)
 I (..\Libraries\Drivers\include\lpc177x_8x_gpio.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\LPC177x_8x.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\CoreSupport\core_cm3.h)(0x5942A6E5)
@@ -43,6 +43,7 @@ I (..\User\Include\../Host/usbhost_lpc17xx.h)(0x5A1AD541)
 I (..\User\Include\../MassStorage/usbhost_ms.h)(0x641D13D4)
 I (..\User\Include\../Fat/usbhost_fat.h)(0x5A1D75D3)
 I (..\User\rtc/rtc.h)(0x5AC61512)
+I (..\Libraries\Drivers\include\lpc177x_8x_gpdma.h)(0x642159DB)
 F (..\User\timer.c)(0x63DB6E16)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\timer.o --omf_browse .\output\timer.crf --depend .\output\timer.d)
 I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\LPC177x_8x.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\CoreSupport\core_cm3.h)(0x5942A6E5)
@@ -102,7 +103,7 @@ I (..\Libraries\Drivers\include\lpc177x_8x_uart.h)(0x5029ACB3)
 I (..\User\main.h)(0x5029ACB1)
 I (..\User\LCD/lpc177x_8x_lcd.h)(0x6191F6E5)
 I (..\User\EX_SDRAM/EX_SDRAM.H)(0x64212195)
-F (..\User\UseDisp\use_disp.c)(0x6421432E)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\use_disp.o --omf_browse .\output\use_disp.crf --depend .\output\use_disp.d)
+F (..\User\UseDisp\use_disp.c)(0x64223FEE)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\use_disp.o --omf_browse .\output\use_disp.crf --depend .\output\use_disp.d)
 I (..\User\LCD/lpc177x_8x_lcd.h)(0x6191F6E5)
 I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\LPC177x_8x.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\CoreSupport\core_cm3.h)(0x5942A6E5)
@@ -123,6 +124,9 @@ I (..\User\test/Test.h)(0x6420F20F)
 I (..\Libraries\Drivers\include\lpc177x_8x_eeprom.h)(0x5029ACB3)
 I (..\User\timer.h)(0x5996F7D3)
 I (E:\Keil_v5\ARM\ARMCC\include\math.h)(0x599ECD2E)
+I (..\Libraries\Drivers\include\debug_frmwrk.h)(0x641D0946)
+I (..\Libraries\Drivers\include\lpc177x_8x_uart.h)(0x5029ACB3)
+I (..\Libraries\Drivers\include\lpc177x_8x_gpdma.h)(0x642159DB)
 F (..\User\Key\key.c)(0x5C48227A)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\key.o --omf_browse .\output\key.crf --depend .\output\key.d)
 I (..\User\Key/key.h)(0x5ACE1901)
 I (..\Libraries\Drivers\include\lpc177x_8x_gpio.h)(0x5029ACB3)
@@ -134,7 +138,7 @@ I (..\Libraries\Core\CM3\CoreSupport\core_cmFunc.h)(0x5029ACB3)
 I (..\Libraries\Drivers\include\lpc_types.h)(0x5029ACB3)
 I (..\User\Globalvalue/globalvalue.h)(0x64213C89)
 I (..\Libraries\Drivers\include\lpc177x_8x_rtc.h)(0x5AC61622)
-F (..\User\Test\test.c)(0x6421433F)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\test.o --omf_browse .\output\test.crf --depend .\output\test.d)
+F (..\User\Test\test.c)(0x6421512F)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\test.o --omf_browse .\output\test.crf --depend .\output\test.d)
 I (..\User\Test\test.h)(0x6420F20F)
 I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x63FC1CD9)
 I (..\User\Globalvalue/globalvalue.h)(0x64213C89)
@@ -180,6 +184,20 @@ I (..\Libraries\Core\CM3\CoreSupport\core_cm3.h)(0x5942A6E5)
 I (..\Libraries\Core\CM3\CoreSupport\core_cmInstr.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\CoreSupport\core_cmFunc.h)(0x5029ACB3)
 I (..\Libraries\Drivers\include\lpc_types.h)(0x5029ACB3)
+F (..\User\DMA\dma.c)(0x64223C79)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\dma.o --omf_browse .\output\dma.crf --depend .\output\dma.d)
+I (..\Libraries\Drivers\include\lpc177x_8x_gpdma.h)(0x642159DB)
+I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\LPC177x_8x.h)(0x5029ACB3)
+I (..\Libraries\Core\CM3\CoreSupport\core_cm3.h)(0x5942A6E5)
+I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x63FC1CD9)
+I (..\Libraries\Core\CM3\CoreSupport\core_cmInstr.h)(0x5029ACB3)
+I (..\Libraries\Core\CM3\CoreSupport\core_cmFunc.h)(0x5029ACB3)
+I (..\Libraries\Drivers\include\lpc_types.h)(0x5029ACB3)
+I (..\Libraries\Drivers\include\debug_frmwrk.h)(0x641D0946)
+I (..\User\Globalvalue/GlobalValue.h)(0x64213C89)
+I (..\Libraries\Drivers\include\lpc177x_8x_rtc.h)(0x5AC61622)
+I (..\Libraries\Drivers\include\lpc177x_8x_uart.h)(0x5029ACB3)
+I (..\Libraries\Drivers\include\lpc177x_8x_pinsel.h)(0x5029ACB3)
+I (E:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599ECD2A)
 F (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\startup\arm\startup_LPC177x_8x.s)(0x642122A6)(--cpu Cortex-M3 -g --apcs=interwork --pd "__MICROLIB SETA 1"-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x--pd "__UVISION_VERSION SETA 537" --pd "NO_CRP SETA 1" --pd "Define SETA 1" --pd "HEAP_SIZE SETA 0x1800"--list .\listing\startup_lpc177x_8x.lst --xref -o .\output\startup_lpc177x_8x.o --depend .\output\startup_lpc177x_8x.d)
 F (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\system_LPC177x_8x.c)(0x64212F5D)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\system_lpc177x_8x.o --omf_browse .\output\system_lpc177x_8x.crf --depend .\output\system_lpc177x_8x.d)
 I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x63FC1CD9)
@@ -237,7 +255,7 @@ I (..\Libraries\Core\CM3\CoreSupport\core_cmFunc.h)(0x5029ACB3)
 I (..\Libraries\Drivers\include\lpc_types.h)(0x5029ACB3)
 I (..\Libraries\Drivers\include\lpc177x_8x_clkpwr.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\system_LPC177x_8x.h)(0x5029ACB3)
-F (..\Libraries\Drivers\source\debug_frmwrk.c)(0x6421413C)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\debug_frmwrk.o --omf_browse .\output\debug_frmwrk.crf --depend .\output\debug_frmwrk.d)
+F (..\Libraries\Drivers\source\debug_frmwrk.c)(0x64215610)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\debug_frmwrk.o --omf_browse .\output\debug_frmwrk.crf --depend .\output\debug_frmwrk.d)
 I (..\Libraries\Drivers\include\debug_frmwrk.h)(0x641D0946)
 I (..\User\Globalvalue/GlobalValue.h)(0x64213C89)
 I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x63FC1CD9)
@@ -270,6 +288,16 @@ I (..\Libraries\Drivers\include\lpc177x_8x_clkpwr.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\system_LPC177x_8x.h)(0x5029ACB3)
 F (..\Libraries\Drivers\source\lpc177x_8x_rtc.c)(0x5C398B44)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\lpc177x_8x_rtc.o --omf_browse .\output\lpc177x_8x_rtc.crf --depend .\output\lpc177x_8x_rtc.d)
 I (..\Libraries\Drivers\include\lpc177x_8x_rtc.h)(0x5AC61622)
+I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\LPC177x_8x.h)(0x5029ACB3)
+I (..\Libraries\Core\CM3\CoreSupport\core_cm3.h)(0x5942A6E5)
+I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x63FC1CD9)
+I (..\Libraries\Core\CM3\CoreSupport\core_cmInstr.h)(0x5029ACB3)
+I (..\Libraries\Core\CM3\CoreSupport\core_cmFunc.h)(0x5029ACB3)
+I (..\Libraries\Drivers\include\lpc_types.h)(0x5029ACB3)
+I (..\Libraries\Drivers\include\lpc177x_8x_clkpwr.h)(0x5029ACB3)
+I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\system_LPC177x_8x.h)(0x5029ACB3)
+F (..\Libraries\Drivers\source\lpc177x_8x_gpdma.c)(0x5029ACB3)(-c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork -I ..\Libraries\Core\CM3\CoreSupport -I ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x -I ..\Libraries\Drivers\include -I ..\User -I ..\Libraries\BoardSupport -I ..\User\UseDisp -I ..\User\Globalvalue -I ..\Libraries\Drivers\include -I ..\User\Include -I ..\User\Fat -I ..\User\Host -I ..\User\MassStorage -I ..\User\rtc -I ..\User\FATFS_V0.08A\src --diag_suppress=870 --no-multibyte-chars-IE:\Keil_v5\ARM\RV31\INC-IE:\Keil_v5\ARM\CMSIS\Include-IE:\Keil_v5\ARM\INC\NXP\LPC177x_8x-D__UVISION_VERSION="537"-o .\output\lpc177x_8x_gpdma.o --omf_browse .\output\lpc177x_8x_gpdma.crf --depend .\output\lpc177x_8x_gpdma.d)
+I (..\Libraries\Drivers\include\lpc177x_8x_gpdma.h)(0x642159DB)
 I (..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\LPC177x_8x.h)(0x5029ACB3)
 I (..\Libraries\Core\CM3\CoreSupport\core_cm3.h)(0x5942A6E5)
 I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x63FC1CD9)

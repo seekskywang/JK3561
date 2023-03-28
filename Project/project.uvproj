@@ -478,6 +478,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\Globalvalue\GlobalValue.c</FilePath>
             </File>
+            <File>
+              <FileName>dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\DMA\dma.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -552,6 +557,11 @@
               <FileName>lpc177x_8x_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\Drivers\source\lpc177x_8x_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>lpc177x_8x_gpdma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\Drivers\source\lpc177x_8x_gpdma.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -19,3 +19,6 @@
 .\output\use_disp.o: ..\Libraries\Drivers\include\lpc177x_8x_eeprom.h
 .\output\use_disp.o: ..\User\timer.h
 .\output\use_disp.o: E:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\output\use_disp.o: ..\Libraries\Drivers\include\debug_frmwrk.h
+.\output\use_disp.o: ..\Libraries\Drivers\include\lpc177x_8x_uart.h
+.\output\use_disp.o: ..\Libraries\Drivers\include\lpc177x_8x_gpdma.h

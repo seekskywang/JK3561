@@ -32,3 +32,4 @@
 .\output\main.o: ..\User\Include\../MassStorage/usbhost_ms.h
 .\output\main.o: ..\User\Include\../Fat/usbhost_fat.h
 .\output\main.o: ..\User\rtc/rtc.h
+.\output\main.o: ..\Libraries\Drivers\include\lpc177x_8x_gpdma.h
