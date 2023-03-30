@@ -4561,14 +4561,42 @@ void Disp_Big_SecondUnit(vu8 unit,vu8 unit1)
 
 void Send_Freq(Send_Ord_Typedef *ord)
 {
-	vu8 Send_buff[10]={0xAB,0x52};
+//	vu8 Send_buff[10]={0xAB,0x52};
+//	
+//	Send_buff[2]=Save_Res.Set_Data.Range;
+//	Send_buff[3]=0xbf;
 	
-	Send_buff[2]=Save_Res.Set_Data.Range;
-	Send_buff[3]=0xbf;
+	ComBuf.send.buf[0] = 0xAB;
+	ComBuf.send.buf[1] = 0x52;
+	ComBuf.send.buf[2] = Save_Res.Set_Data.Range;
+	ComBuf.send.buf[3] = 0xbf;
+	DMASendReadInit();
+	ComBuf.respondflag = 1;
 //	Send_buff[6]=0X80;//校验和 
 //	Send_buff[7]=0XBF;
 //	Send_buff[8]=0;
-	UARTPuts( LPC_UART0, Send_buff);
+//	UARTPuts( LPC_UART0, Send_buff);
+	//_printf("s%",(const)Send_buff);
+
+}
+
+void Send_Range(void)
+{
+//	vu8 Send_buff[10]={0xAB,0x52};
+//	
+//	Send_buff[2]=Save_Res.Set_Data.Range;
+//	Send_buff[3]=0xbf;
+	
+	ComBuf.send.buf[0] = 0xAB;
+	ComBuf.send.buf[1] = 0x52;
+	ComBuf.send.buf[2] = Save_Res.Set_Data.Range;
+	ComBuf.send.buf[3] = 0xbf;
+	DMASendRangeInit();
+	ComBuf.respondflag = 1;
+//	Send_buff[6]=0X80;//校验和 
+//	Send_buff[7]=0XBF;
+//	Send_buff[8]=0;
+//	UARTPuts( LPC_UART0, Send_buff);
 	//_printf("s%",(const)Send_buff);
 
 }
@@ -4622,7 +4650,8 @@ void Send_Request(void)
 	ComBuf.send.buf[0] = 0xAB;
 	ComBuf.send.buf[1] = 0x00;
 	ComBuf.send.buf[2] = 0xbf;
-	DMASendInit();
+	DMASendReadInit();
+	ComBuf.respondflag = 1;
 //	UARTPuts( LPC_UART0, Send_buff);
 	//_printf("s%",(const)Send_buff);
 

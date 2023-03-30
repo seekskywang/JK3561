@@ -18,6 +18,7 @@
 #include "open.h"
 #include "ff.h"
 #include <stdlib.h>
+#include "lpc177x_8x_gpdma.h"
 
 FATFS fs;         /* Work area (file system object) for logical drive */
 FIL fsrc;         /* file objects */   
@@ -404,6 +405,7 @@ void Test_Process(void)
 	Button_Page.page=0;
 	Button_Page.index=0;
 	Button_Page.third=0xff;
+	lpc1788_DMA_Init();
 //     if(Save_Res.Sys_Setvalue.uart)
 //         UART_TxCmd(LPC_UART3, ENABLE);
 //     else
@@ -463,7 +465,7 @@ void Test_Process(void)
 			return_flag=1;
 //			delayMs(1,500);
 		}
-		Uart_Process();
+//		Uart_Process();
 		if(u3sendflag == 1)
 		{
 			if(uartresdelay == 0)
@@ -481,53 +483,53 @@ void Test_Process(void)
 		
         if(nodisp_v_flag)
             eee=0;
-		if(timer0_counter>0)//请求数据
-		{
-			switch(Uart_Send_Flag)
-			{
-				case 0:
-					if(Save_Res.Set_Data.trip==0/* && u3sendflag ==0*/)
-					{
-						Send_Request();
-						return_flag=1;
-					}
-					
-					
-					
-					break;
-				case 1:
-					//if(uart_count++>5)
-					Uart_Send_Flag=0;
-				if(keynum<99)
-				keynum++;
-				else
-					keynum++;
-					Send_Main_Ord();
-				
-					break;
-				case 2:
-					
-					//if(uart_count++>5)
-					Uart_Send_Flag=0;
-					Send_Freq(&Uart);
-				
-					break;
-				case 3:
-				{
-					Uart_Send_Flag=0;
-					Send_Clear(&Uart);
-				}break;
-				default:
-					//Send_Request();
-					break;
-			
-			}
-			
-			
-			timer0_counter=0;
-		
-		
-		}
+//		if(timer0_counter>0)//请求数据
+//		{
+//			switch(Uart_Send_Flag)
+//			{
+//				case 0:
+//					if(Save_Res.Set_Data.trip==0/* && u3sendflag ==0*/)
+//					{
+//						Send_Request();
+//						return_flag=1;
+//					}
+//					
+//					
+//					
+//					break;
+//				case 1:
+//					//if(uart_count++>5)
+//					Uart_Send_Flag=0;
+//				if(keynum<99)
+//				keynum++;
+//				else
+//					keynum++;
+//					Send_Main_Ord();
+//				
+//					break;
+//				case 2:
+//					
+//					//if(uart_count++>5) 	
+//					Uart_Send_Flag=0;
+//					Send_Freq(&Uart);
+//				
+//					break;
+//				case 3:
+//				{
+//					Uart_Send_Flag=0;
+//					Send_Clear(&Uart);
+//				}break;
+//				default:
+//					//Send_Request();
+//					break;
+//			
+//			}
+//			
+//			
+//			timer0_counter=0;
+//		
+//		
+//		}
 				//校正
 		string_to_float((char *)Test_Dispvalue.Main_valuebuff,&Test_Dispvalue.Rdata);
 		string_to_float((char *)Test_Dispvalue.Secondvaluebuff,&Test_Dispvalue.Vdata);
@@ -664,8 +666,8 @@ void Test_Process(void)
 			No_Comp();
 		}
 		#endif
-		if(return_flag)	
-		{
+//		if(return_flag)	
+//		{
             rwatch = (int)ddd;
             vwatch = (int)eee * 10;
 			testwatch[j] = rwatch;
@@ -785,7 +787,7 @@ void Test_Process(void)
 // 			if(Save_Res.Sys_Setvalue.uart)
 // 				UARTPuts( LPC_UART3, sendtest);
 	
-		}
+//		}
 		Colour.Fword=LCD_COLOR_WHITE;
 //		if(timer1_counter > 0)
 //        {
@@ -1194,12 +1196,17 @@ void Setup_Process(void)
 //	pt=(vu32 *)&SaveData.Main_Func;
 	Button_Page.index=0;
 	Button_Page.page=0;
-    lcd_Clear(LCD_COLOR_TEST_BACK);
-    Disp_Test_Set_Item();
+	
+	lcd_Clear(LCD_COLOR_TEST_BACK);
+	Disp_Test_Set_Item();
 	Delay_Key();
  	while(GetSystemStatus()==SYS_STATUS_SETUPTEST)
 	{
-	    
+	  if(missflag == 1)
+		{
+			lpc1788_DMA_SetInit();
+			missflag = 0;
+		}
 		if(Disp_Flag==1)
 		{
 			DispSet_value(&Button_Page);
@@ -1207,35 +1214,35 @@ void Setup_Process(void)
 			Delay_Key();
 		
 		}
-		if(timer0_counter>0)//请求数据
-		{
-			switch(Uart_Send_Flag)
-			{
-				case 0:
-					//Send_Request();
-					break;
-				case 1:
-					Send_Main_Ord();
-					break;
-				case 2:
-					Send_Freq(&Uart);
-					Delay(100);
-					break;
-				case 3:
-					Send_Freq(&Uart);
-					Delay(100);
-					break;
-				default:
-					Send_Request();
-					break;
-			
-			}
-			Uart_Send_Flag=0;
-			
-			timer0_counter=0;
-		
-		
-		}
+//		if(timer0_counter>0)//请求数据
+//		{
+//			switch(Uart_Send_Flag)
+//			{
+//				case 0:
+//					//Send_Request();
+//					break;
+//				case 1:
+//					Send_Main_Ord();
+//					break;
+//				case 2:
+//					Send_Freq(&Uart);
+//					Delay(100);
+//					break;
+//				case 3:
+//					Send_Freq(&Uart);
+//					Delay(100);
+//					break;
+//				default:
+//					Send_Request();
+//					break;
+//			
+//			}
+//			Uart_Send_Flag=0;
+//			
+//			timer0_counter=0;
+//		
+//		
+//		}
 		key=HW_KeyScsn();
 		if(key==0xff)
 		{
@@ -1302,7 +1309,7 @@ void Setup_Process(void)
 							break;
 						case 7+1:
 							Save_Res.Set_Data.Range=0;
-							Uart_Send_Flag=2;
+							Send_Range();
 							break;
 						case 8+1:
 							Save_Res.Set_Data.beep=0;
@@ -1404,7 +1411,7 @@ void Setup_Process(void)
 						case 7+1:
 							if(Save_Res.Set_Data.Range > 1)
 								Save_Res.Set_Data.Range--;
-							Uart_Send_Flag=2;
+							Send_Range();
 							break;
 						case 8+1:
 							Save_Res.Set_Data.beep=1;
@@ -1489,7 +1496,7 @@ void Setup_Process(void)
 						case 7+1:
 							if(Save_Res.Set_Data.Range < 7)
 								Save_Res.Set_Data.Range++;
-							Uart_Send_Flag=2;
+							Send_Range();
 							break;
 						case 8+1:
 							Save_Res.Set_Data.beep=2;
@@ -3929,18 +3936,18 @@ u8 Uart_Process(void)
 					default:
 						for(i=0;i<6;i++)
 						{
-							Test_Dispvalue.Main_valuebuff[i]=ComBuf.rec.buf[1+i];
+//							Test_Dispvalue.Main_valuebuff[i]=ComBuf.rec.buf[1+i];
 		//					Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[8+i];
-//							Test_Dispvalue.Rvaluebuff[i] = ComBuf.rec.buf[1+i];
+							Test_Dispvalue.Rvaluebuff[i] = ComBuf.rec.buf[1+i];
 						}
 						
 						
 						for(i=0;i<8;i++)
 						{
-							Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[7+i];
-//							Test_Dispvalue.Vvaluebuff[i] = ComBuf.rec.buf[7+i];							
+//							Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[7+i];
+							Test_Dispvalue.Vvaluebuff[i] = ComBuf.rec.buf[7+i];							
 						}
-//						Test_Dispvalue.Test_V = VBCDtoInt((int8_t *)Test_Dispvalue.Vvaluebuff);
+						Test_Dispvalue.Test_V = VBCDtoInt((int8_t *)Test_Dispvalue.Vvaluebuff);
 						if(ComBuf.rec.buf[7]=='-')
 							Test_Unit.V_Neg=0;
 						else
@@ -3953,18 +3960,18 @@ u8 Uart_Process(void)
 						
 						Test_Dispvalue.Rangedisp=ComBuf.rec.buf[15];
 						
-//						//滤波
-//						if(Test_Dispvalue.rfcount <10)
-//						{
-//							Test_Dispvalue.rfcount ++;
-//							Test_Dispvalue.Test_R += BCDtoInt((int8_t *)Test_Dispvalue.Rvaluebuff);
-//						}else{
-//							Test_Dispvalue.rfcount = 0;
-//							Test_Dispvalue.Test_R /= 10;
-//							IntToBCD(Test_Dispvalue.Test_R,Test_Dispvalue.Dot[0],6,Test_Dispvalue.Main_valuebuff);
-//							Test_Dispvalue.Test_R = 0;	
-//							
-//						}
+						//滤波
+						if(Test_Dispvalue.rfcount <10)
+						{
+							Test_Dispvalue.rfcount ++;
+							Test_Dispvalue.Test_R += BCDtoInt((int8_t *)Test_Dispvalue.Rvaluebuff);
+						}else{
+							Test_Dispvalue.rfcount = 0;
+							Test_Dispvalue.Test_R /= 10;
+							IntToBCD(Test_Dispvalue.Test_R,Test_Dispvalue.Dot[0],6,Test_Dispvalue.Main_valuebuff);
+							Test_Dispvalue.Test_R = 0;	
+							
+						}
 					break;
 				}
 					
@@ -3973,63 +3980,13 @@ u8 Uart_Process(void)
 			//准备接收下一帧数据sprintf
 			ComBuf.rec.end=0;//接收缓冲可读标志复位
 			ComBuf.rec.ptr=0;//接收指针清零
+			ComBuf.respondflag = 0;
+			ComBuf.commcount++;
 		}
 	}
-//	WriteString_Big(0, 150, (uint8_t *)&ComBuf.rec.buf[1]);
 	ComBuf.rec.end=0;
 
-//	switch(kind)
-//	{
-//		case FRAME_READ_RESULT://读取结果
-//			//串口发送测试数据:电压(5)+电阻(6)+时间(4)+分选(1)=16字节
-//			switch (GetSystemMessage())//系统信息
-//			{
-//				case MSG_ABORT:
-//					kind=0x9B;//测试中止
-//					break;
-//				case MSG_PASS:
-//					kind=0x91;//测试通过
-//					break;
-//				case MSG_HIGH:
-//					kind=0x92;//上限报警
-//					break;
-//				case MSG_LOW:
-//					kind=0x92;//下限报警
-//					break;
-//				default:
-//					kind=0x90;//正常测试
-//					break;
-//			}		
-//			ComBuf.send.buf[1+5+6+4]=kind;
-//			ComBuf.send.begin=0;
-//			ComBuf.send.len=PackStandFrame(ComBuf.send.buf , &ComBuf.send.buf[1] , 16  );
-////			if(SendDataToCom()==0)//发送成功判别
-////			{
-////			//	Delay_1ms(100);//延时
-////			//	SendDataToCom();//发送
-////			}
-//			break;
-//		
-//		case FRAME_START://启动
-//			SetSystemStatus(SYS_STATUS_TEST);//系统状态-启动测试
-//			break;
-
-//		case FRAME_RESET://复位
-//			//SetSystemStatus(SYS_STATUS_IDLE);//系统状态-待机
-//			break;
-
-//		case FRAME_WRITE_SN://写序列号
-//			break;
-//		
-//		case FRAME_CLR_BOOT_NUM://清开机次数
-//			break;
-//		
-//		case FRAME_DATA://数据帧
-//			break;
-
-//		default:
-//			break;
-//	}
+	
 	return data;
 #endif
 }

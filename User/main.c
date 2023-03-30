@@ -111,7 +111,7 @@ int main(void)
 	NVIC_EnableIRQ(MCI_IRQn);
 	__enable_irq();
 	softswitch=0;
-	SysTick_Config(cclk/1000 - 1); 
+	SysTick_Config(cclk/500 - 1); //500us定时
 	GPIO_IntCmd(0, 1<<19, 1);//p0_19 下降沿中断
 	NVIC_SetPriority(GPIO_IRQn, 1);
 	NVIC_EnableIRQ(GPIO_IRQn);

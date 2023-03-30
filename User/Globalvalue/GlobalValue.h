@@ -711,6 +711,7 @@ enum SysMessageEnum
 #define RANGR_LIMIT_HIGH (3000)
 #define RANGR_LIMIT_LOW  (190)
 extern uint32_t clear_flag;
+extern uint8_t missflag;
 //==========================================================
 //函数列表
 void InitGlobalValue(void);//全局变量初始化
@@ -729,6 +730,6 @@ void ReadSaveData(void);//读取保存参数
 
 void Check_Calibrate_Limit(void);//校准值检查
 void Hex_Format(vu32 dat , vu8 Dot , vu8 len , vu8 dispzero);
-
+u8 Uart_Process(void);
 
 #endif

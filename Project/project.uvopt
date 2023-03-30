@@ -169,40 +169,7 @@
           <Name>-UV0201123 -O463 -S0 -C0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>19</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>140882</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\User\DMA\dma.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\project\../User/DMA/dma.c\19</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>19</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>141052</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\User\DMA\dma.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\project\../User/DMA/dma.c\19</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -417,7 +384,7 @@
         <Ww>
           <count>42</count>
           <WinNumber>1</WinNumber>
-          <ItemText>timer0_counter</ItemText>
+          <ItemText>timer0_counter,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>43</count>
@@ -437,7 +404,22 @@
         <Ww>
           <count>46</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ComBuf</ItemText>
+          <ItemText>ComBuf,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>47</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>DMADest_Buffer</ItemText>
+        </Ww>
+        <Ww>
+          <count>48</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>missflag</ItemText>
+        </Ww>
+        <Ww>
+          <count>49</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>SysTickCnt,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

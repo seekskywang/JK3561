@@ -74,6 +74,7 @@ void Disp_Testvalue(int8_t chosen ,int32_t eee);//显示测试数据
 void Disp_Big_MainUnit(vu8 unit,vu8 unit1);
 void Disp_Big_SecondUnit(vu8 unit,vu8 unit1);
 void Send_Freq(Send_Ord_Typedef *ord);
+void Send_Range(void);
 void Send_Clear(Send_Ord_Typedef *ord);
 void Send_Main_Ord(void);
 //测试时档号显示界面的显示

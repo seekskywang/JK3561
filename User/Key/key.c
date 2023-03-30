@@ -1,10 +1,16 @@
 #include "Key/key.h"
 #include "lpc177x_8x_gpio.h"
 #include  "Globalvalue/globalvalue.h"
+#include "debug_frmwrk.h"
+#include "use_disp.h"
 volatile unsigned long SysTickCnt;
 void SysTick_Handler (void)
 {
 	SysTickCnt++;
+	if(ComBuf.respondflag == 0 & Save_Res.Set_Data.trip==0 && GetSystemStatus()==SYS_STATUS_TEST)
+	{
+		Send_Request();
+	}
 }
 void No_Comp(void)
 {

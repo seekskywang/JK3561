@@ -9,3 +9,6 @@
 .\output\key.o: ..\Libraries\Drivers\include\lpc_types.h
 .\output\key.o: ..\User\Globalvalue/globalvalue.h
 .\output\key.o: ..\Libraries\Drivers\include\lpc177x_8x_rtc.h
+.\output\key.o: ..\Libraries\Drivers\include\debug_frmwrk.h
+.\output\key.o: ..\Libraries\Drivers\include\lpc177x_8x_uart.h
+.\output\key.o: ..\User\UseDisp\use_disp.h

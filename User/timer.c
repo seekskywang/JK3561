@@ -23,7 +23,8 @@
 #include "timer.h"
 #include "system_LPC177x_8x.h"
 #include "Globalvalue/GlobalValue.h"
-
+#include "use_disp.h"
+#include "debug_frmwrk.h"
 volatile uint32_t timer0_counter = 0;
 volatile uint32_t timer1_counter = 0;
 volatile uint32_t timer2_counter = 0;
@@ -109,9 +110,13 @@ void delayMs(uint8_t timer_num, uint32_t delayInMs)
 ******************************************************************************/
 void TIMER0_IRQHandler (void) 
 {  
-    LPC_TIM0->IR = 0x1<<0;		/* clear interrupt flag */
+  LPC_TIM0->IR = 0x1<<0;		/* clear interrupt flag */
   timer0_counter++;
-  stable_counter++;
+//	if(ComBuf.respondflag == 0 & Save_Res.Set_Data.trip==0 && GetSystemStatus()==SYS_STATUS_TEST)
+//	{
+//		Send_Request();
+//	}
+//  stable_counter++;
   return;
 }
 

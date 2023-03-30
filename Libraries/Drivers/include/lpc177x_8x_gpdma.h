@@ -391,7 +391,9 @@ void GPDMA_ClearIntPending(GPDMA_StateClear_Type type, uint8_t channel);
 void GPDMA_ChannelCmd(uint8_t channelNum, FunctionalState NewState);
 
 void lpc1788_DMA_Init(void);
-void DMASendInit(void);
+void lpc1788_DMA_SetInit(void);
+void DMASendReadInit(void);
+void DMASendRangeInit(void);
 //void GPDMA_IntHandler(void);
 
 /**

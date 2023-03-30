@@ -9,3 +9,6 @@
 .\output\timer.o: ..\Libraries\Core\CM3\DeviceSupport\NXP\LPC177x_8x\system_LPC177x_8x.h
 .\output\timer.o: ..\User\Globalvalue/GlobalValue.h
 .\output\timer.o: ..\Libraries\Drivers\include\lpc177x_8x_rtc.h
+.\output\timer.o: ..\User\UseDisp\use_disp.h
+.\output\timer.o: ..\Libraries\Drivers\include\debug_frmwrk.h
+.\output\timer.o: ..\Libraries\Drivers\include\lpc177x_8x_uart.h

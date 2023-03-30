@@ -556,7 +556,7 @@ void debug_frmwrk_init(void)
 	 */
 	UART_ConfigStructInit(&UARTConfigStruct);
 	// Re-configure baudrate to 115200bps
-	UARTConfigStruct.Baud_rate = 9600;
+	UARTConfigStruct.Baud_rate = 115200;
 
 	// Initialize DEBUG_UART_PORT peripheral with given to corresponding parameter
 	UART_Init(DEBUG_UART_PORT, &UARTConfigStruct);//|UART_INTCFG_THRE

@@ -107,6 +107,8 @@ typedef struct
 {
 	ComSend_TypeDef send;
 	ComRec_TypeDef  rec;
+	u8 respondflag;//接收到响应标志
+	u32 commcount;//通讯次数计数
 }Com_TypeDef;
 extern Com_TypeDef ComBuf;//串口收发缓冲
 extern Com_TypeDef ComBuf3;

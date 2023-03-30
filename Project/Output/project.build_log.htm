@@ -22,14 +22,21 @@ Dialog DLL:      TARMP1.DLL V1.27.1.0
  
 <h2>Project:</h2>
 F:\JK3561\Project\project.uvproj
-Project File Date:  03/27/2023
+Project File Date:  03/28/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Open1788'
+compiling main.c...
+..\User\main.c(108): warning:  #177-D: variable "rc"  was declared but never referenced
+        uint8_t key,rc;
+..\User\main.c: 1 warning, 0 errors
+linking...
+Program Size: Code=70784 RO-data=34320 RW-data=396 ZI-data=22636  
+FromELF: creating hex file...
 After Build - User command #1: E:\Keil_v5\ARM\ARMCC\bin\fromelf.exe --bin  -o ..\shengji\update.bin Output\project.axf
-".\Output\project.axf" - 0 Error(s), 0 Warning(s).
-Build Time Elapsed:  00:00:00
+".\Output\project.axf" - 0 Error(s), 1 Warning(s).
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
