@@ -961,8 +961,8 @@ static uint8_t MODS_ReadRegValue(uint16_t reg_addr, uint8_t *reg_value)
 //	lock = 1;
 	if(Test_Dispvalue.openflag == 0)
 	{
-		sendrvalue = (u32)(Test_Dispvalue.Rdata*10000);
-		sendvvalue = (u32)(Test_Dispvalue.Vdata*100000);
+		sendrvalue = (u32)(Test_Dispvalue.Rdata*1000);
+		sendvvalue = (u32)(Test_Dispvalue.Vdata*10000);
 	}else{
 		sendrvalue = 0xffffffff;
 		sendvvalue = 0;

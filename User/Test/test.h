@@ -44,6 +44,7 @@ Sort_TypeDef Disp_Set_InputpreNum(Disp_Coordinates_Typedef *Coordinates);
 void Set_Compbcd_float(void);
 void Test_Comp(All_Compvalue_Typedef *pt);
 Sort_TypeDef Disp_Set_CompNum(Disp_Coordinates_Typedef *Coordinates);
+Sort_TypeDef Disp_Set_NumV(Disp_Coordinates_Typedef *Coordinates);
 int32_t BCDtoInt(int8_t *pt);
 int32_t VBCDtoInt(int8_t *pt);
 void IntToBCD(u32 r,u8 dot,u8 len,char *pt);

@@ -87,7 +87,7 @@ typedef struct
 	int8_t begin;//发送开始标志
 	int8_t ptr;//当前发送指针
 	int8_t len;//发送数据长度
-	int8_t buf[SEND_LEN_MAX];//数据发送缓冲
+	uint8_t buf[SEND_LEN_MAX];//数据发送缓冲
 }ComSend_TypeDef;
 #define TICKS_PER_SEC 100	//系统时钟每秒节拍数，100x10mS(T0)=1S
 //接收溢出时间,3*1000/50=60mS
@@ -98,7 +98,7 @@ typedef struct
 	int8_t end;//接收结束标志
 	int8_t ptr;	//当前接收指针
 	int8_t len;//接收数据长度
-	int8_t buf[REC_LEN_MAX];//数据接收缓冲
+	uint8_t buf[REC_LEN_MAX];//数据接收缓冲
 	int8_t TimeOut;//接收超时(10ms周期)
 }ComRec_TypeDef;
 
@@ -109,6 +109,8 @@ typedef struct
 	ComRec_TypeDef  rec;
 	u8 respondflag;//接收到响应标志
 	u32 commcount;//通讯次数计数
+	u32 sendcount;//通讯次数计数
+	u8 pageswflag;//切换页面标志，用于重新初始化DMA发送和接收，否则会造成数据错位
 }Com_TypeDef;
 extern Com_TypeDef ComBuf;//串口收发缓冲
 extern Com_TypeDef ComBuf3;
@@ -126,17 +128,17 @@ extern Com_TypeDef ComBuf3;
 #define UART_REC_END 			(0xAF)//AF
 
 //帧类型定义
-#define FRAME_READ_RESULT		(0x00)	//读取结果
+#define FRAME_READ_RESULT		(0x10)	//读取结果
 #define FRAME_START				(0x01)	//启动
 #define FRAME_RESET				(0x02)	//复位
 #define FRAME_DATA				(0xF1)	//数据帧
 #define FRAME_CLR_BOOT_NUM		(0xF2)	//清开机次数帧
 #define FRAME_WRITE_SN			(0xF3)	//写序列号帧
 
-#define FRAME_RANGE_SET			(0x52)	//设置量程
-#define FRAME_CLEAR					(0x43)	//清零
-#define FRAME_CLEAR_OK			(0x50)	//清零
-#define FRAME_CLEAR_FAIL		(0x46)	//清零
+#define FRAME_RANGE_SET			(0x20)	//设置量程
+#define FRAME_CLEAR					(0x30)	//清零
+#define FRAME_CLEAR_OK			(0x01)	//清零成功
+#define FRAME_CLEAR_FAIL		(0x02)	//清零失败
 
 //帧位置定义
 #define PFRAMEHEAD				(0)	//帧头位置
@@ -156,7 +158,10 @@ extern Com_TypeDef ComBuf3;
 //void  _printf (const  char *format, ...);
 #define SetRecTimeOut(time) (ComBuf.rec.TimeOut=time)
 
-
+//命令响应数据长度
+#define READLEN						(11)	//帧头位置
+#define SETRANGELEN				(4)	//帧类型位置
+#define CLAERLEN					(4)	//数据包首地址位置
 extern const vu8 READDATA[7];
 extern void (*_db_msg)(LPC_UART_TypeDef *UARTx, const void *s);
 extern void (*_db_msg_)(LPC_UART_TypeDef *UARTx, const void *s);
@@ -189,6 +194,7 @@ uint8_t UARTGetChar (LPC_UART_TypeDef *UARTx);
 //void  _printf (const  char *format, ...);
 void debug_frmwrk_init(void);
 void Uart3_init(uint32_t freq);
+void RecHandle(void);
 //void Send_Freq(Send_Ord_Typedef *ord);
 
 #endif /* __DEBUG_FRMWRK_H_ */

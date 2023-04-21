@@ -111,14 +111,15 @@ int main(void)
 	NVIC_EnableIRQ(MCI_IRQn);
 	__enable_irq();
 	softswitch=0;
-	SysTick_Config(cclk/500 - 1); //500us定时
+	SysTick_Config(cclk/200 - 1); //500us定时
 	GPIO_IntCmd(0, 1<<19, 1);//p0_19 下降沿中断
 	NVIC_SetPriority(GPIO_IRQn, 1);
 	NVIC_EnableIRQ(GPIO_IRQn);
-//    Delay(100);
+//    Delay(100);	
 	
 	HW_keyInt();
 	GPIO_Led_Configuration();
+//	Uart3_init(Save_Res.Sys_Setvalue.buard);
 	debug_frmwrk_init();
 	lpc1788_DMA_Init();
 	softswitch=0;
@@ -137,7 +138,7 @@ int main(void)
 	
 //	Delay(200);
 //	Delay(200);
-	Delay(200);
+	Delay(200/5);
     SDRAM_Init();
     GLCD_Ctrl (FALSE);
     GLCD_Init (LogoPic.pPicStream, NULL);
@@ -147,7 +148,7 @@ int main(void)
 	HW_Sendvalueto164(0);
     ReadSavedata();
     Set_Compbcd_float();
-	SetSystemStatus(SYS_STATUS_TOOL);//开机上电状态
+	SetSystemStatus(SYS_STATUS_TOOL); //开机上电状态
 
     while(1)
     {  
@@ -197,10 +198,10 @@ int main(void)
 				Use_DebugProcess();
 				break;
 
-            case SYS_STATUS_SYSSET : //系统设置
-                
-                Use_SysSetProcess();
-                break;
+			case SYS_STATUS_SYSSET : //系统设置
+					
+				Use_SysSetProcess();
+				break;
 			case SYS_STATUS_TOOL://工具
 				Soft_Turnon();
 				

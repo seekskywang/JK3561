@@ -3,13 +3,39 @@
 #include  "Globalvalue/globalvalue.h"
 #include "debug_frmwrk.h"
 #include "use_disp.h"
+extern Filter Rfilter,Vfilter;
+extern u8 testtimingflag;
+extern u32 timing;
 volatile unsigned long SysTickCnt;
 void SysTick_Handler (void)
 {
 	SysTickCnt++;
-	if(ComBuf.respondflag == 0 & Save_Res.Set_Data.trip==0 && GetSystemStatus()==SYS_STATUS_TEST)
+	if(Rfilter.initdataflag == 1)
 	{
-		Send_Request();
+		Rfilter.inittime ++;
+	}
+	if(testtimingflag == 1)
+	{
+		timing++;
+	}
+	if(ComBuf.respondflag == 0/* && Save_Res.Set_Data.trip==0 */
+		&& GetSystemStatus()==SYS_STATUS_TEST && ComBuf.pageswflag == 0)
+	{
+		if(Save_Res.Set_Data.trip==0)//自动触发
+		{
+			Send_Request();
+			ComBuf.sendcount ++;
+		}else if(Save_Res.Set_Data.trip==1){//手动触发
+			if(trip_flag == 1)
+			{
+				Send_Request();
+			}
+		}
+	}
+	if(ComBuf.respondflag == 0/* && Save_Res.Set_Data.trip==0 */
+		&& GetSystemStatus()==SYS_STATUS_USERDEBUG)//校正模式自动触发
+	{
+			Send_Request();
 	}
 }
 void No_Comp(void)
@@ -244,7 +270,7 @@ u8 HW_KeyScsn(void)
 	keynum=HW_KeyScsn1();
 	if(keynum!=0xff)
 	{
-		Delay(10);
+		Delay(10/5);
 		keynum1=HW_KeyScsn1();
 		
 		if(keynum1==keynum)
@@ -355,7 +381,7 @@ void Delay_Key(void)
 void Key_Beep(void)
 {
 	Beep_on();
-	Delay(20);
+	Delay(20/5);
 	Beep_Off();
 
 }

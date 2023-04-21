@@ -87,7 +87,7 @@
 #define KEY_NUM				(3)	//按键灵敏度
 
 #define NUM_LENTH 			(6)//显示长度
-#define VNUM_LENTH 			(5)//显示长度
+#define VNUM_LENTH 			(7)//显示长度
 #define NUM_FREQ 			(33+4)//显示长度
 #define DEBUG_RANGE			(5+2)
 
@@ -112,8 +112,13 @@
 //#define PASSWORD "12345789"
 //==========================================================
 //标题长度
-#define TITLE_LEN_MAX		(8)
-
+#define TITLE_LEN_MAX				(8)
+#define RMAF_LENGTH_SLOW 		(60)
+#define RMAF_LENGTH_MID 		(20)
+#define VMAF_LENGTH_SLOW 		(50)
+#define VMAF_LENGTH_MID 		(20)
+#define RECORDERSIZE 				(200)
+#define DISPBUFFSIZE 				(10)
 //==========================================================
 #define S_RX_BUF_SIZE		30
 #define S_TX_BUF_SIZE		128
@@ -160,7 +165,7 @@ struct MODS_T
 
 extern uint8_t Send_buff2[30];
 extern uint8_t Rtc_intflag;
-
+extern u16 filtersize[3];
 typedef  unsigned long  vu32;
 typedef  unsigned short vu16;
 typedef  unsigned char  vu8;
@@ -241,14 +246,17 @@ typedef struct
 typedef struct
 {
 	Set_Data_Typedef Set_Data;
-	Debug_Value_Typedef Debug_Value[DEBUG_RANGE];
+	float Debug_Value[DEBUG_RANGE];
 	Sys_Setvalue_Typedef Sys_Setvalue;
 	float clear;
 	float V_Clear;
 	vu8 softswitch;
     vu8 fac_num[10];
 	vu8 open;
-
+	Sort_TypeDef DebugStd[10];//校准标准值 7电阻+3电压
+	double VDebug_Valuek[2];
+	double VDebug_Valueb[2];
+	vu8 version;//版本型号
 }Save_Res_Typedef;
 
 extern Save_Res_Typedef Save_Res;
@@ -343,20 +351,20 @@ typedef struct
 	vu32 Trig;//外部触发开关(0-3，内部 手动 外部 总线)
 	vu32 Alc;//恒电平(0-1，默认关0)
 	vu32 Rsou;//内阻(0-1，默认关0)
-    Sort_TypeDef Trig_time;
-    Sort_TypeDef Temp_time;
-    vu32 Dev_a;
-    vu32 Dev_b;
-    AotoRange_Typedef Range;
-    vu32 Bias;
-    vu32 Speed;
-    vu32 Avg;
-    vu32 V_i;
-    vu32 Dcr;
-    AotoRange_Typedef DC_Range;
-    vu32 DC_Level;
-    Sort_TypeDef Ref_A; 
-    Sort_TypeDef Ref_B;
+	Sort_TypeDef Trig_time;
+	Sort_TypeDef Temp_time;
+	vu32 Dev_a;
+	vu32 Dev_b;
+	AotoRange_Typedef Range;
+	vu32 Bias;
+	vu32 Speed;
+	vu32 Avg;
+	vu32 V_i;
+	vu32 Dcr;
+	AotoRange_Typedef DC_Range;
+	vu32 DC_Level;
+	Sort_TypeDef Ref_A; 
+	Sort_TypeDef Ref_B;
 	vu32 beep;
 	vu32 buad;
 //	vu8  Count;
@@ -381,6 +389,62 @@ typedef struct
 	
 
 }Save_Main_Funce_Typedef;
+
+#if defined(__CC_ARM)
+#pragma anon_unions
+#elif defined(__ICCARM__)
+#endif
+
+typedef union Rdata {      // 电阻数据
+  uint32_t dat;
+  struct {
+    uint32_t index :8;   				// 序号
+    uint32_t range :3;      		// 当前量程 1-7
+    uint32_t coefficient :3;    // 系数 1-10^(-1);2-10^(-2);3-10^(-3);4-10^(-4)
+    uint32_t unit :2;        		// 单位 0-mΩ;1-Ω
+    uint32_t num :16;      		  // 正整数值 (0xffff代表开路)
+  };
+} Rdata;
+
+typedef union Vdata {      // 电压数据
+  uint32_t dat;
+  struct {
+    uint32_t index :8;   				// 序号
+    uint32_t coefficient :3;    // 系数 3-10^(-3);4-10^(-4);4-10^(-5)
+    uint32_t sign :1;        		// 符号 0:+;1:-
+    uint32_t num :20;      		  // 正整数值
+  };
+} Vdata;
+
+typedef struct
+{
+	u16 indexbuf[RMAF_LENGTH_SLOW];		//数据序号
+	u32 data[RMAF_LENGTH_SLOW];			//数据值
+}FilterBuffer;
+
+typedef struct
+{
+	u8 initflag;										//队列初始化标志
+	FilterBuffer buffer;						//队列数据和序号缓冲区
+	u16 initcount;									//队列初始化计数
+	u32 sum;												//滤波前求和值
+	u32 result;											//滤波后的值
+	u32 oldres;											//上次的值
+	u16 count;											//进队列计数
+	u16 index;											//数据序号
+	u16 indexcount;									//队列初始化计数
+	u32 recorder[RECORDERSIZE];			//记录缓冲区
+	u16 recindex;										//记录计数
+	u32 inittime;
+	u32 initdataflag;
+	u32 dispbufsum;										//显示二次滤波求和缓冲区
+	u32 dispresult;										//用于显示的滤波结果
+	u16 dispcount;										//显示数据滤波计数
+	u8 oldcft;												//现在显示数据的系数
+}Filter;
+
+
+
 typedef struct
 {
 	Sort_TypeDef Mainvalue;
@@ -395,13 +459,17 @@ typedef struct
 	vu8 Dot[4];
 	vu8 Unit[4];
 	vu32 Test_V;
-	vu32 Test_R;
+	u16 Test_R;
 	vu8 rfcount;
 	vu8 vfcount;
 	double Rdata;
 	double Vdata;
 	vu8 openflag;
-
+	Rdata Rdataraw;
+	Vdata Vdataraw;
+	vu8 vrange;
+	vu8 voverflag;
+	vu8 TestVDot;
 }Test_Dispvalue_TypeDef;
 extern Test_Dispvalue_TypeDef Test_Dispvalue; 
 typedef struct
@@ -712,6 +780,7 @@ enum SysMessageEnum
 #define RANGR_LIMIT_LOW  (190)
 extern uint32_t clear_flag;
 extern uint8_t missflag;
+extern vu8 trip_flag;
 //==========================================================
 //函数列表
 void InitGlobalValue(void);//全局变量初始化
@@ -731,5 +800,5 @@ void ReadSaveData(void);//读取保存参数
 void Check_Calibrate_Limit(void);//校准值检查
 void Hex_Format(vu32 dat , vu8 Dot , vu8 len , vu8 dispzero);
 u8 Uart_Process(void);
-
+extern u8 SUMCK(uint8_t *buf,u16 len);
 #endif

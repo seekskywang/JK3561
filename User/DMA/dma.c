@@ -4,12 +4,13 @@
 #include "stdarg.h"
 #include "Globalvalue/GlobalValue.h"
 
-#define DMA_SIZE        19
+#define DMA_SIZE        11
 #define DMASEND_SIZE    21
 uint8_t DMADest_Buffer[DMA_SIZE];
 uint8_t DMAsend_Buffer[DMASEND_SIZE];
 GPDMA_Channel_CFG_Type GPDMACfg;
 GPDMA_Channel_CFG_Type GPDMACfg1;
+GPDMA_Channel_CFG_Type GPDMACfg2;
 uint8_t missflag;
 void lpc1788_DMA_Init(void);
 void lpc1788_DMA_SetInit(void);
@@ -31,17 +32,49 @@ void DMA_IRQHandler (void)
 							{
 								case 0:
 								{
-									if(DMADest_Buffer[0] != UART_REC_BEGIN && DMADest_Buffer[1] != UART_REC_END)
+									switch(DMADest_Buffer[1])
 									{
-										debug_frmwrk_init();//串口3初始化
-										lpc1788_DMA_Init();
-									}else{
-											for(i = 0;i < DMA_SIZE;i ++)
+										case FRAME_READ_RESULT:
+										{
+											if(DMADest_Buffer[READLEN-1] == SUMCK(DMADest_Buffer,READLEN-1))
 											{
-												ComBuf.rec.buf[i] = DMADest_Buffer[i];
+												for(i = 0;i < READLEN;i ++)
+												{
+													ComBuf.rec.buf[i] = DMADest_Buffer[i];
+												}
+												ComBuf.rec.end = 1;
+												Uart_Process();
 											}
-											ComBuf.rec.end = 1;
+										}break;
+										case FRAME_RANGE_SET:
+										{
+											if(DMADest_Buffer[SETRANGELEN-1] == SUMCK(DMADest_Buffer,SETRANGELEN-1))
+											{
+												for(i = 0;i < SETRANGELEN;i ++)
+												{
+													ComBuf.rec.buf[i] = DMADest_Buffer[i];
+												}
+												ComBuf.rec.end = 1;
+												Uart_Process();
+											}
+										}break;
+										case FRAME_CLEAR:
+										{
+											
+										}break;
+										default:break;
 									}
+//									if(DMADest_Buffer[0] != UART_REC_BEGIN && DMADest_Buffer[1] != UART_REC_END)
+//									{
+////										debug_frmwrk_init();//串口3初始化
+//										lpc1788_DMA_Init();
+//									}else{
+//											for(i = 0;i < DMA_SIZE;i ++)
+//											{
+//												ComBuf.rec.buf[i] = DMADest_Buffer[i];
+//											}
+//											ComBuf.rec.end = 1;
+//									}
 									LPC_GPDMACH0->CDestAddr = GPDMACfg.DstMemAddr;// Assign memory destination address
 									LPC_GPDMACH0->CControl= GPDMA_DMACCxControl_TransferSize((uint32_t)GPDMACfg.TransferSize) \
 									| GPDMA_DMACCxControl_SBSize((uint32_t)GPDMA_LUTPerBurst[GPDMACfg.SrcConn]) \
@@ -51,8 +84,8 @@ void DMA_IRQHandler (void)
 									| GPDMA_DMACCxControl_DI \
 									| GPDMA_DMACCxControl_I;
 									GPDMA_ChannelCmd(0, ENABLE);
-									Uart_Process();
-									if(GetSystemStatus()==SYS_STATUS_SETUPTEST && ComBuf.rec.buf[1] != 0x52)
+									
+									if(GetSystemStatus()==SYS_STATUS_SETUPTEST && ComBuf.rec.buf[1] != 0X20)
 									{
 										missflag = 1;
 									}
@@ -61,6 +94,10 @@ void DMA_IRQHandler (void)
 								{
 									GPDMA_ChannelCmd(1, DISABLE);
 									GPDMA_ChannelCmd(0, ENABLE);
+								}break;
+								case 2:
+								{
+									GPDMA_ChannelCmd(2, DISABLE);
 								}break;
 							}
 							     
@@ -94,17 +131,31 @@ void lpc1788_DMA_Init(void)
 
 	GPDMA_Setup(&GPDMACfg);
  
+//		//DMA USART3 TX CONFIG	
+//	GPDMACfg2.ChannelNum = 2;
+//	GPDMACfg2.SrcMemAddr =(uint32_t)&ComBuf.rec.buf[5];       
+//	GPDMACfg2.DstMemAddr = 0;       
+//	GPDMACfg2.TransferSize = 1;
+//	GPDMACfg2.TransferWidth = 0;
+//	GPDMACfg2.TransferType = GPDMA_TRANSFERTYPE_M2P;       
+//	GPDMACfg2.SrcConn = 0;       
+//	GPDMACfg2.DstConn = GPDMA_CONN_UART3_Tx;       
+//	GPDMACfg2.DMALLI = 0;       
+//	GPDMA_Setup(&GPDMACfg2);
+	
 //DMA USART TX CONFIG	
 	GPDMACfg1.ChannelNum = 1;
 	GPDMACfg1.SrcMemAddr =(uint32_t)&ComBuf.send.buf;       
 	GPDMACfg1.DstMemAddr = 0;       
-	GPDMACfg1.TransferSize = 3;
+	GPDMACfg1.TransferSize = 4;
 	GPDMACfg1.TransferWidth = 0;
 	GPDMACfg1.TransferType = GPDMA_TRANSFERTYPE_M2P;       
 	GPDMACfg1.SrcConn = 0;       
 	GPDMACfg1.DstConn = GPDMA_CONN_UART0_Tx;       
 	GPDMACfg1.DMALLI = 0;       
 	GPDMA_Setup(&GPDMACfg1);
+	
+
 //        LPC_SSP0->DMACR |=0x11;//SSP_DMACmd (0, SSP_DMA_RXDMA_EN, ENABLE);
  
 	NVIC_EnableIRQ(DMA_IRQn);
@@ -112,7 +163,9 @@ void lpc1788_DMA_Init(void)
 	ComBuf.send.buf[1] = 0x00;
 	ComBuf.send.buf[2] = 0xbf;
 	GPDMA_ChannelCmd(0, DISABLE);
+//	GPDMA_ChannelCmd(2, DISABLE);
 	GPDMA_ChannelCmd(1, ENABLE);
+//	GPDMA_ChannelCmd(2, ENABLE);
 //	GPDMA_ChannelCmd(0, ENABLE);
 //	GPDMA_ChannelCmd(1, DISABLE);
 }
@@ -168,7 +221,7 @@ void DMASendReadInit(void)
 	GPDMACfg1.ChannelNum = 1;
 	GPDMACfg1.SrcMemAddr =(uint32_t)&ComBuf.send.buf;       
 	GPDMACfg1.DstMemAddr = 0;       
-	GPDMACfg1.TransferSize = 3;
+	GPDMACfg1.TransferSize = 4;
 	GPDMACfg1.TransferWidth = 0;
 	GPDMACfg1.TransferType = GPDMA_TRANSFERTYPE_M2P;       
 	GPDMACfg1.SrcConn = 0;       
@@ -203,4 +256,29 @@ void DMASendRangeInit(void)
 	GPDMA_Setup(&GPDMACfg1);
 		
 	GPDMA_ChannelCmd(1, ENABLE);
+}
+
+void DMASendToPC(void)
+{
+//	GPDMACfg.ChannelNum = 0;
+//	GPDMACfg.SrcMemAddr =0;       
+//	GPDMACfg.DstMemAddr = (uint32_t)&DMADest_Buffer;       
+//	GPDMACfg.TransferSize = 4;
+//	GPDMACfg.TransferType = GPDMA_TRANSFERTYPE_P2M;       
+//	GPDMACfg.SrcConn = GPDMA_CONN_UART0_Rx;       
+//	GPDMACfg.DstConn = 0;       
+//	GPDMACfg.DMALLI = 0;       
+//	GPDMA_Setup(&GPDMACfg);
+	GPDMACfg2.ChannelNum = 2;
+	GPDMACfg2.SrcMemAddr =(uint32_t)&ComBuf.rec.buf[5];       
+	GPDMACfg2.DstMemAddr = 0;       
+	GPDMACfg2.TransferSize = 1;
+	GPDMACfg2.TransferWidth = 0;
+	GPDMACfg2.TransferType = GPDMA_TRANSFERTYPE_M2P;       
+	GPDMACfg2.SrcConn = 0;       
+	GPDMACfg2.DstConn = GPDMA_CONN_UART3_Tx;       
+	GPDMACfg2.DMALLI = 0;       
+	GPDMA_Setup(&GPDMACfg2);
+		
+	GPDMA_ChannelCmd(2, ENABLE);
 }

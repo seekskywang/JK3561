@@ -71,6 +71,7 @@ void Disp_R_X(void);
 void Disp_Rs_Q(void);
 void Disp_Rp_Q(void);
 void Disp_Testvalue(int8_t chosen ,int32_t eee);//œ‘ æ≤‚ ‘ ˝æ›
+void Disp_Data_Debug(void);
 void Disp_Big_MainUnit(vu8 unit,vu8 unit1);
 void Disp_Big_SecondUnit(vu8 unit,vu8 unit1);
 void Send_Freq(Send_Ord_Typedef *ord);
@@ -107,4 +108,5 @@ void Disp_Debug_Reference(Button_Page_Typedef* Button_Page,float ddd,float eee);
 int16_t Debug_Value(Sort_TypeDef *Debug_value);
 void Disp_Usbflag(uint8_t flag);
 void DrawLogo(uint16_t x,uint16_t y);
+void Data_Format(char *dest,vu32 dat , vu8 Dot , vu8 len , vu8 dispzero);
 #endif

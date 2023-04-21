@@ -52,6 +52,18 @@ vu8 powerontest;
 extern vu8 u3sendflag;
 extern vu8 negvalm;
 uint32_t keynum;
+Filter Rfilter,Vfilter;
+u16 filtersize[3] = {16,32,60};//快中慢速滤波次数
+u16 dispfilter[3] = {1,2,10};	 //快中慢速显示二次滤波次数
+vu8 trip_flag=0;//手动触发标志
+u8 testtimingflag;
+u32 timing;
+u8 rangenum[5] = {4,7,7,7,7};//不同版本总量程数
+double maxv[5] = {30,100,300,600,1000};//不同版本电压上限
+double maxvdisp[5] = {300000,100000,300000,600000,100000};//不同版本电压上限
+double maxvdot[5] = {4,3,3,3,2};//不同版本电压上限小数点
+double x1,y1,x2,y2;
+
 const u8 DOT_POS[6]=
 {	
 	2,
@@ -94,6 +106,59 @@ const vu8 Disp_Main_Ord[][3]={
 	{1,5,9},//GB
 	//{1,1,0},
 	};
+
+void Swap(uint32_t A[], uint16_t i, uint16_t j)
+{
+    int temp = A[i];
+    A[i] = A[j];
+    A[j] = temp;
+}
+
+//冒泡排序
+void BubbleSort(uint32_t A[], uint16_t n)
+{
+	int i,j;
+    for (j = 0; j < n - 1; j++)         // 每次最大元素就像气泡一样"浮"到数组的最后
+    {
+        for (i = 0; i < n - 1 - j; i++) // 依次比较相邻的两个元素,使较大的那个向后移
+        {
+            if (A[i] > A[i + 1])            // 如果条件改成A[i] >= A[i + 1],则变为不稳定的排序算法
+            {
+                Swap(A, i, i + 1);
+            }
+        }
+    }
+}
+
+//已排序递增数组队首进入新数据排序
+void HeadSort(uint32_t A[], uint16_t n)
+{
+	int i;
+	for(i = 0;i < n-1;i ++)
+	{
+		if (A[i] > A[i + 1])
+		{
+				Swap(A, i, i + 1);
+		}else{
+			break;
+		}
+	}
+}
+
+//已排序递增数组队尾进入新数据排序
+void TailSort(uint32_t A[], uint16_t n)
+{
+	int i;
+	for(i = n-1;i > 0;i --)
+	{
+		if (A[i] < A[i - 1])
+		{
+				Swap(A, i, i - 1);
+		}else{
+			break;
+		}
+	}
+}
 //==========================================================
 //函数名称：Power_Process
 //函数功能：上电处理
@@ -174,7 +239,7 @@ void MODS_Poll(void)
 //    }else{
 //        usartocflag = 1;
         u3sendflag = 1;
-				uartresdelay = 5;
+				uartresdelay = 2;
 //        RecHandle();
 //        u3sendflag = 0;
 //    }
@@ -240,17 +305,19 @@ void Power_Process(void)
 //    } 
 	if(Save_Res.open == 1)
 	{
-		Delay(1800);
+		Delay(1800/5);
 	}
 	Beep_Off();
     i=0;
 	powerontest = 1;
+	Vfilter.initflag = 1;
+	Vfilter.initcount = 0;
 //UART_TxCmd(LPC_UART3, ENABLE);
 	while(GetSystemStatus()==SYS_STATUS_POWER)
 	{
 	    
         i++;
-        Delay(10);
+        Delay(10/5);
         if(i>10)
             SetSystemStatus(SYS_STATUS_TEST);//待测状态
          key=HW_KeyScsn();
@@ -391,7 +458,7 @@ void Test_Process(void)
 //    vu8 page=1;
 	vu8 Disp_Flag=1;
 //	vu8 uart_count;
-	vu8 trip_flag=0;
+	
 	vu8 lock_flag=0;
 //	vu8 rc;
 	vu8 chosen=ALL_PASS,chosen1=ALL_PASS,comp=ALL_PASS;
@@ -406,6 +473,7 @@ void Test_Process(void)
 	Button_Page.index=0;
 	Button_Page.third=0xff;
 	lpc1788_DMA_Init();
+	ComBuf.pageswflag=0;
 //     if(Save_Res.Sys_Setvalue.uart)
 //         UART_TxCmd(LPC_UART3, ENABLE);
 //     else
@@ -420,9 +488,12 @@ void Test_Process(void)
 	Delay_Key();
 //	uart_count=0;
 	clear_flag=0;
+	Rfilter.initflag = 1;//每次重新进入测试页面都初始化滤波队列
 //	Send_UartStart();//开始时的串口发送数据
 	while(GetSystemStatus()==SYS_STATUS_TEST)
 	{
+		
+//		GPIO_SetValue(0, (1<<22));
         if(Rtc_intflag)
         {
             Rtc_intflag=0;
@@ -452,164 +523,10 @@ void Test_Process(void)
 		//_printf("CoreClock: %s\n",READDATA); 
 		
 		Colour.black=LCD_COLOR_TEST_MID;
-		
-		if((Save_Res.Set_Data.trip==1&&trip_flag==1) || powerontest == 1/* || u3sendflag == 1*/)//单次触发
-		{
-//			if(powerontest == 1)
-//			{
-//				delayMs(1,1000);
-//			}
-			powerontest = 0;
-			Send_Request();
-			trip_flag=0;
-			return_flag=1;
-//			delayMs(1,500);
-		}
-//		Uart_Process();
-		if(u3sendflag == 1)
-		{
-			if(uartresdelay == 0)
-			{
-				RecHandle();
-				u3sendflag = 0;
-				g_tModS.RxCount = 0;
-			}else{
-				uartresdelay --;
-			}
-		}
-//		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
-//       
-//		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
-		
+
         if(nodisp_v_flag)
             eee=0;
-//		if(timer0_counter>0)//请求数据
-//		{
-//			switch(Uart_Send_Flag)
-//			{
-//				case 0:
-//					if(Save_Res.Set_Data.trip==0/* && u3sendflag ==0*/)
-//					{
-//						Send_Request();
-//						return_flag=1;
-//					}
-//					
-//					
-//					
-//					break;
-//				case 1:
-//					//if(uart_count++>5)
-//					Uart_Send_Flag=0;
-//				if(keynum<99)
-//				keynum++;
-//				else
-//					keynum++;
-//					Send_Main_Ord();
-//				
-//					break;
-//				case 2:
-//					
-//					//if(uart_count++>5) 	
-//					Uart_Send_Flag=0;
-//					Send_Freq(&Uart);
-//				
-//					break;
-//				case 3:
-//				{
-//					Uart_Send_Flag=0;
-//					Send_Clear(&Uart);
-//				}break;
-//				default:
-//					//Send_Request();
-//					break;
-//			
-//			}
-//			
-//			
-//			timer0_counter=0;
-//		
-//		
-//		}
-				//校正
-		string_to_float((char *)Test_Dispvalue.Main_valuebuff,&Test_Dispvalue.Rdata);
-		string_to_float((char *)Test_Dispvalue.Secondvaluebuff,&Test_Dispvalue.Vdata);
-//		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
-//       
-//		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
-		
-		if(clear_flag)//清零
-		{
-			Bais_LedOff();
-			clear_flag=0;
-			if(Test_Dispvalue.Main_valuebuff[0]=='-')
-			{
-				Save_Res.clear=ddd;
-				Save_Res.clear=-Save_Res.clear;
-			}
-			else
-				Save_Res.clear=ddd;
-			if(Test_Dispvalue.Main_valuebuff[0]=='-')
-			{
-				Save_Res.V_Clear=eee;
-				Save_Res.V_Clear=-Save_Res.V_Clear;
-				
-			
-			}
-			else
-				Save_Res.V_Clear=eee;
-				
-			Savetoeeprom();
-		
-		}else
-		{
-			if(!Test_Dispvalue.Rangedisp)
-			{
-				if(Test_Dispvalue.Main_valuebuff[0]=='-')
-					ddd=0-ddd;
-				ddd=fabs(ddd-Save_Res.clear);
-				
-				
-			}
-			if(Test_Unit.V_dot==3)
-			{
-				if(Test_Unit.V_Neg==0)//负
-					eee=0-eee;
-				eee=fabs(eee-Save_Res.V_Clear);
-					
-			
-			
-			}
-		}
-        
-//         if(ddd==0xfffffff)
-//            nodisp_v_flag=1;
-//        else
-//            nodisp_v_flag=0;
-		
-		//1125  1.171  8.84
-		
 
-//		if(Test_Dispvalue.Rangedisp == 0 && ddd < 2000){
-//			ddd=Debug_Res(ddd,Save_Res.Debug_Value[Test_Dispvalue.Rangedisp].standard,
-//			Save_Res.Debug_Value[Test_Dispvalue.Rangedisp].ad_value);
-//		}else{
-//			ddd=Debug_Res(ddd,Save_Res.Debug_Value[Test_Dispvalue.Rangedisp+1].standard,
-//			Save_Res.Debug_Value[Test_Dispvalue.Rangedisp+1].ad_value);
-//		}
-		
-//        if(ddd>32000000)
-//		{
-//           nodisp_v_flag=1;
-//			stable_counter = 0;
-//			j = 0;
-//        }else{
-//            nodisp_v_flag=0;
-//		}
-//		if(Test_Unit.V_dot==3)
-//			eee=Debug_Res(eee,Save_Res.Debug_Value[5].standard,Save_Res.Debug_Value[5].ad_value);
-//		else
-//			eee=Debug_Res(eee,Save_Res.Debug_Value[6].standard,Save_Res.Debug_Value[6].ad_value);
-		
 		if(nodisp_v_flag)
             eee=0;
 			//ddd-=Save_Res.clear;
@@ -668,9 +585,9 @@ void Test_Process(void)
 		#endif
 //		if(return_flag)	
 //		{
-            rwatch = (int)ddd;
-            vwatch = (int)eee * 10;
-			testwatch[j] = rwatch;
+//            rwatch = (int)ddd;
+//            vwatch = (int)eee * 10;
+//			testwatch[j] = rwatch;
 			
 			if(j < 499)
 				j++;
@@ -679,26 +596,26 @@ void Test_Process(void)
 				stabletime = stable_counter * 20;
 			}
 			BCD_Int(ddd);//DOT_POS	
-			for(i=0;i<5;i++)
+			for(i=0;i<6;i++)
 			{
-				*(UserBuffer+i)=DispBuf[i];
+				*(UserBuffer+i)=Test_Dispvalue.Main_valuebuff[i];
 				Send_buff2[i]=DispBuf[i];
 			}
-			if(Test_Unit.Res_dot)
+			if(Test_Dispvalue.Rdataraw.unit)
 			{
-				*(UserBuffer+5)=' ';
-				Send_buff2[5]=' ';
+				*(UserBuffer+6)=' ';
+				Send_buff2[6]=' ';
 				
 			}
 			else
 			{
-				*(UserBuffer+5)='m';
-				Send_buff2[5]='m';
+				*(UserBuffer+6)='m';
+				Send_buff2[6]='m';
 				
 			}
-			*(UserBuffer+6)=0xa6;
-			*(UserBuffer+7)=0xb8;
-			*(UserBuffer+8)='	';
+			*(UserBuffer+7)=0xa6;
+			*(UserBuffer+8)=0xb8;
+			*(UserBuffer+9)='	';
 			Disp_R_X();//显示单位
 			if(nodisp_v_flag == 1)
 			{
@@ -715,38 +632,39 @@ void Test_Process(void)
 			}else{
 				vflag = 0;
 			}
+			testtimingflag = 1;
 			Disp_Testvalue(comp,eee);
-			
-			if(Test_Unit.V_Neg)
-			{
-				*(UserBuffer+9)=' ';
-				Send_buff2[6]=' ';
-				
-			}
-			//WriteString_Big(100,92+55 ," ");
-		else
-		{
-			*(UserBuffer+9)='-';
-			Send_buff2[6]='-';
-			
-		}
+			testtimingflag = 0;
+//			if(Test_Unit.V_Neg)
+//			{
+//				*(UserBuffer+9)=' ';
+//				Send_buff2[6]=' ';
+//				
+//			}
+//			//WriteString_Big(100,92+55 ," ");
+//		else
+//		{
+//			*(UserBuffer+9)='-';
+//			Send_buff2[6]='-';
+//			
+//		}
 			//WriteString_Big(100,92+55 ,"-");
-		for(i=0;i<5;i++)
+		for(i=0;i<8;i++)
 		{
-			*(UserBuffer+10+i)=DispBuf[i];
+			*(UserBuffer+10+i)=Test_Dispvalue.Vvaluebuff[i];
 			Send_buff2[7+i]=DispBuf[i];
 			
 		}
 			Send_buff2[12]=comp;
 			Send_buff2[13]=0;
-			*(UserBuffer+15)='V';
-			*(UserBuffer+16)='	';
+			*(UserBuffer+18)='V';
+			*(UserBuffer+19)='	';
 			for(i=0;i<8;i++)
-			*(UserBuffer+17+i)=USB_dISPVALUE[comp][i];
+			*(UserBuffer+20+i)=USB_dISPVALUE[comp][i];
 		
-			*(UserBuffer+25)='\r';
-			*(UserBuffer+26)='\n';
-        *(UserBuffer+27)='\0';
+			*(UserBuffer+28)='\r';
+			*(UserBuffer+29)='\n';
+        *(UserBuffer+30)='\0';
 //			return_flag=0;
             
 			strcpy((char *)send_usbbuff,(char *)timebuff);
@@ -766,7 +684,7 @@ void Test_Process(void)
 					f_lseek(&fsrc,fsrc.fsize);
 		//			bytes_written = FILE_Write(fdw, buffer, num);//MAX_BUFFER_SIZE);
 
-					res = f_write(&fsrc, &send_usbbuff, 38, &br);     
+					res = f_write(&fsrc, &send_usbbuff, 41, &br);     
 					f_close(&fsrc); 
 		//			usb_oenflag=1;
 
@@ -1086,7 +1004,8 @@ void Test_Process(void)
 		
 		}
 	
-	
+//		testtimingflag = 0;
+//		GPIO_ClearValue(0, (1<<22));
 	}
 
 }
@@ -1214,35 +1133,7 @@ void Setup_Process(void)
 			Delay_Key();
 		
 		}
-//		if(timer0_counter>0)//请求数据
-//		{
-//			switch(Uart_Send_Flag)
-//			{
-//				case 0:
-//					//Send_Request();
-//					break;
-//				case 1:
-//					Send_Main_Ord();
-//					break;
-//				case 2:
-//					Send_Freq(&Uart);
-//					Delay(100);
-//					break;
-//				case 3:
-//					Send_Freq(&Uart);
-//					Delay(100);
-//					break;
-//				default:
-//					Send_Request();
-//					break;
-//			
-//			}
-//			Uart_Send_Flag=0;
-//			
-//			timer0_counter=0;
-//		
-//		
-//		}
+
 		key=HW_KeyScsn();
 		if(key==0xff)
 		{
@@ -1261,6 +1152,7 @@ void Setup_Process(void)
 					{
 						case 0:
 							//if(Button_Page.page==0)
+								ComBuf.pageswflag=1;
 								SetSystemStatus(SYS_STATUS_TEST);//
 //							else
 //								SetSystemStatus(SYS_STATUS_FILE);
@@ -1273,7 +1165,7 @@ void Setup_Process(void)
 						case 2:
 							Save_Res.Set_Data.speed=0;
 							
-							Uart_Send_Flag=2;
+//							Uart_Send_Flag=2;
 								
 							
 							break;
@@ -1373,7 +1265,7 @@ void Setup_Process(void)
 						case 2:
 							Save_Res.Set_Data.speed=1;
 							
-							Uart_Send_Flag=2;
+//							Uart_Send_Flag=2;
 							
 							
 							break;
@@ -1467,7 +1359,9 @@ void Setup_Process(void)
 						case 1:
 							break;
 						case 2:
-							break;
+							Save_Res.Set_Data.speed=2;
+							
+						break;
 						case 3:
 							Save_Res.Set_Data.dispvr=2;
 							
@@ -1494,7 +1388,7 @@ void Setup_Process(void)
 							
 							break;
 						case 7+1:
-							if(Save_Res.Set_Data.Range < 7)
+							if(Save_Res.Set_Data.Range < rangenum[Save_Res.version])
 								Save_Res.Set_Data.Range++;
 							Send_Range();
 							break;
@@ -1638,7 +1532,8 @@ void Setup_Process(void)
 					
 				break;
 				case Key_Disp:
-                        SetSystemStatus(SYS_STATUS_TEST);
+					ComBuf.pageswflag=1;
+					SetSystemStatus(SYS_STATUS_TEST);
 				break;
 				case Key_SETUP:
                         //SetSystemStatus(SYS_STATUS_SETUPTEST);
@@ -1766,7 +1661,7 @@ void Setup_Process(void)
 						Coordinates.xpos=LIST1+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*7;
 						Coordinates.lenth=76;
-						Save_Res.Set_Data.V_low=Disp_Set_CompNum(&Coordinates);
+						Save_Res.Set_Data.V_low=Disp_Set_NumV(&Coordinates);
 						
 						break;
 					case 9+1:
@@ -1785,13 +1680,13 @@ void Setup_Process(void)
 						Coordinates.xpos=LIST2+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*6;
 						Coordinates.lenth=76;
-						Save_Res.Set_Data.Nominal_V=Disp_Set_CompNum(&Coordinates);
+						Save_Res.Set_Data.Nominal_V=Disp_Set_NumV(&Coordinates);
 						break;
 					case 12+1:
 						Coordinates.xpos=LIST2+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*7;
 						Coordinates.lenth=76;
-						Save_Res.Set_Data.V_high=Disp_Set_CompNum(&Coordinates);
+						Save_Res.Set_Data.V_high=Disp_Set_NumV(&Coordinates);
 						break;
 					default:
 						break;
@@ -2938,6 +2833,7 @@ void Sys_Process(void)
 					switch(Button_Page.index)
 					{
 						case 0:
+							ComBuf.pageswflag=1;
 							SetSystemStatus(SYS_STATUS_TEST);
 							break;
 						
@@ -2988,7 +2884,8 @@ void Sys_Process(void)
 				
 				
 				case Key_Disp:
-                    SetSystemStatus(SYS_STATUS_TEST);
+					ComBuf.pageswflag=1;
+					SetSystemStatus(SYS_STATUS_TEST);
 				break;
 				case Key_SETUP:
                     SetSystemStatus(SYS_STATUS_SETUPTEST);
@@ -3093,6 +2990,7 @@ void Use_SysSetProcess(void)
 					switch(Button_Page.index)
 					{
 						case 0:
+							ComBuf.pageswflag=1;
 							SetSystemStatus(SYS_STATUS_TEST);
 							break;
 						case 1:
@@ -3379,7 +3277,8 @@ void Use_SysSetProcess(void)
 					}
 				break;
 				case Key_Disp:
-                    SetSystemStatus(SYS_STATUS_TEST);
+					ComBuf.pageswflag=1;
+					SetSystemStatus(SYS_STATUS_TEST);
 				break;
 				case Key_SETUP:
                     SetSystemStatus(SYS_STATUS_SETUPTEST);
@@ -3561,6 +3460,67 @@ void Use_SysSetProcess(void)
 	Savetoeeprom();
 }
 
+//电阻校正计算
+void DebugHandleR(u8 range)
+{
+	float standard;
+	standard = ((float)Save_Res.DebugStd[range].Num)/((float)pow(10,Save_Res.DebugStd[range].Dot));
+	Save_Res.Debug_Value[range] = standard/Test_Dispvalue.Rdata;
+}
+
+//电压校正计算
+void DebugHandleV(u8 step)
+{
+	float standard;
+	u16 coff;
+	if(Save_Res.DebugStd[step+6].Dot == 5)
+		coff = 1;
+	else if(Save_Res.DebugStd[step+6].Dot == 4)
+		coff = 10;
+	else if(Save_Res.DebugStd[step+6].Dot == 3)
+		coff = 100;
+	standard = ((float)Save_Res.DebugStd[step+6].Num)*coff;
+	if(step == 1)
+	{
+		x1 = (double)Vfilter.result;
+		y1 = standard;
+	}else if(step == 2){
+		x2 = (double)Vfilter.result;
+		y2 = standard;
+		Save_Res.VDebug_Valuek[0] = (y2 - y1)/(x2 - x1);
+		Save_Res.VDebug_Valueb[0] = (double)y2 - Save_Res.VDebug_Valuek[0]*(double)x2;
+	}else if(step == 3){
+		x2 = (double)Vfilter.result;
+		y2 = standard;
+		Save_Res.VDebug_Valuek[1] = (y2 - y1)/(x2 - x1);
+		Save_Res.VDebug_Valueb[1] = (double)y2 - Save_Res.VDebug_Valuek[1]*(double)x2;
+	}
+}
+
+void DebugRInit(void)
+{
+	Save_Res.DebugStd[0].Num=9926;
+	Save_Res.DebugStd[0].Dot = 4;
+	
+	Save_Res.DebugStd[1].Num=99987;
+	Save_Res.DebugStd[1].Dot = 4;
+	
+	Save_Res.DebugStd[2].Num=10015;
+	Save_Res.DebugStd[2].Dot = 2;
+	
+	Save_Res.DebugStd[3].Num=10014;
+	Save_Res.DebugStd[3].Dot = 4;
+	
+	Save_Res.DebugStd[4].Num=99729;
+	Save_Res.DebugStd[4].Dot = 4;
+	
+	Save_Res.DebugStd[5].Num=99990;
+	Save_Res.DebugStd[5].Dot = 3;
+	
+	Save_Res.DebugStd[6].Num=10001;
+	Save_Res.DebugStd[6].Dot = 1;
+}
+
 //用户校正
 void Use_DebugProcess(void)
 {
@@ -3575,89 +3535,20 @@ void Use_DebugProcess(void)
 	Button_Page_Typedef Button_Page;
 	Button_Page.index=0;
 	Button_Page.page=0;
-    lcd_Clear(LCD_COLOR_TEST_BACK);
+	lcd_Clear(LCD_COLOR_TEST_BACK);
 	Disp_UserCheck_Item();
 	Delay_Key();
+	DebugRInit();
  	while(GetSystemStatus()==SYS_STATUS_USERDEBUG)
 	{
-		Uart_Process();
+//		Uart_Process();
+		Disp_Data_Debug();
 		if(Disp_flag==1)
 		{
 			Disp_Debug_value(&Button_Page);
 			Disp_flag=0;	
 		}
-		
-		if(timer0_counter>0)//请求数据
-		{
-			switch(Uart_Send_Flag)
-			{
-				case 0:
-					//if(Save_Res.Set_Data.trip==0)
-						Send_Request();
-					
-					break;
-				case 1:
-					//if(uart_count++>5)
-//					Uart_Send_Flag=0;
-//				if(keynum<99)
-//				keynum++;
-//				else
-//					keynum++;
-//					Send_Main_Ord();
-				
-					break;
-				case 2:
-					
-					//if(uart_count++>5)
-//					Uart_Send_Flag=0;
-//					Send_Freq(&Uart);
-				
-					break;
-				default:
-					//Send_Request();
-					break;
-				
-			
-			}
-			//Disp_flag=1;
-			
-			
-			timer0_counter=0;
-		}
-//		ddd=BCDtoInt((int8_t *)Test_Dispvalue.Main_valuebuff);//电阻
-//		eee=VBCDtoInt((int8_t *)Test_Dispvalue.Secondvaluebuff);//电压
-		if(!Test_Dispvalue.Rangedisp)
-			{
-				if(Test_Dispvalue.Main_valuebuff[0]=='-')
-					ddd=0-ddd;
-				ddd=fabs(ddd-Save_Res.clear);
-				
-				
-			}
-			if(Test_Unit.V_dot==3)
-			{
-				if(Test_Unit.V_Neg==0)//负
-					eee=0-eee;
-				eee=fabs(eee-Save_Res.V_Clear);
-					
-			
-			
-			}
-			
-			Disp_Debug_Reference(&Button_Page,eee,ddd);
-			if(Button_Page.index-1<5){
-				if(Button_Page.index == 0)
-				{
-					Save_Res.Debug_Value[Button_Page.index-1].ad_value=ddd/(pow(10,Button_Page.index))*10;
-				}else{
-					Save_Res.Debug_Value[Button_Page.index-1].ad_value=ddd/(pow(10,Button_Page.index-1));
-				}
-			}
-				//Input_int((int8_t *)Test_Dispvalue.Main_valuebuff);
-			else{
-				Save_Res.Debug_Value[Button_Page.index-1].ad_value=eee/pow(10,Button_Page.index-6);
-				//Input_int((int8_t *)Test_Dispvalue.Secondvaluebuff);
-			}
+
 		key=HW_KeyScsn();
 		if(key==0xff)
 		{
@@ -3665,15 +3556,14 @@ void Use_DebugProcess(void)
 		}
 		else
 			keynum++;
-		if(keynum==KEY_NUM)
+		if(keynum==KEY_NUM)  
 		{
 			Disp_flag=1;
             Key_Beep();
 			switch(key)
 			{
 				case Key_F1:
-                    Savetoeeprom();
-                    SetSystemStatus(SYS_STATUS_TEST);
+                    
 //                    if(Button_Page.page==0)
 //                        SetSystemStatus(SYS_STATUS_SETUPTEST);
 //					else
@@ -3687,16 +3577,27 @@ void Use_DebugProcess(void)
 //						SetSystemStatus(SYS_STATUS_SYSSET);
 				break;
 				case Key_F3:
+					Savetoeeprom();
+					SetSystemStatus(SYS_STATUS_TEST);
 //                    if(Button_Page.page==0)
 //                        SetSystemStatus(SYS_STATUS_LIMITSET);
 //					else
 //						SetSystemStatus(SYS_STATUS_TOOL);
 				break;
 				case Key_F4:
+					if(Save_Res.version < 4)
+						Save_Res.version ++;
+					else
+						Save_Res.version = 0;
 //                    if(Button_Page.page==0)
 //                        SetSystemStatus(SYS_STATUS_ITEMSET);
 				break;
 				case Key_F5:
+					if(Button_Page.index < 8)
+						DebugHandleR(Button_Page.index-1);
+					else
+						DebugHandleV(Button_Page.index - 7);
+//					Savetoeeprom();
 //					if(Button_Page.page)
 //						Button_Page.page=0;
 //					else
@@ -3704,14 +3605,14 @@ void Use_DebugProcess(void)
 //                    Disp_Button_TestSet(Button_Page.page);
 				break;
 				case Key_Disp:
-                    if(Button_Page.index==0)
-                    {
-                        Debug_Cood.xpos=70;
-                        Debug_Cood.ypos =272-70;
-                        Debug_Cood.lenth=120;
-                        input_num(&Debug_Cood);
-                    
-                    }
+					if(Button_Page.index==0)
+					{
+							Debug_Cood.xpos=70;
+							Debug_Cood.ypos =272-70;
+							Debug_Cood.lenth=120;
+							input_num(&Debug_Cood);
+					
+					}
 
 				break;
 				case Key_SETUP:
@@ -3730,14 +3631,14 @@ void Use_DebugProcess(void)
 						if(Button_Page.index>0)
 							Button_Page.index--;
 						else
-							Button_Page.index=DEBUG_RANGE;
+							Button_Page.index=DEBUG_RANGE+3;
 							
 				break;
                         case Key_RIGHT:
 				case Key_DOWN:
 //					Save_Res.Debug_Value[Button_Page.index].standard=
 //					Save_Res.Debug_Value[Button_Page.index].ad_value=
-					if(Button_Page.index<DEBUG_RANGE)
+					if(Button_Page.index<DEBUG_RANGE+3)
 						Button_Page.index++;
                     else
                         Button_Page.index=0;
@@ -3766,11 +3667,24 @@ void Use_DebugProcess(void)
 				//break;
 				case Key_NUM0:
 				//break;
-				
-				Coordinates.xpos=LIST1+160;
-				Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index);
-				Coordinates.lenth=70;
-				Save_Res.Debug_Value[Button_Page.index-1].standard=Freq_Set_Num(&Coordinates);
+				if(Button_Page.index < 8)
+				{
+					Coordinates.xpos=LIST1+88;
+					Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index-1);
+					Coordinates.lenth=60;
+					Save_Res.DebugStd[Button_Page.index-1]=Disp_Set_Num(&Coordinates);
+				}else{
+					Coordinates.xpos=LIST1+88;
+					Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index-1);
+					Coordinates.lenth=60;
+					Save_Res.DebugStd[Button_Page.index-1]=Disp_Set_NumV(&Coordinates);					
+				}
+				LCD_DrawRect( 0, 227, 479, 271 , LCD_COLOR_TEST_BACK ) ;
+				Disp_UserCheck_Item();
+//				Coordinates.xpos=LIST1+160;
+//				Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index);
+//				Coordinates.lenth=70;
+//				Save_Res.Debug_Value[Button_Page.index-1].standard=Freq_Set_Num(&Coordinates);
 				
 //					if(Button_Page.index==5)
 //					{ 	
@@ -3897,6 +3811,306 @@ void Fac_DebugProcess(void)
 	
 	}
 }	
+void VrangeSW(void)
+{
+	if(Test_Dispvalue.vrange == 0)
+	{
+		if(Test_Dispvalue.Vdata > 70)
+			Test_Dispvalue.vrange = 1;
+	}else{
+		if(Test_Dispvalue.Vdata < 65)
+			Test_Dispvalue.vrange = 0;
+	}
+}
+void VDATAFILTER(void)
+{
+	u16 i;
+	if(Test_Dispvalue.openflag == 1/* || Test_Dispvalue.Vdataraw.coefficient != Vfilter.oldcft*/)//开路或电压小数点位置变化
+	{
+		Vfilter.initflag = 1;//队列初始化
+		Vfilter.initcount = 0;//进队列数据计数清零
+//		Rfilter.index = 0;
+		Vfilter.recindex = 0;
+		Vfilter.initdataflag = 0;
+		memset(Vfilter.buffer.data,0,sizeof(Vfilter.buffer.data));
+		
+	}
+		
+	if(Vfilter.initflag == 1)//队列初始化操作，结束前不进行滤波
+	{
+		if(Test_Dispvalue.Vdataraw.index != Vfilter.index)//序号与上次不一样则进入队列，否则跳过
+		{
+			Vfilter.index = Test_Dispvalue.Vdataraw.index;//记录本次序号
+			Vfilter.oldcft = Test_Dispvalue.Vdataraw.coefficient;
+			if(Vfilter.initcount < 20-1)
+			{
+				Vfilter.buffer.indexbuf[Vfilter.initcount] = Test_Dispvalue.Vdataraw.index;
+				Vfilter.buffer.data[Vfilter.initcount] = Test_Dispvalue.Vdataraw.num * pow(10,5-Test_Dispvalue.Vdataraw.coefficient);
+				Vfilter.initcount++;
+				if(Test_Dispvalue.openflag == 0)
+				{
+					Test_Dispvalue.Test_V = (Test_Dispvalue.Vdataraw.num * 
+					pow(10,5-Test_Dispvalue.Vdataraw.coefficient))*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+					Save_Res.VDebug_Valueb[Test_Dispvalue.vrange];
+					
+					if(Test_Dispvalue.Test_V < 1000000)
+					{
+						Test_Dispvalue.TestVDot = 5;
+					}else if(Test_Dispvalue.Test_V >= 1000000 && Test_Dispvalue.Test_V < 10000000){
+						Test_Dispvalue.Test_V/=10;
+						Test_Dispvalue.TestVDot = 4;
+					}else if(Test_Dispvalue.Test_V >= 10000000 && Test_Dispvalue.Test_V < 100000000){
+						Test_Dispvalue.Test_V/=100;
+						Test_Dispvalue.TestVDot = 3;
+					}
+				
+//					if(Test_Dispvalue.Vdataraw.coefficient ==5)
+//					{
+//						Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+//							Save_Res.VDebug_Valueb[Test_Dispvalue.vrange]);
+//					}else if(Test_Dispvalue.Vdataraw.coefficient ==4){
+//						Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+//							Save_Res.VDebug_Valueb[Test_Dispvalue.vrange])/10;
+//					}else if(Test_Dispvalue.Vdataraw.coefficient ==3){
+//						Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*100)*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+//							Save_Res.VDebug_Valueb[Test_Dispvalue.vrange])/100;
+//					}
+				}
+			}else{
+				BubbleSort(Vfilter.buffer.data,20);
+				Vfilter.initflag = 0;//队列初始化结束，可以开始滤波
+				Vfilter.count = 0;
+			}
+		}
+	}else{
+		if(Test_Dispvalue.Vdataraw.index != Vfilter.index)//序号与上次不一样则进入队列，否则跳过
+		{
+			Vfilter.index = Test_Dispvalue.Vdataraw.index;//记录本次序号
+			Vfilter.oldcft = Test_Dispvalue.Vdataraw.coefficient;//记录当前系数
+			if(Vfilter.count == 0)
+			{
+				Vfilter.count ++;
+				Vfilter.buffer.data[0] = Test_Dispvalue.Vdataraw.num * pow(10,5-Test_Dispvalue.Vdataraw.coefficient);//第一个新数据进入队首
+				HeadSort(Vfilter.buffer.data,20);//新数据单独排序
+				
+
+			}else if(Vfilter.count == 1){
+				Vfilter.count ++; 
+				Vfilter.buffer.data[20-1] = Test_Dispvalue.Vdataraw.num * pow(10,5-Test_Dispvalue.Vdataraw.coefficient);//第二个新数据进入队尾
+				TailSort(Vfilter.buffer.data,20);//新数据单独排序
+			}
+			
+			if(Vfilter.count ==2)
+			{
+				
+				Vfilter.count = 0;
+				Vfilter.sum = 0;
+				
+				for(i=5;i<15;i++)
+				{
+					Vfilter.sum += Vfilter.buffer.data[i];//根据队列长度取中间一半数据求和
+				}
+				Vfilter.result = Vfilter.sum/10;//求和后平均计算出滤波后数据
+				Test_Dispvalue.Test_V = (u32)(((float)Vfilter.result)*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+					Save_Res.VDebug_Valueb[Test_Dispvalue.vrange]);
+				if(Test_Dispvalue.Test_V < 1000000)
+				{
+					Test_Dispvalue.TestVDot = 5;
+				}else if(Test_Dispvalue.Test_V >= 1000000 && Test_Dispvalue.Test_V < 10000000){
+					Test_Dispvalue.Test_V/=10;
+					Test_Dispvalue.TestVDot = 4;
+				}else if(Test_Dispvalue.Test_V >= 10000000 && Test_Dispvalue.Test_V < 100000000){
+					Test_Dispvalue.Test_V/=100;
+					Test_Dispvalue.TestVDot = 3;
+				}
+//				if(Test_Dispvalue.Vdataraw.coefficient ==5)
+//				{
+//					Test_Dispvalue.Test_V = (u32)(((float)Vfilter.result)*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+//						Save_Res.VDebug_Valueb[Test_Dispvalue.vrange]);
+//				}else if(Test_Dispvalue.Vdataraw.coefficient ==4){
+//					Test_Dispvalue.Test_V = (u32)(((float)Vfilter.result*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+//						Save_Res.VDebug_Valueb[Test_Dispvalue.vrange])/10;
+//				}else if(Test_Dispvalue.Vdataraw.coefficient ==3){
+//					Test_Dispvalue.Test_V = (u32)(((float)Vfilter.result*100)*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+//						Save_Res.VDebug_Valueb[Test_Dispvalue.vrange])/100;
+//				}
+//				Test_Dispvalue.Test_V = (u32)((Test_Dispvalue.Vdata*Save_Res.VDebug_Valuek + Save_Res.VDebug_Valueb)*
+//				pow(10,Test_Dispvalue.Vdataraw.coefficient));
+			}
+		}
+	}
+}
+void RDATAFILTER(void)
+{
+	u16 i;
+	if(Save_Res.version == 0)//3560电阻量程最大为3Ω
+	{
+		if(Test_Dispvalue.Rdataraw.num == 0xffff || Test_Dispvalue.Rdataraw.range > 4)//采集到开路或短路数据
+		{
+			Rfilter.initflag = 1;//队列初始化
+			Rfilter.initcount = 0;//进队列数据计数清零
+			Test_Dispvalue.openflag = 1;//开路标志
+	//		Rfilter.index = 0;
+			Rfilter.recindex = 0;
+			Rfilter.initdataflag = 0;
+			memset(Rfilter.buffer.data,0,sizeof(Rfilter.buffer.data));
+			
+		}
+	}else{
+		if(Test_Dispvalue.Rdataraw.num == 0xffff/* || Test_Dispvalue.Rdataraw.num == 0*/)//采集到开路或短路数据
+		{
+			Rfilter.initflag = 1;//队列初始化
+			Rfilter.initcount = 0;//进队列数据计数清零
+			Test_Dispvalue.openflag = 1;//开路标志
+	//		Rfilter.index = 0;
+			Rfilter.recindex = 0;
+			Rfilter.initdataflag = 0;
+			memset(Rfilter.buffer.data,0,sizeof(Rfilter.buffer.data));
+			
+		}
+	}
+	
+	if(Rfilter.initflag == 1)//队列初始化操作，结束前不进行滤波
+	{
+		if(Test_Dispvalue.Rdataraw.index != Rfilter.index)//序号与上次不一样则进入队列，否则跳过
+		{
+			if(Rfilter.initdataflag == 0)
+			{
+				Rfilter.initdataflag = 1;
+				Rfilter.inittime = 0;
+			}
+			Rfilter.recorder[Rfilter.recindex++] = Test_Dispvalue.Rdataraw.num;
+			Rfilter.index = Test_Dispvalue.Rdataraw.index;//记录本次序号
+			Rfilter.buffer.data[Rfilter.initcount] = Test_Dispvalue.Rdataraw.num;//相应数量的数据进入队列
+
+			if(Rfilter.initflag == 1)
+			{
+				if(Rfilter.initcount < filtersize[Save_Res.Set_Data.speed]-1)
+				{
+					Rfilter.buffer.indexbuf[Rfilter.initcount] = Test_Dispvalue.Rdataraw.index;
+					Rfilter.initcount++;
+				}
+				else{
+//					for(i = 0;i < 20;i ++)
+//					{
+//						Vfilter.buffer.data[i] = Test_Dispvalue.Vdataraw.num;
+//					}
+					BubbleSort(Rfilter.buffer.data,filtersize[Save_Res.Set_Data.speed]);
+					Rfilter.initflag = 0;//队列初始化结束，可以开始滤波
+	//				Rfilter.oldres = Test_Dispvalue.Rdataraw.num;
+	//				Rfilter.result = Rfilter.oldres;
+					Rfilter.count = 0;
+//					Vfilter.count = 0;
+				}
+			}
+		}
+	}else{
+		Test_Dispvalue.openflag = 0;
+//		if(Test_Dispvalue.Vdataraw.index != Vfilter.index)//序号与上次不一样则进入队列，否则跳过
+//		{
+//			Vfilter.index = Test_Dispvalue.Vdataraw.index;//记录本次序号
+//			
+//			if(Vfilter.count == 0)
+//			{
+//				Vfilter.count ++;
+//				Vfilter.buffer.data[0] = Test_Dispvalue.Vdataraw.num;//第一个新数据进入队首
+//				HeadSort(Vfilter.buffer.data,10);//新数据单独排序
+//				
+
+//			}else if(Vfilter.count == 1){
+//				Vfilter.count ++; 
+//				Vfilter.buffer.data[10-1] = Test_Dispvalue.Vdataraw.num;//第二个新数据进入队尾
+//				TailSort(Vfilter.buffer.data,10);//新数据单独排序
+//			}
+//			
+//			if(Vfilter.count ==2)
+//			{
+//				
+//				Vfilter.count = 0;
+//				Vfilter.sum = 0;
+//				
+//				for(i=5;i<15;i++)
+//				{
+//					Vfilter.sum += Vfilter.buffer.data[i];//根据队列长度取中间一半数据求和
+//				}
+//				Vfilter.result = Vfilter.sum/10;//求和后平均计算出滤波后数据
+//				if(Test_Dispvalue.Vdataraw.coefficient ==5)
+//				{
+//					Test_Dispvalue.Test_V = (u32)(((float)Vfilter.result)*Save_Res.VDebug_Valuek+Save_Res.VDebug_Valueb);
+//				}else if(Test_Dispvalue.Vdataraw.coefficient ==4){
+//					Test_Dispvalue.Test_V = (u32)(((float)Vfilter.result*10)*Save_Res.VDebug_Valuek+Save_Res.VDebug_Valueb)/10;
+//				}else if(Test_Dispvalue.Vdataraw.coefficient ==3){
+//					Test_Dispvalue.Test_V = (u32)(((float)Vfilter.result*100)*Save_Res.VDebug_Valuek+Save_Res.VDebug_Valueb)/100;
+//				}
+////				Test_Dispvalue.Test_V = (u32)((Test_Dispvalue.Vdata*Save_Res.VDebug_Valuek + Save_Res.VDebug_Valueb)*
+////				pow(10,Test_Dispvalue.Vdataraw.coefficient));
+//			}
+//		}
+		if(Test_Dispvalue.Rdataraw.index != Rfilter.index/* && Rfilter.oldres != Test_Dispvalue.Rdataraw.num*/)//序号与上次不一样则进入队列，否则跳过
+		{
+			Rfilter.index = Test_Dispvalue.Rdataraw.index;//记录本次序号
+
+//			UARTPutChar(LPC_UART3,Test_Dispvalue.Rdataraw.num%100);//打印到串口
+			if(Rfilter.count == 0)
+			{
+				Rfilter.count ++;
+				Rfilter.buffer.data[0] = Test_Dispvalue.Rdataraw.num;//第一个新数据进入队首
+				HeadSort(Rfilter.buffer.data,filtersize[Save_Res.Set_Data.speed]);//新数据单独排序
+				
+
+			}else if(Rfilter.count == 1){
+				Rfilter.count ++; 
+				Rfilter.buffer.data[filtersize[Save_Res.Set_Data.speed]-1] = Test_Dispvalue.Rdataraw.num;//第二个新数据进入队尾
+				TailSort(Rfilter.buffer.data,filtersize[Save_Res.Set_Data.speed]);//新数据单独排序
+			}
+			if(Rfilter.count ==2)
+			{
+				
+				Rfilter.count = 0;
+				Rfilter.sum = 0;
+//				BubbleSort(Rfilter.buffer,RMAF_LENGTH_SLOW);
+				for(i=filtersize[Save_Res.Set_Data.speed]/4;i<(filtersize[Save_Res.Set_Data.speed]-filtersize[Save_Res.Set_Data.speed]/4);i++)
+				{
+					Rfilter.sum += Rfilter.buffer.data[i];//根据队列长度取中间一半数据求和
+				}
+				Rfilter.result = Rfilter.sum/(filtersize[Save_Res.Set_Data.speed]/2);//求和后平均计算出滤波后数据
+				if(Save_Res.Set_Data.speed != 0)//非快速模式，显示数据进行二次平均滤波
+				{
+					if(Rfilter.dispcount < dispfilter[Save_Res.Set_Data.speed])
+					{
+						Rfilter.dispbufsum += Rfilter.result;
+						Rfilter.dispcount ++;
+					}else{
+						trip_flag = 0;//手动触发标志复位
+						Rfilter.dispresult = Rfilter.dispbufsum/dispfilter[Save_Res.Set_Data.speed];
+						Test_Dispvalue.Test_R = (u16)(((float)Rfilter.dispresult)*Save_Res.Debug_Value[Test_Dispvalue.Rangedisp - 1]);						
+						Rfilter.dispbufsum =0 ;
+						Rfilter.dispcount= 0 ;
+						Rfilter.dispbufsum += Rfilter.result;
+						Rfilter.dispcount++;
+						
+					}						
+				}else{
+					trip_flag = 0;//手动触发标志复位
+					Rfilter.dispresult = Rfilter.result;
+					Test_Dispvalue.Test_R = (u16)(((float)Rfilter.dispresult)*Save_Res.Debug_Value[Test_Dispvalue.Rangedisp - 1]);
+				}
+				if(u3sendflag == 1)
+				{
+					if(uartresdelay == 0)
+					{
+						RecHandle();
+						u3sendflag = 0;
+						g_tModS.RxCount = 0;
+					}else{
+						uartresdelay --;
+					}
+				}				
+//				UARTPutChar(LPC_UART3,Rfilter.result%100);//打印到串口
+			}
+		}
+	}
+}
 //==========================================================
 //函数名称：Uart_Process
 //函数功能：串口处理
@@ -3928,50 +4142,124 @@ u8 Uart_Process(void)
 						
 					break;
 					case FRAME_CLEAR_OK:
-						WriteString_16(380, 92+55+55+8, "CLEAR!     ",  0);
+						WriteString_16(380, 92+55+55+8,(uint8_t *)"CLEAR!     ",  0);
 					break;
 					case FRAME_CLEAR_FAIL:
-						WriteString_16(380, 92+55+55+8, "CLEAR FAIL!",  0);
+						WriteString_16(380, 92+55+55+8,(uint8_t *)"CLEAR FAIL!",  0);
 					break;
-					default:
-						for(i=0;i<6;i++)
+					case FRAME_READ_RESULT:
+					{
+						Test_Dispvalue.Rdataraw.index = ComBuf.rec.buf[2];
+						Test_Dispvalue.Rdataraw.range = (ComBuf.rec.buf[3]&0xE0)>>5;
+						Test_Dispvalue.Rdataraw.coefficient = (ComBuf.rec.buf[3]&0x1C)>>2;
+						Test_Dispvalue.Rdataraw.unit = (ComBuf.rec.buf[3]&0x03);
+						Test_Dispvalue.Rdataraw.num = ((u32)(ComBuf.rec.buf[4])<<8)+(ComBuf.rec.buf[5]);
+						
+						Test_Dispvalue.Vdataraw.index = ComBuf.rec.buf[6];
+						Test_Dispvalue.Vdataraw.coefficient = (ComBuf.rec.buf[7]&0xE0)>>5;
+						Test_Dispvalue.Vdataraw.sign = (ComBuf.rec.buf[7]&0x10)>>4;
+						Test_Dispvalue.Vdataraw.num = (((u32)(ComBuf.rec.buf[7])<<16)+((u32)(ComBuf.rec.buf[8])<<8)+(ComBuf.rec.buf[9]))&0XFFFFF;
+						RDATAFILTER();
+						VDATAFILTER();
+						Test_Dispvalue.Rangedisp = Test_Dispvalue.Rdataraw.range;
+						if(Save_Res.version == 0)
 						{
-//							Test_Dispvalue.Main_valuebuff[i]=ComBuf.rec.buf[1+i];
-		//					Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[8+i];
-							Test_Dispvalue.Rvaluebuff[i] = ComBuf.rec.buf[1+i];
+							if(Test_Dispvalue.Rangedisp  > 4)
+								Test_Dispvalue.Rangedisp = 4;
 						}
+						Test_Dispvalue.Unit[0] = Test_Dispvalue.Rdataraw.unit;
 						
 						
-						for(i=0;i<8;i++)
+//						Data_Format(Test_Dispvalue.Main_valuebuff,Test_Dispvalue.Rdataraw.num,Test_Dispvalue.Rdataraw.coefficient,5,0);
+						if(Test_Dispvalue.openflag == 0)
 						{
-//							Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[7+i];
-							Test_Dispvalue.Vvaluebuff[i] = ComBuf.rec.buf[7+i];							
-						}
-						Test_Dispvalue.Test_V = VBCDtoInt((int8_t *)Test_Dispvalue.Vvaluebuff);
-						if(ComBuf.rec.buf[7]=='-')
-							Test_Unit.V_Neg=0;
-						else
-							Test_Unit.V_Neg=1;
-						//Test_Dispvalue.Test_R=
-						if(ComBuf.rec.buf[16])
-							Test_Dispvalue.Unit[0]=1;
-						else
-							Test_Dispvalue.Unit[0]=0;
-						
-						Test_Dispvalue.Rangedisp=ComBuf.rec.buf[15];
-						
-						//滤波
-						if(Test_Dispvalue.rfcount <10)
-						{
-							Test_Dispvalue.rfcount ++;
-							Test_Dispvalue.Test_R += BCDtoInt((int8_t *)Test_Dispvalue.Rvaluebuff);
+							Data_Format(Test_Dispvalue.Main_valuebuff,Rfilter.dispresult,Test_Dispvalue.Rdataraw.coefficient,5,0);
+//							Data_Format(Test_Dispvalue.Main_valuebuff,Test_Dispvalue.Test_R,Test_Dispvalue.Rdataraw.coefficient,5,0);
+							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Test_R,Test_Dispvalue.Rdataraw.coefficient,5,0);
+							if(Save_Res.version == 0 && Test_Dispvalue.Rdataraw.range == 1)
+								Test_Dispvalue.Main_valuebuff[5] = ' ';
 						}else{
-							Test_Dispvalue.rfcount = 0;
-							Test_Dispvalue.Test_R /= 10;
-							IntToBCD(Test_Dispvalue.Test_R,Test_Dispvalue.Dot[0],6,Test_Dispvalue.Main_valuebuff);
-							Test_Dispvalue.Test_R = 0;	
-							
+							strcpy(Test_Dispvalue.Main_valuebuff,(char*)"------");
+							strcpy(Test_Dispvalue.Rvaluebuff,(char*)"------");
 						}
+						Test_Unit.V_Neg = !Test_Dispvalue.Vdataraw.sign;
+						if(Test_Dispvalue.openflag == 0)
+						{
+							if(Test_Dispvalue.Vdataraw.sign)
+							{
+								Test_Dispvalue.Secondvaluebuff[0] = '-';
+								Test_Dispvalue.Vvaluebuff[0] = '-';
+							}else{
+								Test_Dispvalue.Secondvaluebuff[0] = ' ';
+								Test_Dispvalue.Vvaluebuff[0] = ' ';
+							}
+							Data_Format(&Test_Dispvalue.Secondvaluebuff[1],Vfilter.result/pow(10,5-Test_Dispvalue.Vdataraw.coefficient),Test_Dispvalue.Vdataraw.coefficient,6,0);	
+//							if((Test_Dispvalue.Vdataraw.coefficient == 4 && Test_Dispvalue.Test_V < 100000) || 
+//								(Test_Dispvalue.Vdataraw.coefficient == 3 && Test_Dispvalue.Test_V < 100000))
+//								Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V*10,Test_Dispvalue.Vdataraw.coefficient+1,6,0);	
+//							else
+								Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V,Test_Dispvalue.TestVDot,6,0);
+								if(Save_Res.version == 0)
+								{
+									Test_Dispvalue.Vvaluebuff[7] = ' ';
+								}
+						}else{
+							strcpy(Test_Dispvalue.Secondvaluebuff,(char*)" 0.00000");
+							strcpy(Test_Dispvalue.Vvaluebuff,(char*)" 0.00000");	
+						}
+						string_to_float((char *)Test_Dispvalue.Rvaluebuff,&Test_Dispvalue.Rdata);
+						string_to_float((char *)Test_Dispvalue.Vvaluebuff,&Test_Dispvalue.Vdata);
+						if(Test_Dispvalue.Vdata > maxv[Save_Res.version])
+						{
+							Test_Dispvalue.voverflag = 1;
+						}else{
+							Test_Dispvalue.voverflag = 0;
+						}
+						VrangeSW();
+//						Test_Dispvalue.Test_V = (u32)((Test_Dispvalue.Vdata*Save_Res.VDebug_Valuek + Save_Res.VDebug_Valueb)*pow(10,Test_Dispvalue.Vdataraw.coefficient));
+						if(GetSystemStatus() == SYS_STATUS_USERDEBUG)
+							Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V,Test_Dispvalue.Vdataraw.coefficient,6,0);						
+//						RDATAFILTER();
+					}break;
+					default:
+//						for(i=0;i<6;i++)
+//						{
+////							Test_Dispvalue.Main_valuebuff[i]=ComBuf.rec.buf[1+i];
+//		//					Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[8+i];
+//							Test_Dispvalue.Rvaluebuff[i] = ComBuf.rec.buf[1+i];
+//						}
+//						
+//						
+//						for(i=0;i<8;i++)
+//						{
+////							Test_Dispvalue.Secondvaluebuff[i]=ComBuf.rec.buf[7+i];
+//							Test_Dispvalue.Vvaluebuff[i] = ComBuf.rec.buf[7+i];							
+//						}
+//						Test_Dispvalue.Test_V = VBCDtoInt((int8_t *)Test_Dispvalue.Vvaluebuff);
+//						if(ComBuf.rec.buf[7]=='-')
+//							Test_Unit.V_Neg=0;
+//						else
+//							Test_Unit.V_Neg=1;
+//						//Test_Dispvalue.Test_R=
+//						if(ComBuf.rec.buf[16])
+//							Test_Dispvalue.Unit[0]=1;
+//						else
+//							Test_Dispvalue.Unit[0]=0;
+//						
+//						Test_Dispvalue.Rangedisp=ComBuf.rec.buf[15];
+//						
+//						//滤波
+//						if(Test_Dispvalue.rfcount <10)
+//						{
+//							Test_Dispvalue.rfcount ++;
+//							Test_Dispvalue.Test_R += BCDtoInt((int8_t *)Test_Dispvalue.Rvaluebuff);
+//						}else{
+//							Test_Dispvalue.rfcount = 0;
+//							Test_Dispvalue.Test_R /= 10;
+//							IntToBCD(Test_Dispvalue.Test_R,Test_Dispvalue.Dot[0],6,Test_Dispvalue.Main_valuebuff);
+//							Test_Dispvalue.Test_R = 0;	
+//							
+//						}
 					break;
 				}
 					
@@ -4808,10 +5096,27 @@ Sort_TypeDef Disp_NumKeyboard_Set(Disp_Coordinates_Typedef *Coordinates )
 //电阻设置
 Sort_TypeDef Disp_Set_Num(Disp_Coordinates_Typedef *Coordinates)
 {
+	double val;
 	Sort_TypeDef Sort_num,Sort_num1;
 	Disp_button_Num_time();
 	Sort_num=Disp_NumKeyboard_Set(Coordinates);
 	Sort_num.Dot = 5- Sort_num.Dot;
+	val = (((double)Sort_num.Num)/((double)pow(10,Sort_num.Dot)))
+		*1000*((double)pow(1000,Sort_num.Unit));
+	if(Save_Res.version == 0)
+	{
+		if(val > 3000000){
+			Sort_num.Num = 30000;
+			Sort_num.Dot = 4;
+			Sort_num.Unit = 1;
+		}
+	}else{
+		if(val > 3000000000){
+			Sort_num.Num = 30000;
+			Sort_num.Dot = 1;
+			Sort_num.Unit = 1;
+		}
+	}
 //	Sort_num1=Time_Set_Cov(&Sort_num);
 //	if(Sort_num1.Updata_flag==0)
 //	{
@@ -4824,6 +5129,9 @@ Sort_TypeDef Disp_Set_Num(Disp_Coordinates_Typedef *Coordinates)
 	return Sort_num;
 
 }
+
+
+
 
 Sort_TypeDef Disp_NumKeyboard_SetV(Disp_Coordinates_Typedef *Coordinates )
 {
@@ -4841,7 +5149,7 @@ Sort_TypeDef Disp_NumKeyboard_SetV(Disp_Coordinates_Typedef *Coordinates )
 	Sort_set.Num=0;
 	Sort_set.Unit=0;
 	Sort_set.Num=0;
-	for(i=0;i<6;i++)
+	for(i=0;i<7;i++)
 	Disp_buff[i]=' ';
 	Disp_buff[7]=0;
 	
@@ -5156,6 +5464,33 @@ Sort_TypeDef Disp_NumKeyboard_SetV(Disp_Coordinates_Typedef *Coordinates )
 }
 
 //电压设置
+Sort_TypeDef Disp_Set_NumV(Disp_Coordinates_Typedef *Coordinates)
+{
+	double val;
+	Sort_TypeDef Sort_num,Sort_num1;
+	Disp_button_Num_Freq();
+	Sort_num=Disp_NumKeyboard_SetV(Coordinates);
+	Sort_num.Dot = 6- Sort_num.Dot;
+	val = ((double)Sort_num.Num)/((double)pow(10,Sort_num.Dot));
+	if(val > maxv[Save_Res.version]){
+		Sort_num.Num = maxvdisp[Save_Res.version];
+		Sort_num.Dot = maxvdot[Save_Res.version];
+		Sort_num.Unit = 0;
+	}
+//	Sort_num1=Time_Set_Cov(&Sort_num);
+//	if(Sort_num1.Updata_flag==0)
+//	{
+//		Sort_num1.Dot=0;
+//		Sort_num1.Num=0;
+//		Sort_num1.Unit=0;
+//	
+//	}
+		
+	return Sort_num;
+
+}
+
+//电压设置
 Sort_TypeDef Disp_Set_CompNum(Disp_Coordinates_Typedef *Coordinates)
 {
 	Sort_TypeDef Sort_num,Sort_num1;
@@ -5364,57 +5699,81 @@ int8_t R_Test_Comp(double value)
 }
 void Comp_prompt(int8_t value)
 {	
-	if(value==ALL_PASS)
+	if(Test_Dispvalue.openflag == 0)
 	{
-		Pass_Led();	
-	}
-	else
-	{
-		if(Save_Res.Set_Data.openbeep==1 || nodisp_v_flag == 0)
+		if(value==ALL_PASS)
 		{
-			Fail_led();	
+			Pass_Led();	
+		}else{
+			Fail_led();
+		}
+		switch(Save_Res.Set_Data.beep)
+		{
+			case 0://蜂鸣器关闭
+				Beep_Off();
+				break;
+			case 1://合格讯响
+				if(value==ALL_PASS)
+					Beep_on();
+				else
+					Beep_Off();
+				break;
+			case 2://不合格讯响
+				if(Save_Res.Set_Data.openbeep==1)
+				{
+					if(value==ALL_PASS)
+						Beep_Off();
+					else
+						Beep_on();
+				}else{
+					if(nodisp_v_flag == 1)
+					{
+						Beep_Off();
+					}else{
+						if(value==ALL_PASS)
+							Beep_Off();
+						else
+							Beep_on();
+					}
+				}
+					
+				
+				break;
+			default:
+				Beep_Off();
+				break;
+		
+		}
+	}else if(Test_Dispvalue.openflag == 1){
+		if(Save_Res.Set_Data.openbeep==1/* || nodisp_v_flag == 0*/)
+		{
+			Fail_led();
+			if(Save_Res.Set_Data.beep==2)//不合格讯响
+			{
+				Beep_on();
+			}else{
+				Beep_Off();
+			}				
 		}else{
 			No_Comp();
 		}
 	}
 	
-	switch(Save_Res.Set_Data.beep)
-	{
-		case 0://蜂鸣器关闭
-			Beep_Off();
-			break;
-		case 1://合格讯响
-			if(value==ALL_PASS)
-				Beep_on();
-			else
-				Beep_Off();
-			break;
-		case 2://不合格讯响
-			if(Save_Res.Set_Data.openbeep==1)
-			{
-				if(value==ALL_PASS)
-					Beep_Off();
-				else
-					Beep_on();
-			}else{
-				if(nodisp_v_flag == 1)
-				{
-					Beep_Off();
-				}else{
-					if(value==ALL_PASS)
-						Beep_Off();
-					else
-						Beep_on();
-				}
-			}
-				
-			
-			break;
-		default:
-			Beep_Off();
-			break;
+//	if(value==ALL_PASS && Test_Dispvalue.openflag == 0)
+//	{
+//		Pass_Led();	
+//	}
+//	else if(Test_Dispvalue.openflag == 1)
+//	{
+//		if(Save_Res.Set_Data.openbeep==1/* || nodisp_v_flag == 0*/)
+//		{
+//			Fail_led();	
+//		}else{
+//			No_Comp();
+//		}
+//	}
 	
-	}
+	
 
 
 
