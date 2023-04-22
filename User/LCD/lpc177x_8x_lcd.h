@@ -81,6 +81,7 @@ void lcd_Clear(uint32_t color);
 void lcd_display_coord(uint16_t x,uint16_t y,uint32_t color,uint32_t color1);
 void LCD_ShowFontCN_40_55(uint16_t x,uint16_t y,uint16_t xsize,uint16_t ysize,uint8_t * image); 
 void LCD_DrawRect( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint32_t color );
+uint32_t LCD_ReadPixel(uint16_t Xpos,uint16_t Ypos);
 
 void WriteString(uint16_t x0, uint16_t y0, const uint8_t *pcStr, uint8_t mode);
 

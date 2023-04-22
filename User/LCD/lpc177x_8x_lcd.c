@@ -262,6 +262,13 @@ void LCD_SetPoint(uint16_t Xpos,uint16_t Ypos,uint32_t color)
 }
 
 
+//读取像素点信息
+uint32_t LCD_ReadPixel(uint16_t Xpos,uint16_t Ypos)
+{
+	unsigned long *pDst = (unsigned long *)LCD_VRAM_BASE_ADDR;
+	return *pDst + (C_GLCD_V_SIZE-Ypos-1)*480+(C_GLCD_H_SIZE-Xpos-1);
+}
+
 
 /******************************************************************************
 * Function Name  : LCD_DrawLine
