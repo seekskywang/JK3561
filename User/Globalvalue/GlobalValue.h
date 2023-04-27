@@ -464,6 +464,8 @@ typedef struct
 	vu8 vfcount;
 	double Rdata;
 	double Vdata;
+	double Rraw;
+	double Vraw;
 	vu8 openflag;
 	Rdata Rdataraw;
 	Vdata Vdataraw;

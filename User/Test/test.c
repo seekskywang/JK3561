@@ -19,6 +19,7 @@
 #include "ff.h"
 #include <stdlib.h>
 #include "lpc177x_8x_gpdma.h"
+#include "bsp_bmp.h"
 
 FATFS fs;         /* Work area (file system object) for logical drive */
 FIL fsrc;         /* file objects */   
@@ -58,11 +59,13 @@ u16 dispfilter[3] = {1,2,10};	 //快中慢速显示二次滤波次数
 vu8 trip_flag=0;//手动触发标志
 u8 testtimingflag;
 u32 timing;
+uint32_t colorbuf[480];
 u8 rangenum[5] = {4,7,7,7,7};//不同版本总量程数
 double maxv[5] = {30,100,300,600,1000};//不同版本电压上限
 double maxvdisp[5] = {300000,100000,300000,600000,100000};//不同版本电压上限
 double maxvdot[5] = {4,3,3,3,2};//不同版本电压上限小数点
 double x1,y1,x2,y2;
+u8 bmpname[30];
 
 const u8 DOT_POS[6]=
 {	
@@ -439,6 +442,15 @@ void string_to_float(char *string, double *data)
 	*(data+k) = num*pow(-1,flag);                            //补上最后一个数
 }
 
+void ReadPointTest(void)
+{
+	uint16_t i;
+	for(i=0;i<480;i++)
+	{
+		colorbuf[i] = LCD_ReadPixel(i,1);
+	}
+}
+
 //测试程序
 void Test_Process(void)
 {
@@ -512,6 +524,13 @@ void Test_Process(void)
             timebuff[8]=0;
             
             WriteString_16(LIST1+360, 2, timebuff,  0);
+						sprintf((char *)bmpname,"0:20%0.2d%0.2d%0.2d%0.2d%0.2d%0.2d.bmp", 
+						RTC_TIME_DISP.YEAR,
+						RTC_TIME_DISP.MONTH, 
+						RTC_TIME_DISP.DOY,
+						RTC_TIME_DISP.HOUR, 
+						RTC_TIME_DISP.HOUR,
+						RTC_TIME_DISP.SEC);
         }
         if(Disp_Flag==1)
 		{
@@ -889,6 +908,7 @@ void Test_Process(void)
                     //Savetoeeprom();
 				break;
 				case Key_FAST:
+//					Screen_shot(0,0,480,272,(const char *)bmpname);
 				break;
 				case Key_LEFT:
 					if(Button_Page.index==0)
@@ -3465,7 +3485,7 @@ void DebugHandleR(u8 range)
 {
 	float standard;
 	standard = ((float)Save_Res.DebugStd[range].Num)/((float)pow(10,Save_Res.DebugStd[range].Dot));
-	Save_Res.Debug_Value[range] = standard/Test_Dispvalue.Rdata;
+	Save_Res.Debug_Value[range] = standard/Test_Dispvalue.Rraw;
 }
 
 //电压校正计算
@@ -4209,6 +4229,9 @@ u8 Uart_Process(void)
 						}
 						string_to_float((char *)Test_Dispvalue.Rvaluebuff,&Test_Dispvalue.Rdata);
 						string_to_float((char *)Test_Dispvalue.Vvaluebuff,&Test_Dispvalue.Vdata);
+						
+						string_to_float((char *)Test_Dispvalue.Main_valuebuff,&Test_Dispvalue.Rraw);
+						string_to_float((char *)Test_Dispvalue.Secondvaluebuff,&Test_Dispvalue.Vraw);
 						if(Test_Dispvalue.Vdata > maxv[Save_Res.version])
 						{
 							Test_Dispvalue.voverflag = 1;
@@ -4236,7 +4259,7 @@ u8 Uart_Process(void)
 //							Test_Dispvalue.Vvaluebuff[i] = ComBuf.rec.buf[7+i];							
 //						}
 //						Test_Dispvalue.Test_V = VBCDtoInt((int8_t *)Test_Dispvalue.Vvaluebuff);
-//						if(ComBuf.rec.buf[7]=='-')
+//						if(ComBuf.rec.`buf[7]=='-')
 //							Test_Unit.V_Neg=0;
 //						else
 //							Test_Unit.V_Neg=1;

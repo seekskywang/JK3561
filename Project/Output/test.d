@@ -36,3 +36,4 @@
 .\output\test.o: ..\User\FATFS_V0.08A\src\ffconf.h
 .\output\test.o: E:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\test.o: ..\Libraries\Drivers\include\lpc177x_8x_gpdma.h
+.\output\test.o: ..\User\bmp\bsp_bmp.h
