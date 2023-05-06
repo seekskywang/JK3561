@@ -689,7 +689,7 @@ void Test_Process(void)
 			strcpy((char *)send_usbbuff,(char *)timebuff);
 			strcat((char *)send_usbbuff,(char *)"   ");
 			strcat((char *)send_usbbuff,(char *)UserBuffer);
-			if(Save_Res.Sys_Setvalue.u_flag)
+			if(Save_Res.Sys_Setvalue.u_flag && usb_oenflag == 1)
 			{
 				strcpy(filename,"0:/"); 
 				strcat(filename,(char*)Save_Res.Sys_Setvalue.textname); 
@@ -699,7 +699,7 @@ void Test_Process(void)
 		//		fdw = FILE_Open((uint8_t *)filename, RDWR);
 				if (res == 0) 
 				{
-					usb_oenflag=1;
+//					usb_oenflag=1;
 					f_lseek(&fsrc,fsrc.fsize);
 		//			bytes_written = FILE_Write(fdw, buffer, num);//MAX_BUFFER_SIZE);
 
@@ -712,8 +712,8 @@ void Test_Process(void)
 		//			FILE_Close(fdw);
 								
 				} 
-				else
-					usb_oenflag=0;
+//				else
+//					usb_oenflag=0;
 //					Write_Usbdata ( send_usbbuff,38);//27
 			}
 			else
@@ -841,7 +841,9 @@ void Test_Process(void)
 					{
 						Host_Init();
 						//rc = Host_EnumDev();       /* Enumerate the device connected                                            */
-						do{res=Host_EnumDev();j++;
+						do{
+							res=Host_EnumDev();
+							j++;
 			
 						}
 						while(res!=0&&j<50);
@@ -3974,7 +3976,17 @@ void RDATAFILTER(void)
 			Rfilter.recindex = 0;
 			Rfilter.initdataflag = 0;
 			memset(Rfilter.buffer.data,0,sizeof(Rfilter.buffer.data));
-			
+			if(u3sendflag == 1)
+			{
+				if(uartresdelay == 0)
+				{
+					RecHandle();
+					u3sendflag = 0;
+					g_tModS.RxCount = 0;
+				}else{
+					uartresdelay --;
+				}
+			}
 		}
 	}else{
 		if(Test_Dispvalue.Rdataraw.num == 0xffff/* || Test_Dispvalue.Rdataraw.num == 0*/)//采集到开路或短路数据
@@ -3986,7 +3998,17 @@ void RDATAFILTER(void)
 			Rfilter.recindex = 0;
 			Rfilter.initdataflag = 0;
 			memset(Rfilter.buffer.data,0,sizeof(Rfilter.buffer.data));
-			
+			if(u3sendflag == 1)
+			{
+				if(uartresdelay == 0)
+				{
+					RecHandle();
+					u3sendflag = 0;
+					g_tModS.RxCount = 0;
+				}else{
+					uartresdelay --;
+				}
+			}
 		}
 	}
 	
