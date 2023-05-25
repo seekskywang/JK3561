@@ -66,6 +66,8 @@ double maxvdisp[5] = {300000,100000,300000,600000,100000};//不同版本电压上限
 double maxvdot[5] = {4,3,3,3,2};//不同版本电压上限小数点
 double x1,y1,x2,y2;
 u8 bmpname[30];
+u8 vcalstep[6]={1,2,1,3,1,4};
+u8 clearfalg;
 
 const u8 DOT_POS[6]=
 {	
@@ -1007,7 +1009,8 @@ void Test_Process(void)
 //					}
 				break;
 				case Key_BIAS:
-					Uart_Send_Flag=3;
+//					clearfalg = 1;
+//					Uart_Send_Flag=3;
 //					clear_flag=1;
 //					Bais_LedOn();
 //					Delay(500);
@@ -3026,7 +3029,7 @@ void Use_SysSetProcess(void)
 							
 							break;
 						case 4:
-							Save_Res.Sys_Setvalue.plc=0;
+//							Save_Res.clearsw=0;
 							break;
 						case 5:
 							Save_Res.Sys_Setvalue.lanage=0;
@@ -3149,7 +3152,7 @@ void Use_SysSetProcess(void)
 							Save_Res.Sys_Setvalue.u_flag=1;
 							break;
 						case 4:
-							Save_Res.Sys_Setvalue.plc=1;
+//							Save_Res.clearsw=1;
 							break;
 						case 5:
 							Save_Res.Sys_Setvalue.lanage=1;
@@ -3497,12 +3500,14 @@ void DebugHandleV(u8 step)
 	u16 coff;
 	if(Save_Res.DebugStd[step+6].Dot == 5)
 		coff = 1;
-	else if(Save_Res.DebugStd[step+6].Dot == 4)
+	else if(Save_Res.DebugStd[step+6].Dot == 4)//10V以上
 		coff = 10;
-	else if(Save_Res.DebugStd[step+6].Dot == 3)
+	else if(Save_Res.DebugStd[step+6].Dot == 3)//100V以上
 		coff = 100;
+	else if(Save_Res.DebugStd[step+6].Dot == 2)//1000V以上
+		coff = 1000;
 	standard = ((float)Save_Res.DebugStd[step+6].Num)*coff;
-	if(step == 1)
+	if(step == 1 || step == 3 || step == 5)
 	{
 		x1 = (double)Vfilter.result;
 		y1 = standard;
@@ -3511,11 +3516,16 @@ void DebugHandleV(u8 step)
 		y2 = standard;
 		Save_Res.VDebug_Valuek[0] = (y2 - y1)/(x2 - x1);
 		Save_Res.VDebug_Valueb[0] = (double)y2 - Save_Res.VDebug_Valuek[0]*(double)x2;
-	}else if(step == 3){
+	}else if(step == 4){
 		x2 = (double)Vfilter.result;
 		y2 = standard;
 		Save_Res.VDebug_Valuek[1] = (y2 - y1)/(x2 - x1);
 		Save_Res.VDebug_Valueb[1] = (double)y2 - Save_Res.VDebug_Valuek[1]*(double)x2;
+	}else if(step == 6){
+		x2 = (double)Vfilter.result;
+		y2 = standard;
+		Save_Res.VDebug_Valuek[2] = (y2 - y1)/(x2 - x1);
+		Save_Res.VDebug_Valueb[2] = (double)y2 - Save_Res.VDebug_Valuek[2]*(double)x2;
 	}
 }
 
@@ -3558,7 +3568,7 @@ void Use_DebugProcess(void)
 	Button_Page.index=0;
 	Button_Page.page=0;
 	lcd_Clear(LCD_COLOR_TEST_BACK);
-	Disp_UserCheck_Item();
+	Disp_UserCheck_Item(&Button_Page);
 	Delay_Key();
 	DebugRInit();
  	while(GetSystemStatus()==SYS_STATUS_USERDEBUG)
@@ -3585,7 +3595,10 @@ void Use_DebugProcess(void)
 			switch(key)
 			{
 				case Key_F1:
-                    
+					Button_Page.page = 0;
+					Button_Page.index = 0;
+//					Send_RangeCALR();
+					Disp_UserCheck_Item(&Button_Page);
 //                    if(Button_Page.page==0)
 //                        SetSystemStatus(SYS_STATUS_SETUPTEST);
 //					else
@@ -3593,6 +3606,10 @@ void Use_DebugProcess(void)
 						
 				break;
 				case Key_F2:
+					Button_Page.page = 1;
+					Button_Page.index = 0;
+//					Send_RangeCALV();
+					Disp_UserCheck_Item(&Button_Page);
 //                    if(Button_Page.page==0)
 //                        SetSystemStatus(SYS_STATUS_USERDEBUG);
 //					else
@@ -3615,10 +3632,13 @@ void Use_DebugProcess(void)
 //                        SetSystemStatus(SYS_STATUS_ITEMSET);
 				break;
 				case Key_F5:
-					if(Button_Page.index < 8)
+					if(Button_Page.page == 0)
+					{
+//					if(Button_Page.index < 8)
 						DebugHandleR(Button_Page.index-1);
-					else
-						DebugHandleV(Button_Page.index - 7);
+					}else if(Button_Page.page == 1){
+						DebugHandleV(Button_Page.index);
+					}
 //					Savetoeeprom();
 //					if(Button_Page.page)
 //						Button_Page.page=0;
@@ -3650,20 +3670,35 @@ void Use_DebugProcess(void)
 				
                 case Key_LEFT:
 				case Key_UP:
+					if(Button_Page.page == 0)
+					{
 						if(Button_Page.index>0)
 							Button_Page.index--;
 						else
-							Button_Page.index=DEBUG_RANGE+3;
-							
+							Button_Page.index=DEBUG_RANGE;
+					}else if(Button_Page.page == 1){
+						if(Button_Page.index>0)
+							Button_Page.index--;
+						else
+							Button_Page.index=6;
+					}
 				break;
                         case Key_RIGHT:
 				case Key_DOWN:
 //					Save_Res.Debug_Value[Button_Page.index].standard=
 //					Save_Res.Debug_Value[Button_Page.index].ad_value=
-					if(Button_Page.index<DEBUG_RANGE+3)
-						Button_Page.index++;
-                    else
-                        Button_Page.index=0;
+					if(Button_Page.page == 0)
+					{
+						if(Button_Page.index<DEBUG_RANGE)
+							Button_Page.index++;
+						else
+							Button_Page.index=0;
+					}else if(Button_Page.page == 1){
+						if(Button_Page.index<6)
+							Button_Page.index++;
+						else
+							Button_Page.index=0;
+					}
                     
 					
 				break;
@@ -3689,20 +3724,28 @@ void Use_DebugProcess(void)
 				//break;
 				case Key_NUM0:
 				//break;
-				if(Button_Page.index < 8)
+				if(Button_Page.page == 0)
 				{
-					Coordinates.xpos=LIST1+88;
-					Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index-1);
-					Coordinates.lenth=60;
-					Save_Res.DebugStd[Button_Page.index-1]=Disp_Set_Num(&Coordinates);
-				}else{
-					Coordinates.xpos=LIST1+88;
-					Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index-1);
-					Coordinates.lenth=60;
-					Save_Res.DebugStd[Button_Page.index-1]=Disp_Set_NumV(&Coordinates);					
+//					if(Button_Page.index < 8)
+//					{
+						Coordinates.xpos=LIST1+88;
+						Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index-1);
+						Coordinates.lenth=60;
+						Save_Res.DebugStd[Button_Page.index-1]=Disp_Set_Num(&Coordinates);
+//					}else{
+//						Coordinates.xpos=LIST1+88;
+//						Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index-1);
+//						Coordinates.lenth=60;
+//						Save_Res.DebugStd[Button_Page.index-1]=Disp_Set_NumV(&Coordinates);					
+//					}
+				}else if(Button_Page.page == 1){
+						Coordinates.xpos=LIST1+88;
+						Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index-1);
+						Coordinates.lenth=60;
+						Save_Res.DebugStd[Button_Page.index-1+7]=Disp_Set_NumV(&Coordinates);	
 				}
 				LCD_DrawRect( 0, 227, 479, 271 , LCD_COLOR_TEST_BACK ) ;
-				Disp_UserCheck_Item();
+				Disp_UserCheck_Item(&Button_Page);
 //				Coordinates.xpos=LIST1+160;
 //				Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index);
 //				Coordinates.lenth=70;
@@ -3835,13 +3878,40 @@ void Fac_DebugProcess(void)
 }	
 void VrangeSW(void)
 {
-	if(Test_Dispvalue.vrange == 0)
+	if(Test_Dispvalue.openflag == 0)
 	{
-		if(Test_Dispvalue.Vdata > 70)
-			Test_Dispvalue.vrange = 1;
+		if(Test_Dispvalue.Vdata >= 0)
+		{
+			if(Test_Dispvalue.vrange == 0)
+			{
+				if(Test_Dispvalue.Vdata > 10.5)
+					Test_Dispvalue.vrange = 1;
+			}else if(Test_Dispvalue.vrange == 1){
+				if(Test_Dispvalue.Vdata < 9.5)
+					Test_Dispvalue.vrange = 0;
+				else if(Test_Dispvalue.Vdata > 105)
+					Test_Dispvalue.vrange = 2;
+			}else if(Test_Dispvalue.vrange == 2){
+				if(Test_Dispvalue.Vdata < 95)
+					Test_Dispvalue.vrange = 1;
+			}
+		}else{
+			if(Test_Dispvalue.vrange == 0)
+			{
+				if(Test_Dispvalue.Vdata < -10.5)
+					Test_Dispvalue.vrange = 1;
+			}else if(Test_Dispvalue.vrange == 1){
+				if(Test_Dispvalue.Vdata > -9.5)
+					Test_Dispvalue.vrange = 0;
+				else if(Test_Dispvalue.Vdata < -105)
+					Test_Dispvalue.vrange = 2;
+			}else if(Test_Dispvalue.vrange == 2){
+				if(Test_Dispvalue.Vdata > -95)
+					Test_Dispvalue.vrange = 1;
+			}
+		}
 	}else{
-		if(Test_Dispvalue.Vdata < 65)
-			Test_Dispvalue.vrange = 0;
+		Test_Dispvalue.vrange = 0;
 	}
 }
 void VDATAFILTER(void)
@@ -3935,6 +4005,18 @@ void VDATAFILTER(void)
 				Vfilter.result = Vfilter.sum/10;//求和后平均计算出滤波后数据
 				Test_Dispvalue.Test_V = (u32)(((float)Vfilter.result)*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
 					Save_Res.VDebug_Valueb[Test_Dispvalue.vrange]);
+//				if(Save_Res.clearsw == 1)//清零开关打开执行清零操作
+//				{
+//					if(Test_Dispvalue.Test_V >= Save_Res.vclear)
+//						Test_Dispvalue.Test_V-=Save_Res.vclear;
+//					else
+//						Test_Dispvalue.Test_V = 0;
+//				}
+//				if(clearfalg == 1)//获取清零值
+//				{
+//					clearfalg = 0;
+//					Save_Res.vclear = Test_Dispvalue.Test_V;
+//				}
 				if(Test_Dispvalue.Test_V < 1000000)
 				{
 					Test_Dispvalue.TestVDot = 5;
@@ -3944,6 +4026,9 @@ void VDATAFILTER(void)
 				}else if(Test_Dispvalue.Test_V >= 10000000 && Test_Dispvalue.Test_V < 100000000){
 					Test_Dispvalue.Test_V/=100;
 					Test_Dispvalue.TestVDot = 3;
+				}else if(Test_Dispvalue.Test_V >= 100000000 && Test_Dispvalue.Test_V < 1000000000){
+					Test_Dispvalue.Test_V/=1000;
+					Test_Dispvalue.TestVDot = 2;
 				}
 //				if(Test_Dispvalue.Vdataraw.coefficient ==5)
 //				{
@@ -3969,6 +4054,7 @@ void RDATAFILTER(void)
 	{
 		if(Test_Dispvalue.Rdataraw.num == 0xffff || Test_Dispvalue.Rdataraw.range > 4)//采集到开路或短路数据
 		{
+			trip_flag = 0;//手动触发标志复位
 			Rfilter.initflag = 1;//队列初始化
 			Rfilter.initcount = 0;//进队列数据计数清零
 			Test_Dispvalue.openflag = 1;//开路标志
@@ -3991,6 +4077,7 @@ void RDATAFILTER(void)
 	}else{
 		if(Test_Dispvalue.Rdataraw.num == 0xffff/* || Test_Dispvalue.Rdataraw.num == 0*/)//采集到开路或短路数据
 		{
+			trip_flag = 0;//手动触发标志复位
 			Rfilter.initflag = 1;//队列初始化
 			Rfilter.initcount = 0;//进队列数据计数清零
 			Test_Dispvalue.openflag = 1;//开路标志
@@ -4240,18 +4327,22 @@ u8 Uart_Process(void)
 //								(Test_Dispvalue.Vdataraw.coefficient == 3 && Test_Dispvalue.Test_V < 100000))
 //								Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V*10,Test_Dispvalue.Vdataraw.coefficient+1,6,0);	
 //							else
-								Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V,Test_Dispvalue.TestVDot,6,0);
-								if(Save_Res.version == 0)
-								{
-									Test_Dispvalue.Vvaluebuff[7] = ' ';
-								}
+							Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V,Test_Dispvalue.TestVDot,6,0);
+							if(Save_Res.version == 0)
+							{
+								Test_Dispvalue.Vvaluebuff[7] = ' ';
+							}
 						}else{
 							strcpy(Test_Dispvalue.Secondvaluebuff,(char*)" 0.00000");
 							strcpy(Test_Dispvalue.Vvaluebuff,(char*)" 0.00000");	
 						}
 						string_to_float((char *)Test_Dispvalue.Rvaluebuff,&Test_Dispvalue.Rdata);
 						string_to_float((char *)Test_Dispvalue.Vvaluebuff,&Test_Dispvalue.Vdata);
-						
+						if(Test_Dispvalue.Vdata < 0.05 && Test_Dispvalue.Vdata > -0.05)//电压小于0.05显示0
+						{
+							strcpy(Test_Dispvalue.Secondvaluebuff,(char*)" 0.00000");
+							strcpy(Test_Dispvalue.Vvaluebuff,(char*)" 0.00000");
+						}
 						string_to_float((char *)Test_Dispvalue.Main_valuebuff,&Test_Dispvalue.Rraw);
 						string_to_float((char *)Test_Dispvalue.Secondvaluebuff,&Test_Dispvalue.Vraw);
 						if(Test_Dispvalue.Vdata > maxv[Save_Res.version])

@@ -253,10 +253,12 @@ typedef struct
 	vu8 softswitch;
     vu8 fac_num[10];
 	vu8 open;
-	Sort_TypeDef DebugStd[10];//校准标准值 7电阻+3电压
-	double VDebug_Valuek[2];
-	double VDebug_Valueb[2];
+	Sort_TypeDef DebugStd[13];//校准标准值 7电阻+6电压
+	double VDebug_Valuek[3];
+	double VDebug_Valueb[3];
 	vu8 version;//版本型号
+//	vu32 vclear;//电压清零值
+//	vu8 clearsw;//清零开关
 }Save_Res_Typedef;
 
 extern Save_Res_Typedef Save_Res;

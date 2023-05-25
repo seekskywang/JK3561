@@ -1076,7 +1076,12 @@ static void MODS_03H(void)
 	}
 
 	reg = BEBufToUint16(&g_tModS.RxBuf[2]); 				/* ???? */
-	num = BEBufToUint16(&g_tModS.RxBuf[4])*2;					/* ????? */
+	if(Save_Res.Sys_Setvalue.uart == 0)//标准2字节1个寄存器
+	{
+		num = BEBufToUint16(&g_tModS.RxBuf[4]);					/* ????? */
+	}else if(Save_Res.Sys_Setvalue.uart == 1){//定制4字节1个寄存器
+		num = BEBufToUint16(&g_tModS.RxBuf[4])*2;
+	}
 	if (num > sizeof(reg_value) / 2)
 	{
 		g_tModS.RspCode = RSP_ERR_VALUE;					/* ?????? */

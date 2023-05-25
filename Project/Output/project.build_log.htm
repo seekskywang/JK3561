@@ -3,80 +3,80 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: ¦ÌVision V5.37.0.0
+IDE-Version: ¦ÌVision V5.38.0.0
 Copyright (C) 2022 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: 1 Microsoft, Microsoft, LIC=03C6R-KIDXE-2Z1W4-FI5SL-E8BHU-R7F4D
+License Information: lj Administrator, JK, LIC=WHYH9-4ZW6G-TG17T-R739D-ZWPZ5-PK2TP
  
 Tool Versions:
-Toolchain:       MDK-ARM Plus  Version: 5.37.0.0
-Toolchain Path:  E:\Keil_v5\ARM\ARMCC\Bin
-C Compiler:      Armcc.exe V5.06 update 6 (build 750)
-Assembler:       Armasm.exe V5.06 update 6 (build 750)
-Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
-Library Manager: ArmAr.exe V5.06 update 6 (build 750)
-Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
-CPU DLL:         SARMCM3.DLL V5.37.0.0
+Toolchain:       MDK-ARM Plus  Version: 5.38.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 4 (build 422)
+Assembler:       Armasm.exe V5.06 update 4 (build 422)
+Linker/Locator:  ArmLink.exe V5.06 update 4 (build 422)
+Library Manager: ArmAr.exe V5.06 update 4 (build 422)
+Hex Converter:   FromElf.exe V5.06 update 4 (build 422)
+CPU DLL:         SARMCM3.DLL V5.38.0.0
 Dialog DLL:      DARMP1.DLL V1.28.1.0
 Target DLL:      Segger\JL2CM3.dll V2.99.42.0
 Dialog DLL:      TARMP1.DLL V1.27.1.0
  
 <h2>Project:</h2>
-F:\JK3561\Project\project.uvproj
-Project File Date:  04/26/2023
+H:\JK3561\Project\project.uvproj
+Project File Date:  05/22/2023
 
 <h2>Output:</h2>
-*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
+*** Using Compiler 'V5.06 update 4 (build 422)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Open1788'
 compiling test.c...
-..\User\Test\test.c(258): warning:  #127-D: expected a statement
+..\User\Test\test.c(260): warning:  #127-D: expected a statement
   }
-..\User\Test\test.c(176): warning:  #177-D: variable "addr"  was declared but never referenced
-        uint16_t addr;
-..\User\Test\test.c(177): warning:  #177-D: variable "crc1"  was declared but never referenced
-        static uint16_t crc1;
-..\User\Test\test.c(845): warning:  #188-D: enumerated type mixed with another type
-                                                        res=Host_EnumDev();
-..\User\Test\test.c(468): warning:  #177-D: variable "return_flag"  was declared but never referenced
-        vu8 return_flag=0;
-..\User\Test\test.c(474): warning:  #177-D: variable "lock_flag"  was declared but never referenced
-        vu8 lock_flag=0;
-..\User\Test\test.c(477): warning:  #177-D: variable "Uart"  was declared but never referenced
-        Send_Ord_Typedef Uart;
-..\User\Test\test.c(478): warning:  #177-D: variable "sendtest"  was declared but never referenced
+..\User\Test\test.c(178): warning:  #177-D: variable "addr"  was declared but never referenced
+  	uint16_t addr;
+..\User\Test\test.c(179): warning:  #177-D: variable "crc1"  was declared but never referenced
+  	static uint16_t crc1;
+..\User\Test\test.c(847): warning:  #188-D: enumerated type mixed with another type
+  							res=Host_EnumDev();
+..\User\Test\test.c(470): warning:  #177-D: variable "return_flag"  was declared but never referenced
+  	vu8 return_flag=0;
+..\User\Test\test.c(476): warning:  #177-D: variable "lock_flag"  was declared but never referenced
+  	vu8 lock_flag=0;
+..\User\Test\test.c(479): warning:  #177-D: variable "Uart"  was declared but never referenced
+  	Send_Ord_Typedef Uart;
+..\User\Test\test.c(480): warning:  #177-D: variable "sendtest"  was declared but never referenced
       vu8 sendtest[5] ={1,2,3,4,5};
-..\User\Test\test.c(480): warning:  #177-D: variable "numBlks"  was declared but never referenced
+..\User\Test\test.c(482): warning:  #177-D: variable "numBlks"  was declared but never referenced
       uint32_t  numBlks, blkSize;
-..\User\Test\test.c(480): warning:  #177-D: variable "blkSize"  was declared but never referenced
+..\User\Test\test.c(482): warning:  #177-D: variable "blkSize"  was declared but never referenced
       uint32_t  numBlks, blkSize;
-..\User\Test\test.c(481): warning:  #177-D: variable "inquiryResult"  was declared but never referenced
-        uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
-..\User\Test\test.c(481): warning:  #177-D: variable "rc"  was declared but never referenced
-        uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
-..\User\Test\test.c(1129): warning:  #177-D: variable "Uart"  was declared but never referenced
-        Send_Ord_Typedef Uart;
-..\User\Test\test.c(3552): warning:  #177-D: variable "ddd"  was declared but never referenced
-        float ddd,eee;
-..\User\Test\test.c(3552): warning:  #177-D: variable "eee"  was declared but never referenced
-        float ddd,eee;
-..\User\Test\test.c(4167): warning:  #177-D: variable "i"  was declared but never referenced
-        vu8 i;
-..\User\Test\test.c(4338): warning:  #177-D: variable "i"  was declared but never referenced
-        vu8 i;
-..\User\Test\test.c(5159): warning:  #1134-D: literal treated as "long long"
-                if(val > 3000000000){
-..\User\Test\test.c(5145): warning:  #177-D: variable "Sort_num1"  was declared but never referenced
-        Sort_TypeDef Sort_num,Sort_num1;
-..\User\Test\test.c(5515): warning:  #177-D: variable "Sort_num1"  was declared but never referenced
-        Sort_TypeDef Sort_num,Sort_num1;
-..\User\Test\test.c(6116): warning:  #550-D: variable "bytes_written"  was set but never used
+..\User\Test\test.c(483): warning:  #177-D: variable "inquiryResult"  was declared but never referenced
+  	uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
+..\User\Test\test.c(483): warning:  #177-D: variable "rc"  was declared but never referenced
+  	uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
+..\User\Test\test.c(1132): warning:  #177-D: variable "Uart"  was declared but never referenced
+  	Send_Ord_Typedef Uart;
+..\User\Test\test.c(3562): warning:  #177-D: variable "ddd"  was declared but never referenced
+  	float ddd,eee;
+..\User\Test\test.c(3562): warning:  #177-D: variable "eee"  was declared but never referenced
+  	float ddd,eee;
+..\User\Test\test.c(4254): warning:  #177-D: variable "i"  was declared but never referenced
+  	vu8 i;
+..\User\Test\test.c(4429): warning:  #177-D: variable "i"  was declared but never referenced
+  	vu8 i;
+..\User\Test\test.c(5250): warning:  #1134-D: literal treated as "long long"
+  		if(val > 3000000000){
+..\User\Test\test.c(5236): warning:  #177-D: variable "Sort_num1"  was declared but never referenced
+  	Sort_TypeDef Sort_num,Sort_num1;
+..\User\Test\test.c(5606): warning:  #177-D: variable "Sort_num1"  was declared but never referenced
+  	Sort_TypeDef Sort_num,Sort_num1;
+..\User\Test\test.c(6207): warning:  #550-D: variable "bytes_written"  was set but never used
       uint32_t  bytes_written;
 ..\User\Test\test.c: 21 warnings, 0 errors
 linking...
-Program Size: Code=79840 RO-data=35664 RW-data=572 ZI-data=25412  
+Program Size: Code=80696 RO-data=35856 RW-data=572 ZI-data=25508  
 FromELF: creating hex file...
-After Build - User command #1: E:\Keil_v5\ARM\ARMCC\bin\fromelf.exe --bin  -o ..\shengji\update.bin Output\project.axf
+After Build - User command #1: C:\Keil_v5\ARM\ARMCC\bin\fromelf.exe --bin  -o ..\shengji\update.bin Output\project.axf
 ".\Output\project.axf" - 0 Error(s), 21 Warning(s).
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

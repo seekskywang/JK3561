@@ -25,7 +25,7 @@ void Disp_Range_Item(void);
 void Disp_Range_Count_Item(void);
 void Disp_List_Count_Item(void);
 void Disp_Test_Set_Item(void);
-void Disp_UserCheck_Item(void);
+void Disp_UserCheck_Item(Button_Page_Typedef* Button_Page);
 void Disp_LimitList_Item(void);
 void Disp_ListScan_Item(void);
 void Disp_Sys_Item(void);
@@ -76,6 +76,8 @@ void Disp_Big_MainUnit(vu8 unit,vu8 unit1);
 void Disp_Big_SecondUnit(vu8 unit,vu8 unit1);
 void Send_Freq(Send_Ord_Typedef *ord);
 void Send_Range(void);
+void Send_RangeCALV(void);
+void Send_RangeCALR(void);
 void Send_Clear(Send_Ord_Typedef *ord);
 void Send_Main_Ord(void);
 //测试时档号显示界面的显示
