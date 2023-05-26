@@ -861,37 +861,37 @@ const uint8_t Sys_Sys[][4][20+1]=
 {
 	{
 		{"仪器型号  JK3560"},
-		{"软件版本  Ver:1.1"},
+		{"软件版本  Ver:1.2"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3561"},
-		{"软件版本  Ver:1.1"},
+		{"软件版本  Ver:1.2"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3562"},
-		{"软件版本  Ver:1.1"},
+		{"软件版本  Ver:1.2"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3563"},
-		{"软件版本  Ver:1.1"},
+		{"软件版本  Ver:1.2"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3564"},
-		{"软件版本  Ver:1.1"},
+		{"软件版本  Ver:1.2"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 //	{"账号    "},
 //1.1增加电压分档，0.05V以下显示0
-
+//1.2增加电阻清零开关
 };
 
 const uint8_t Sys_Sys_E[][4][20+1]=
@@ -1005,7 +1005,7 @@ const uint8_t Sys_Setitem[][10+1]=
 	{"通讯模式"},
 	{"波特率  "},
 	{"U盘开关"},
-	{"I/O口   "},
+	{"清零开关"},
 	{"显示语言"},
 	
 	{"日期"},
@@ -3308,9 +3308,9 @@ void Disp_Debug_value(Button_Page_Typedef* Button_Page)
 			}
 		
 			
-			LCD_DrawRect( LIST1+88, FIRSTLINE+SPACE1*(i)-2,LIST1+88+70 , FIRSTLINE+SPACE1*(i+1)-4 , Colour.black ) ;//SPACE1
+			LCD_DrawRect( LIST1+88, FIRSTLINE+SPACE1*(i)-2,LIST1+88+70+8 , FIRSTLINE+SPACE1*(i+1)-4 , Colour.black ) ;//SPACE1
 //			if(i < DEBUG_RANGE)
-				Hex_Format(Save_Res.DebugStd[i].Num , Save_Res.DebugStd[i].Dot , 5 , 0);
+				Hex_Format(Save_Res.DebugStd[i].Num , Save_Res.DebugStd[i].Dot , 6 , 0);
 //			else
 //				Hex_Format(Save_Res.DebugStd[i].Num , Save_Res.DebugStd[i].Dot , 6 , 0);
 	//		if(i<DEBUG_RANGE){
@@ -3444,9 +3444,9 @@ void Disp_Sys_value(Button_Page_Typedef* Button_Page)
 		
 	LCD_DrawRect( LIST1+90, FIRSTLINE+SPACE1*3,SELECT_1END , FIRSTLINE+SPACE1*4-4 , Colour.black ) ;//SPACE1
 	if(Save_Res.Sys_Setvalue.lanage )
-		WriteString_16(LIST1+90, FIRSTLINE+SPACE1*3+2, Test_Compvalue_E[Save_Res.Sys_Setvalue.plc],  0);
+		WriteString_16(LIST1+90, FIRSTLINE+SPACE1*3+2, Test_Compvalue_E[Save_Res.clearsw],  0);
 	else
-		WriteString_16(LIST1+90, FIRSTLINE+SPACE1*3+2, Test_Compvalue[Save_Res.Sys_Setvalue.plc],  0);
+		WriteString_16(LIST1+90, FIRSTLINE+SPACE1*3+2, Test_Compvalue[Save_Res.clearsw],  0);
 //显示语言
 	Black_Select=(Button_Page->index==5)?1:0;
 	if(Black_Select)
@@ -3774,7 +3774,7 @@ void Disp_UserCheck_Item(Button_Page_Typedef* Button_Page)
 	for(i=1;i<(sizeof(User_Check_main)/(sizeof(User_Check_main[0])));i++)
 	{
 		if(Save_Res.Sys_Setvalue.lanage )
-				WriteString_16(LIST1+88*2+(i-1)*160, FIRSTLINE, User_Check_main_E[i],  0);
+				WriteString_16(LIST1+88*2+(i-1)*160+24, FIRSTLINE, User_Check_main_E[i],  0);
 		else
 			WriteString_16(LIST1+88*2+(i-1)*160, FIRSTLINE, User_Check_main[i],  0);
 	}
@@ -4787,8 +4787,8 @@ void Disp_Data_Debug(void)
 {
 	Colour.black=LCD_COLOR_TEST_BACK;
 	WriteString_16(LIST2+88+32+32, FIRSTLINE, Auto_Range[Test_Dispvalue.Rangedisp],  0);
-	WriteString_16(LIST1+160, FIRSTLINE+SPACE1*3,Test_Dispvalue.Main_valuebuff,  0);
-	WriteString_16(LIST1+160, FIRSTLINE+SPACE1*4,Test_Dispvalue.Secondvaluebuff,  0);
+	WriteString_16(LIST1+160+24, FIRSTLINE+SPACE1*3,Test_Dispvalue.Main_valuebuff,  0);
+	WriteString_16(LIST1+160+24, FIRSTLINE+SPACE1*4,Test_Dispvalue.Secondvaluebuff,  0);
 	
 	WriteString_16(LIST1+160*2, FIRSTLINE+SPACE1*3,Test_Dispvalue.Rvaluebuff,  0);
 	WriteString_16(LIST1+160*2, FIRSTLINE+SPACE1*4,Test_Dispvalue.Vvaluebuff,  0);

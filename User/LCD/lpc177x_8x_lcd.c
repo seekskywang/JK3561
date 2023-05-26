@@ -952,7 +952,7 @@ void Hex_Format(vu32 dat , vu8 Dot , vu8 len , vu8 dispzero)
 {
 	vu8 i,j;
 
-	if(len>6)len=10;//最大长度5
+	if(len>7)len=7;//最大长度5
 	if(len==0)len=1;
 	if(Dot>5)Dot=5;//最大小数点4
 	if(Dot>len)Dot=len;

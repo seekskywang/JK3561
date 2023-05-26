@@ -1009,7 +1009,7 @@ void Test_Process(void)
 //					}
 				break;
 				case Key_BIAS:
-//					clearfalg = 1;
+					clearfalg = 1;
 //					Uart_Send_Flag=3;
 //					clear_flag=1;
 //					Bais_LedOn();
@@ -3029,7 +3029,7 @@ void Use_SysSetProcess(void)
 							
 							break;
 						case 4:
-//							Save_Res.clearsw=0;
+							Save_Res.clearsw=0;
 							break;
 						case 5:
 							Save_Res.Sys_Setvalue.lanage=0;
@@ -3152,7 +3152,7 @@ void Use_SysSetProcess(void)
 							Save_Res.Sys_Setvalue.u_flag=1;
 							break;
 						case 4:
-//							Save_Res.clearsw=1;
+							Save_Res.clearsw=1;
 							break;
 						case 5:
 							Save_Res.Sys_Setvalue.lanage=1;
@@ -3531,25 +3531,25 @@ void DebugHandleV(u8 step)
 
 void DebugRInit(void)
 {
-	Save_Res.DebugStd[0].Num=9926;
+	Save_Res.DebugStd[0].Num=9866;
 	Save_Res.DebugStd[0].Dot = 4;
 	
-	Save_Res.DebugStd[1].Num=99987;
+	Save_Res.DebugStd[1].Num=100263;
 	Save_Res.DebugStd[1].Dot = 4;
 	
-	Save_Res.DebugStd[2].Num=10015;
+	Save_Res.DebugStd[2].Num=10001;
 	Save_Res.DebugStd[2].Dot = 2;
 	
 	Save_Res.DebugStd[3].Num=10014;
 	Save_Res.DebugStd[3].Dot = 4;
 	
-	Save_Res.DebugStd[4].Num=99729;
+	Save_Res.DebugStd[4].Num=100020;
 	Save_Res.DebugStd[4].Dot = 4;
 	
-	Save_Res.DebugStd[5].Num=99990;
+	Save_Res.DebugStd[5].Num=100009;
 	Save_Res.DebugStd[5].Dot = 3;
 	
-	Save_Res.DebugStd[6].Num=10001;
+	Save_Res.DebugStd[6].Num=10000;
 	Save_Res.DebugStd[6].Dot = 1;
 }
 
@@ -3730,7 +3730,7 @@ void Use_DebugProcess(void)
 //					{
 						Coordinates.xpos=LIST1+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*(Button_Page.index-1);
-						Coordinates.lenth=60;
+						Coordinates.lenth=60+8;
 						Save_Res.DebugStd[Button_Page.index-1]=Disp_Set_Num(&Coordinates);
 //					}else{
 //						Coordinates.xpos=LIST1+88;
@@ -4012,11 +4012,7 @@ void VDATAFILTER(void)
 //					else
 //						Test_Dispvalue.Test_V = 0;
 //				}
-//				if(clearfalg == 1)//获取清零值
-//				{
-//					clearfalg = 0;
-//					Save_Res.vclear = Test_Dispvalue.Test_V;
-//				}
+				
 				if(Test_Dispvalue.Test_V < 1000000)
 				{
 					Test_Dispvalue.TestVDot = 5;
@@ -4223,6 +4219,18 @@ void RDATAFILTER(void)
 					trip_flag = 0;//手动触发标志复位
 					Rfilter.dispresult = Rfilter.result;
 					Test_Dispvalue.Test_R = (u16)(((float)Rfilter.dispresult)*Save_Res.Debug_Value[Test_Dispvalue.Rangedisp - 1]);
+				}
+				if(clearfalg == 1)//获取清零值
+				{
+					clearfalg = 0;
+					Save_Res.rclear = Test_Dispvalue.Test_R;
+				}
+				if(Save_Res.clearsw == 1)//清零开关打开执行清零操作
+				{
+					if(Test_Dispvalue.Test_R >= Save_Res.rclear)
+						Test_Dispvalue.Test_R-=Save_Res.rclear;
+					else
+						Test_Dispvalue.Test_R = 0;
 				}
 				if(u3sendflag == 1)
 				{

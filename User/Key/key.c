@@ -6,6 +6,8 @@
 extern Filter Rfilter,Vfilter;
 extern u8 testtimingflag;
 extern u32 timing;
+extern vu8 u3sendflag;
+extern struct MODS_T g_tModS;
 volatile unsigned long SysTickCnt;
 void SysTick_Handler (void)
 {
@@ -29,6 +31,12 @@ void SysTick_Handler (void)
 			if(trip_flag == 1)
 			{
 				Send_Request();
+			}
+			if(u3sendflag == 1)
+			{
+					RecHandle();
+					u3sendflag = 0;
+					g_tModS.RxCount = 0;
 			}
 		}
 	}

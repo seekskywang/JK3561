@@ -257,8 +257,8 @@ typedef struct
 	double VDebug_Valuek[3];
 	double VDebug_Valueb[3];
 	vu8 version;//版本型号
-//	vu32 vclear;//电压清零值
-//	vu8 clearsw;//清零开关
+	vu32 rclear;//电阻清零值
+	vu8 clearsw;//清零开关
 }Save_Res_Typedef;
 
 extern Save_Res_Typedef Save_Res;
