@@ -27,70 +27,9 @@ Project File Date:  05/25/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 4 (build 422)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Open1788'
-compiling use_disp.c...
-..\User\UseDisp\use_disp.c(1890): warning:  #175-D: subscript out of range
-  	if(SaveData.Limit_Tab.Comp_Value[9].high.Num!=0)
-..\User\UseDisp\use_disp.c(1892): warning:  #175-D: subscript out of range
-  		Hex_Format(SaveData.Limit_Tab.Comp_Value[9].high.Num, 
-..\User\UseDisp\use_disp.c(1893): warning:  #175-D: subscript out of range
-  			SaveData.Limit_Tab.Comp_Value[9].high.Dot , 6 , 1);//加单位//加单位
-..\User\UseDisp\use_disp.c(1918): warning:  #175-D: subscript out of range
-  	if(SaveData.Limit_Tab.Comp_Value[9].high.Num!=0)
-..\User\UseDisp\use_disp.c(1920): warning:  #175-D: subscript out of range
-  			Hex_Format(SaveData.Limit_Tab.Comp_Value[9].low.Num, 
-..\User\UseDisp\use_disp.c(1921): warning:  #175-D: subscript out of range
-  			SaveData.Limit_Tab.Comp_Value[9].low.Dot , 6 , 1);//加单位
-..\User\UseDisp\use_disp.c(3293): warning:  #177-D: variable "Black_Select"  was declared but never referenced
-  	vu32 Black_Select;
-..\User\UseDisp\use_disp.c(4728): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  			WriteString_Big(100+32,92 ,Test_Dispvalue.Rvaluebuff);
-..\User\UseDisp\use_disp.c(4734): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  			WriteString_Big(100+32,92 ,Test_Dispvalue.Rvaluebuff);
-..\User\UseDisp\use_disp.c(4751): warning:  #223-D: function "Plc_PosV" declared implicitly
-  				Plc_PosV();
-..\User\UseDisp\use_disp.c(4762): warning:  #223-D: function "Plc_NegV" declared implicitly
-  					Plc_NegV();
-..\User\UseDisp\use_disp.c(4766): warning:  #223-D: function "Plc_PosV" declared implicitly
-  			Plc_PosV();
-..\User\UseDisp\use_disp.c(4772): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  			WriteString_Big(100,92+55 ,Test_Dispvalue.Vvaluebuff);
-..\User\UseDisp\use_disp.c(4790): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  	WriteString_16(
-IST1+160+24, 
-IRSTLINE+
-PACE1*3,Test_Dispvalue.Main_valuebuff,  0);
-..\User\UseDisp\use_disp.c(4791): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  	WriteString_16(
-IST1+160+24, 
-IRSTLINE+
-PACE1*4,Test_Dispvalue.Secondvaluebuff,  0);
-..\User\UseDisp\use_disp.c(4793): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  	WriteString_16(
-IST1+160*2, 
-IRSTLINE+
-PACE1*3,Test_Dispvalue.Rvaluebuff,  0);
-..\User\UseDisp\use_disp.c(4794): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  	WriteString_16(
-IST1+160*2, 
-IRSTLINE+
-PACE1*4,Test_Dispvalue.Vvaluebuff,  0);
-..\User\UseDisp\use_disp.c(4942): warning:  #177-D: variable "Send_buff"  was declared but never referenced
-  	vu8 Send_buff[10]={0xAB,0X00,0xbf};
-..\User\UseDisp\use_disp.c(5018): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  	WriteString_16(52,200 ,Test_Dispvalue.Main_valuebuff,1);//
-..\User\UseDisp\use_disp.c(5019): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const uint8_t *"
-  	WriteString_16(312,200 ,Test_Dispvalue.Secondvaluebuff,1);//
-..\User\UseDisp\use_disp.c(5183): warning:  #177-D: variable "i"  was declared but never referenced
-  	vu8 i;
-..\User\UseDisp\use_disp.c(5184): warning:  #177-D: variable "pt"  was declared but never referenced
-  	vu8 *pt;
-..\User\UseDisp\use_disp.c: 22 warnings, 0 errors
-linking...
-Program Size: Code=80804 RO-data=35860 RW-data=572 ZI-data=25516  
-FromELF: creating hex file...
 After Build - User command #1: C:\Keil_v5\ARM\ARMCC\bin\fromelf.exe --bin  -o ..\shengji\update.bin Output\project.axf
-".\Output\project.axf" - 0 Error(s), 22 Warning(s).
-Build Time Elapsed:  00:00:02
+".\Output\project.axf" - 0 Error(s), 0 Warning(s).
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

@@ -273,7 +273,7 @@ void Power_Process(void)
     Beep_on();
     ReadSavedata();
     Set_Compbcd_float();
-	Uart3_init(Save_Res.Sys_Setvalue.buard);
+	Uart3_init(2/*Save_Res.Sys_Setvalue.buard*/);//²¨ÌØÂÊÄ¬ÈÏ9600
 
 	Bais_LedOff();
 	Lock_LedOff();

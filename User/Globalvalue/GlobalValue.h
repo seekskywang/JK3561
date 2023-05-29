@@ -243,6 +243,13 @@ typedef struct
 	
 
 }Sys_Setvalue_Typedef;
+
+typedef struct
+{
+	u8 sign;		//符号
+	u32 value;	//值
+}Roffset_Typedef;
+
 typedef struct
 {
 	Set_Data_Typedef Set_Data;
@@ -259,6 +266,7 @@ typedef struct
 	vu8 version;//版本型号
 	vu32 rclear;//电阻清零值
 	vu8 clearsw;//清零开关
+	Roffset_Typedef Roffset[7];
 }Save_Res_Typedef;
 
 extern Save_Res_Typedef Save_Res;
