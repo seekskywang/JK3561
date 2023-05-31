@@ -18,6 +18,7 @@ vu8 negvalm;
 
 const uint8_t Num_1[][9]=
 {"1","2","3","4","5","6","7","8","9"};
+
 const uint8_t Test_Setitem[][9+1]=
 {
 	{"触发    :"},
@@ -53,6 +54,13 @@ const uint8_t Test_Tirpvalue_E[][6+1]=
 {
 	{"AUTO"},
 	{"MAN"}
+
+};
+
+const uint8_t Roffset_Sign[][6+1]=
+{
+	{"+"},
+	{"-"}
 
 };
 
@@ -861,37 +869,38 @@ const uint8_t Sys_Sys[][4][20+1]=
 {
 	{
 		{"仪器型号  JK3560"},
-		{"软件版本  Ver:1.2"},
+		{"软件版本  Ver:1.3"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3561"},
-		{"软件版本  Ver:1.2"},
+		{"软件版本  Ver:1.3"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3562"},
-		{"软件版本  Ver:1.2"},
+		{"软件版本  Ver:1.3"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3563"},
-		{"软件版本  Ver:1.2"},
+		{"软件版本  Ver:1.3"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3564"},
-		{"软件版本  Ver:1.2"},
+		{"软件版本  Ver:1.3"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 //	{"账号    "},
 //1.1增加电压分档，0.05V以下显示0
 //1.2增加电阻清零开关
+//1.3增加相位角修正
 };
 
 const uint8_t Sys_Sys_E[][4][20+1]=
@@ -1248,6 +1257,16 @@ const uint8_t Sys_Buard_Value[][6+1]=
 	{"115200"},
 
 };
+
+const uint8_t RoffsetRst[][6+1]=
+{
+	{""},
+	{""},
+	{""},
+	{"单复位"},
+	{"全复位"},
+};
+
 const uint8_t Set_Unit[][5+1]=
 {
 	{"p"},
@@ -1412,8 +1431,14 @@ void Disp_button_Num_time(void)
 	
 	Colour.black=LCD_COLOR_TEST_BUTON;
 	Colour.Fword=White;
-	WriteString_16(84, 271-30, " mΩ  ",  0);
-	WriteString_16(84+80, 271-30, " Ω ",  0);
+	if(GetSystemStatus() == SYS_STATUS_SYSSET)
+	{
+		WriteString_16(84, 271-30, " +  ",  0);
+		WriteString_16(84+80, 271-30, " - ",  0);
+	}else{
+		WriteString_16(84, 271-30, " mΩ  ",  0);
+		WriteString_16(84+80, 271-30, " Ω ",  0);
+	}
 
 
 }
@@ -3399,7 +3424,7 @@ void Disp_Sys_value(Button_Page_Typedef* Button_Page)
 	else
 		WriteString_16(LIST1+90, FIRSTLINE+2, Comm_Mode[Save_Res.Sys_Setvalue.uart],  0);//
 	
-//波特率
+//相位角修正
 	Black_Select=(Button_Page->index==2)?1:0;
 	if(Black_Select)
 	{
@@ -3412,7 +3437,36 @@ void Disp_Sys_value(Button_Page_Typedef* Button_Page)
 	}
 		
 	LCD_DrawRect( LIST1+90, FIRSTLINE+SPACE1,SELECT_1END , FIRSTLINE+SPACE1*2-4 , Colour.black ) ;//SPACE1
-	WriteString_16(LIST1+90, FIRSTLINE+SPACE1+2, Sys_Buard_Value[Save_Res.Sys_Setvalue.buard],  0);
+	if(Save_Res.Set_Data.Range == 0)
+	{
+		WriteString_16(LIST1+90, FIRSTLINE+SPACE1, Roffset_Sign[Save_Res.Roffset[Test_Dispvalue.Rangedisp-1].sign],  0);
+		Hex_Format(Save_Res.Roffset[Test_Dispvalue.Rangedisp-1].Num,Save_Res.Roffset[Test_Dispvalue.Rangedisp-1].Dot,5,0);
+		if(Test_Dispvalue.Rangedisp < 4)
+		{
+			WriteString_16(LIST1+90+8*9, FIRSTLINE+SPACE1, "mΩ",  0);
+		}else{
+			WriteString_16(LIST1+90+8*9, FIRSTLINE+SPACE1, " Ω",  0);
+		}
+	}else{
+		WriteString_16(LIST1+90, FIRSTLINE+SPACE1, Roffset_Sign[Save_Res.Roffset[Save_Res.Set_Data.Range-1].sign],  0);
+		Hex_Format(Save_Res.Roffset[Save_Res.Set_Data.Range-1].Num,Save_Res.Roffset[Save_Res.Set_Data.Range-1].Dot,5,0);
+		if(Save_Res.Set_Data.Range < 4)
+		{
+			WriteString_16(LIST1+90+8*9, FIRSTLINE+SPACE1, "mΩ",  0);
+		}else{
+			WriteString_16(LIST1+90+8*9, FIRSTLINE+SPACE1, " Ω",  0);
+		}
+	}
+	WriteString_16(LIST1+90+8, FIRSTLINE+SPACE1, DispBuf,  0);
+	
+	Colour.black=LCD_COLOR_TEST_BACK;
+	if(Save_Res.Set_Data.Range == 0)
+	{
+		WriteString_16(LIST1+90+8*14, FIRSTLINE+SPACE1, Auto_Range[Test_Dispvalue.Rangedisp],  0);
+	}else{
+		WriteString_16(LIST1+90+8*14, FIRSTLINE+SPACE1, Auto_Range[Save_Res.Set_Data.Range],  0);
+	}
+	
 	//U盘开关
     Black_Select=(Button_Page->index==3)?1:0;
 	if(Black_Select)
@@ -3625,7 +3679,7 @@ void Disp_Sys_value(Button_Page_Typedef* Button_Page)
 			for(i=0;i<5;i++)
 			{
 				
-				WriteString_16(BUTTOM_X_VALUE+i*BUTTOM_MID_VALUE, BUTTOM_Y_VALUE, Sys_Buard_Value[i],  0);
+				WriteString_16(BUTTOM_X_VALUE+i*BUTTOM_MID_VALUE, BUTTOM_Y_VALUE, RoffsetRst[i],  0);
 			}
 		break;
 		case 3:

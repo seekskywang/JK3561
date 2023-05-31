@@ -429,7 +429,7 @@
         <Ww>
           <count>51</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Save_Res</ItemText>
+          <ItemText>Save_Res,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>52</count>
@@ -915,7 +915,7 @@
 
   <Group>
     <GroupName>host</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

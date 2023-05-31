@@ -68,6 +68,8 @@ double x1,y1,x2,y2;
 u8 bmpname[30];
 u8 vcalstep[6]={1,2,1,3,1,4};
 u8 clearfalg;
+u8 roffcoief[7]={1,10,100,1,10,100,1000};
+u8 rangedot[7] = {4,3,2,4,3,2,1};
 
 const u8 DOT_POS[6]=
 {	
@@ -565,7 +567,7 @@ void Test_Process(void)
 	//			if(R_Test_Comp(ddd)==ALL_PASS)
 	//				;
 		
-		}
+		}	
 		if(chosen==ALL_PASS&&chosen1==ALL_PASS)
 		{
 			comp=ALL_PASS;
@@ -739,15 +741,15 @@ void Test_Process(void)
         if(Button_Page.index==0)
         {
             if(usb_oenflag==1)
-                {
-                    //Write_Usbdata ( UserBuffer,27);
-                    Disp_Usbflag(1);
-                    
-                }
-                else
-                    Disp_Usbflag(2);
-            Colour.Fword=LCD_COLOR_WHITE;
-            Colour.black=LCD_COLOR_TEST_BACK;
+						{
+								//Write_Usbdata ( UserBuffer,27);
+								Disp_Usbflag(1);
+								
+						}
+						else
+							Disp_Usbflag(2);
+							Colour.Fword=LCD_COLOR_WHITE;
+							Colour.black=LCD_COLOR_TEST_BACK;
         }
 		
 	  key=HW_KeyScsn();
@@ -2967,9 +2969,102 @@ void Soft_Turnon(void)
 	Power_Off_led();
 
 }
+
+
+//各个档位相位角修正上限
+void RoffsetComp(void)
+{
+	switch(Test_Dispvalue.Rangedisp)
+	{
+		case 1:
+		case 4:
+		{
+			if(Save_Res.Roffset[0].Dot < 4)
+			{
+				Save_Res.Roffset[0].Dot = 4;
+				Save_Res.Roffset[0].Num = 30000; 
+			}else{
+				if(Save_Res.Roffset[0].Num > 30000)
+				{
+					Save_Res.Roffset[0].Num = 30000; 
+				}
+			}
+		}break;
+		case 2:
+		case 5:
+		{
+			if(Save_Res.Roffset[0].Dot < 3)
+			{
+				Save_Res.Roffset[0].Dot = 3;
+				Save_Res.Roffset[0].Num = 30000; 
+			}else{
+				if(Save_Res.Roffset[0].Num > 30000)
+				{
+					Save_Res.Roffset[0].Num = 30000; 
+				}
+			}
+		}break;
+		case 3:
+		case 6:
+		{
+			if(Save_Res.Roffset[0].Dot < 2)
+			{
+				Save_Res.Roffset[0].Dot = 2;
+				Save_Res.Roffset[0].Num = 30000; 
+			}else{
+				if(Save_Res.Roffset[0].Num > 30000)
+				{
+					Save_Res.Roffset[0].Num = 30000; 
+				}
+			}
+		}break;
+		case 7:
+		{
+			if(Save_Res.Roffset[0].Dot < 1)
+			{
+				Save_Res.Roffset[0].Dot = 1;
+				Save_Res.Roffset[0].Num = 30000; 
+			}else{
+				if(Save_Res.Roffset[0].Num > 30000)
+				{
+					Save_Res.Roffset[0].Num = 30000; 
+				}
+			}
+		}break;
+		default:break;
+	}
+}
+
+//相位角修正值全部复位
+void RoffsetAllReset(void)
+{
+	u8 i;
+	for(i=0;i<7;i++)
+	{
+		Save_Res.Roffset[i].sign = 0;
+		Save_Res.Roffset[i].Num = 0;
+	}
+}
+
+//相位角修正值单复位
+void RoffsetSingleReset(void)
+{
+	u8 i;
+	if(Save_Res.Set_Data.Range == 0)
+	{
+		Save_Res.Roffset[Test_Dispvalue.Rangedisp-1].Num = 0;
+		Save_Res.Roffset[Test_Dispvalue.Rangedisp-1].sign = 0;
+	}else{
+		Save_Res.Roffset[Save_Res.Set_Data.Range-1].Num = 0;
+		Save_Res.Roffset[Save_Res.Set_Data.Range-1].sign = 0;
+	}
+}
+
 //系统设置
 void Use_SysSetProcess(void)
 {	
+	Disp_Coordinates_Typedef  Coordinates;
+	Sort_TypeDef Inputbuf;
 	vu32 keynum=0;
 	vu8 key,i;
 //    uint8_t Disp_buff[12];
@@ -3022,7 +3117,7 @@ void Use_SysSetProcess(void)
 							Save_Res.Sys_Setvalue.uart=0;
 							break;
 						case 2:
-							Save_Res.Sys_Setvalue.buard=0;
+//							Save_Res.Sys_Setvalue.buard=0;
 							break;
 						case 3:
                             Save_Res.Sys_Setvalue.u_flag=0;
@@ -3146,7 +3241,7 @@ void Use_SysSetProcess(void)
 							Save_Res.Sys_Setvalue.uart=1;
 							break;
 						case 2:
-							Save_Res.Sys_Setvalue.buard=1;
+//							Save_Res.Sys_Setvalue.buard=1;
 							break;
 						case 3:
 							Save_Res.Sys_Setvalue.u_flag=1;
@@ -3263,7 +3358,7 @@ void Use_SysSetProcess(void)
 							SetSystemStatus(SYS_STATUS_SYSSET);
 							break;
 						case 2:
-							Save_Res.Sys_Setvalue.buard=2;
+//							Save_Res.Sys_Setvalue.buard=2;
 							
 						break;
 						default:
@@ -3279,7 +3374,7 @@ void Use_SysSetProcess(void)
 							SetSystemStatus(SYS_STATUS_SYS);
 							break;
 						case 2:
-							Save_Res.Sys_Setvalue.buard=3;
+							RoffsetSingleReset();
 							
 						break;
 						default:
@@ -3293,7 +3388,7 @@ void Use_SysSetProcess(void)
 						case 0:
 							break;//恢复系统复位
 						case 2:
-							Save_Res.Sys_Setvalue.buard=4;
+							RoffsetAllReset();
 							
 						break;
 						default:
@@ -3340,127 +3435,259 @@ void Use_SysSetProcess(void)
 						Button_Page.index--;
 				break;
 				case Key_NUM1:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='1';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+						if(key_count<PASSWORD_LENTH-1)
+						{
+							Save_Res.Sys_Setvalue.textname[key_count]='1';
+							key_count++;
+										
+						}
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
                         //Save_Res.Sys_Setvalue
 				break;
 				case Key_NUM2:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='2';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+						if(key_count<PASSWORD_LENTH-1)
+						{
+							Save_Res.Sys_Setvalue.textname[key_count]='2';
+							key_count++;
+										
+						}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_NUM3:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='3';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+							if(key_count<PASSWORD_LENTH-1)
+							{
+									Save_Res.Sys_Setvalue.textname[key_count]='3';
+									key_count++;
+											
+							}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_NUM4:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='4';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+							if(key_count<PASSWORD_LENTH-1)
+							{
+									Save_Res.Sys_Setvalue.textname[key_count]='4';
+									key_count++;
+											
+							}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_NUM5:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='5';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+							if(key_count<PASSWORD_LENTH-1)
+							{
+									Save_Res.Sys_Setvalue.textname[key_count]='5';
+									key_count++;
+											
+							}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_NUM6:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='6';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+							if(key_count<PASSWORD_LENTH-1)
+							{
+									Save_Res.Sys_Setvalue.textname[key_count]='6';
+									key_count++;
+											
+							}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_NUM7:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='7';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+							if(key_count<PASSWORD_LENTH-1)
+							{
+									Save_Res.Sys_Setvalue.textname[key_count]='7';
+									key_count++;
+											
+							}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_NUM8:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='8';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+							if(key_count<PASSWORD_LENTH-1)
+							{
+									Save_Res.Sys_Setvalue.textname[key_count]='8';
+									key_count++;
+											
+							}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_NUM9:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='9';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+							if(key_count<PASSWORD_LENTH-1)
+							{
+									Save_Res.Sys_Setvalue.textname[key_count]='9';
+									key_count++;
+											
+							}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_NUM0:
-                    if(Button_Page.index==12)
-                    {
-                        if(key_count<PASSWORD_LENTH-1)
-                        {
-                            Save_Res.Sys_Setvalue.textname[key_count]='0';
-                            key_count++;
-                                
-                        }
-                    
-                    }
+					if(Button_Page.index==12)
+					{
+							if(key_count<PASSWORD_LENTH-1)
+							{
+									Save_Res.Sys_Setvalue.textname[key_count]='0';
+									key_count++;
+											
+							}
+					
+					}else if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_DOT:
+					if(Button_Page.index==2){
+						Coordinates.xpos=LIST1+90;
+						Coordinates.ypos=FIRSTLINE+SPACE1*1;
+						Coordinates.lenth=76+24;
+						Inputbuf = Disp_Set_Num(&Coordinates);
+						if(Save_Res.Set_Data.Range == 0)
+						{
+							Save_Res.Roffset[Test_Dispvalue.Rangedisp-1] = Inputbuf;
+						}else{
+							Save_Res.Roffset[Save_Res.Set_Data.Range-1] = Inputbuf;
+						}
+						RoffsetComp();
+					}
 				break;
 				case Key_BACK:
 				break;
@@ -4043,6 +4270,26 @@ void VDATAFILTER(void)
 		}
 	}
 }
+
+void RoffsetHandle(void)
+{
+	static double offsetbuf;
+	static u32 offsetval;
+	offsetbuf = (double)Save_Res.Roffset[Test_Dispvalue.Rangedisp - 1].Num/pow(10,Save_Res.Roffset[Test_Dispvalue.Rangedisp - 1].Dot);
+	offsetval = (u32)(offsetbuf*pow(10,rangedot[Test_Dispvalue.Rangedisp - 1]));
+	if(Save_Res.Roffset[Test_Dispvalue.Rangedisp - 1].sign == 0)//相位角修正值为+	
+	{
+		Test_Dispvalue.Test_R += offsetval;
+	}else if(Save_Res.Roffset[Test_Dispvalue.Rangedisp - 1].sign == 1){//相位角修正值为-
+		if(offsetval <= Test_Dispvalue.Test_R)
+		{
+			Test_Dispvalue.Test_R -= offsetval; 
+		}else{
+			Test_Dispvalue.Test_R = offsetval - Test_Dispvalue.Test_R;
+		}
+	}
+}
+
 void RDATAFILTER(void)
 {
 	u16 i;
@@ -4220,6 +4467,7 @@ void RDATAFILTER(void)
 					Rfilter.dispresult = Rfilter.result;
 					Test_Dispvalue.Test_R = (u16)(((float)Rfilter.dispresult)*Save_Res.Debug_Value[Test_Dispvalue.Rangedisp - 1]);
 				}
+				RoffsetHandle();
 				if(clearfalg == 1)//获取清零值
 				{
 					clearfalg = 0;
@@ -4232,6 +4480,8 @@ void RDATAFILTER(void)
 					else
 						Test_Dispvalue.Test_R = 0;
 				}
+				
+				
 				if(u3sendflag == 1)
 				{
 					if(uartresdelay == 0)
@@ -4942,8 +5192,18 @@ Sort_TypeDef Disp_NumKeyboard_Set(Disp_Coordinates_Typedef *Coordinates )
 			switch(key)
 			{
 				case Key_F1:
-					
-					Sort_set.Unit=0;
+					if(GetSystemStatus() == SYS_STATUS_SYSSET)
+					{
+						Sort_set.sign = 0;
+						if(Test_Dispvalue.Rangedisp < 4)
+						{
+							Sort_set.Unit=0;
+						}else{
+							Sort_set.Unit=1;
+						}
+					}else{
+						Sort_set.Unit=0;
+					}
 					
 					While_flag=0;
 					if(key_count<NUM_LENTH)
@@ -4968,8 +5228,18 @@ Sort_TypeDef Disp_NumKeyboard_Set(Disp_Coordinates_Typedef *Coordinates )
 					
 				break;
 				case Key_F2:
-					Sort_set.Unit=1;
-					
+					if(GetSystemStatus() == SYS_STATUS_SYSSET)
+					{
+						Sort_set.sign = 1;
+						if(Test_Dispvalue.Rangedisp < 4)
+						{
+							Sort_set.Unit=0;
+						}else{
+							Sort_set.Unit=1;
+						}
+					}else{
+						Sort_set.Unit=1;
+					}
 					While_flag=0;
 					if(key_count<NUM_LENTH)
 					{
