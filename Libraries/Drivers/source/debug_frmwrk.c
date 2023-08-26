@@ -271,6 +271,18 @@ void UART3SEND(LPC_UART_TypeDef *UARTx, const void *str)
 	
 }
 
+void UART3SENDBYLEN(LPC_UART_TypeDef *UARTx, const void *str,u16 len)
+{
+	uint8_t *s = (uint8_t *) str;
+    vu8 i;
+    
+	for (i=0;i<len;i++)
+	{
+		UARTPutChar(UARTx, *s++);
+	}
+// 	UARTPutChar(UARTx, 0xbf);
+	
+}
 /*********************************************************************//**
  * @brief		Puts a string to UART port and print new line
  * @param[in]	UARTx	Pointer to UART peripheral
@@ -876,7 +888,8 @@ void MODS_SendWithCRC(uint8_t *_pBuf, uint8_t _ucLen)
 //	RS485_SendBuf(buf, _ucLen);
 
 //	uart1SendChars(buf, _ucLen);
-	UART3SEND( LPC_UART3, buf);
+//	UART3SEND( LPC_UART3, buf);
+	UART3SENDBYLEN( LPC_UART3, buf,_ucLen);
 // #if 1									/* ???????????,???????? */
 // 	g_tPrint.Txlen = _ucLen;
 // 	memcpy(g_tPrint.TxBuf, buf, _ucLen);
@@ -962,7 +975,12 @@ static uint8_t MODS_ReadRegValue(uint16_t reg_addr, uint8_t *reg_value)
 	if(Test_Dispvalue.openflag == 0)
 	{
 		sendrvalue = (u32)(Test_Dispvalue.Rdata*1000);
-		sendvvalue = (u32)(Test_Dispvalue.Vdata*10000);
+		if(Test_Dispvalue.Vdata < 0.05 && Test_Dispvalue.Vdata > -0.05)//电压小于0.05显示0
+		{
+			sendvvalue = 0;
+		}else{
+			sendvvalue = (u32)(Test_Dispvalue.Vdata*10000);
+		}
 	}else{
 		sendrvalue = 0xffffffff;
 		sendvvalue = 0;
@@ -984,7 +1002,7 @@ static uint8_t MODS_ReadRegValue(uint16_t reg_addr, uint8_t *reg_value)
 			{
 				vwatch = 0;
 			}
-            value = (vu16)(sendvvalue >> 16);
+			value = (vu16)(sendvvalue >> 16);
 			break;
 		case SLAVE_REG_P03: 
 // 			value = (u16)(Test_Value_V.res);

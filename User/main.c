@@ -148,6 +148,7 @@ int main(void)
 	HW_Sendvalueto164(0);
     ReadSavedata();
     Set_Compbcd_float();
+		
 	SetSystemStatus(SYS_STATUS_TOOL); //开机上电状态
 
     while(1)

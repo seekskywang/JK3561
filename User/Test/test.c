@@ -275,6 +275,7 @@ void Power_Process(void)
     Beep_on();
     ReadSavedata();
     Set_Compbcd_float();
+	Save_Res.Set_Data.dispvr=1;//¹Ì¶¨Ö»ÏÔÊ¾µçÑ¹
 	Uart3_init(2/*Save_Res.Sys_Setvalue.buard*/);//²¨ÌØÂÊÄ¬ÈÏ9600
 
 	Bais_LedOff();
@@ -674,20 +675,20 @@ void Test_Process(void)
 			//WriteString_Big(100,92+55 ,"-");
 		for(i=0;i<8;i++)
 		{
-			*(UserBuffer+10+i)=Test_Dispvalue.Vvaluebuff[i];
+			*(UserBuffer+10+i-10)=Test_Dispvalue.Vvaluebuff[i];
 			Send_buff2[7+i]=DispBuf[i];
 			
 		}
-			Send_buff2[12]=comp;
-			Send_buff2[13]=0;
-			*(UserBuffer+18)='V';
-			*(UserBuffer+19)='	';
+			Send_buff2[12-10]=comp;
+			Send_buff2[13-10]=0;
+			*(UserBuffer+18-10)='V';
+			*(UserBuffer+19-10)='	';
 			for(i=0;i<8;i++)
-			*(UserBuffer+20+i)=USB_dISPVALUE[comp][i];
+			*(UserBuffer+20-10+i)=USB_dISPVALUE[comp][i];
 		
-			*(UserBuffer+28)='\r';
-			*(UserBuffer+29)='\n';
-        *(UserBuffer+30)='\0';
+			*(UserBuffer+28-10)='\r';
+			*(UserBuffer+29-10)='\n';
+        *(UserBuffer+30-10)='\0';
 //			return_flag=0;
             
 			strcpy((char *)send_usbbuff,(char *)timebuff);
@@ -866,9 +867,9 @@ void Test_Process(void)
 							strcat(newfile,(char*)".TXT");
 							res = f_open( &fsrc , newfile , FA_CREATE_NEW | FA_WRITE);//FA_CREATE_NEW | FA_WRITE);	
 							if(Save_Res.Sys_Setvalue.lanage )
-								res = f_write(&fsrc,  "Times   Resistance		Voltage		Sorting\r\n", sizeof( "Times   Resistance		Voltage		Sorting\r\n"), &br);
+								res = f_write(&fsrc,  "Times		Voltage		Sorting\r\n", sizeof( "Times		Voltage		Sorting\r\n"), &br);
 							else
-								res = f_write(&fsrc,  "Ê±¼ä     µç×è		µçÑ¹		·ÖÑ¡\r\n", sizeof( "Ê±¼ä     µç×è		µçÑ¹		·ÖÑ¡\r\n"), &br);							
+								res = f_write(&fsrc,  "Ê±¼ä		µçÑ¹		·ÖÑ¡\r\n", sizeof( "Ê±¼ä		µçÑ¹		·ÖÑ¡\r\n"), &br);							
 							
 					//        #else
 					//            res = f_open( &fsrc , "0:/ZC/ZC2683A.xls" , FA_CREATE_NEW | FA_WRITE);//FA_CREATE_NEW | FA_WRITE);
@@ -1197,7 +1198,7 @@ void Setup_Process(void)
 							
 							break;
 						case 3:
-							Save_Res.Set_Data.dispvr=0;
+//							Save_Res.Set_Data.dispvr=0;
 							
 								
 							
@@ -1294,7 +1295,7 @@ void Setup_Process(void)
 							
 							break;
 						case 3:
-							Save_Res.Set_Data.dispvr=1;
+//							Save_Res.Set_Data.dispvr=1;
 							
 								
 							
@@ -1392,7 +1393,7 @@ void Setup_Process(void)
 							Send_Speed();
 						break;
 						case 3:
-							Save_Res.Set_Data.dispvr=2;
+//							Save_Res.Set_Data.dispvr=2;
 							
 								
 							
@@ -1703,25 +1704,25 @@ void Setup_Process(void)
 						Save_Res.Set_Data.V_low=Disp_Set_NumV(&Coordinates);
 						
 						break;
-					case 9+1:
+					case 9+2:
 						Coordinates.xpos=LIST2+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*3;
 						Coordinates.lenth=76+8;
 						Save_Res.Set_Data.Nominal_Res=Disp_Set_Num(&Coordinates);
 						break;
-					case 10+1:
+					case 10+2:
 						Coordinates.xpos=LIST2+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*4;
 						Coordinates.lenth=76+8;
 						Save_Res.Set_Data.High_Res=Disp_Set_Num(&Coordinates);
 						break;
-					case 11+1:
+					case 11+2:
 						Coordinates.xpos=LIST2+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*6;
 						Coordinates.lenth=76;
 						Save_Res.Set_Data.Nominal_V=Disp_Set_NumV(&Coordinates);
 						break;
-					case 12+1:
+					case 12+2:
 						Coordinates.xpos=LIST2+88;
 						Coordinates.ypos=FIRSTLINE+SPACE1*7;
 						Coordinates.lenth=76;
@@ -4659,6 +4660,18 @@ u8 Uart_Process(void)
 						}else{
 							Test_Dispvalue.voverflag = 0;
 						}
+						if(u3sendflag == 1)
+						{
+							if(uartresdelay == 0)
+							{
+								RecHandle();
+								u3sendflag = 0;
+								g_tModS.RxCount = 0;
+							}else{
+								uartresdelay --;
+							}
+						}
+						trip_flag = 0;//ÊÖ¶¯´¥·¢±êÖ¾¸´Î»
 //						VrangeSW();
 //						Test_Dispvalue.Test_V = (u32)((Test_Dispvalue.Vdata*Save_Res.VDebug_Valuek + Save_Res.VDebug_Valueb)*pow(10,Test_Dispvalue.Vdataraw.coefficient));
 						if(GetSystemStatus() == SYS_STATUS_USERDEBUG)
@@ -6337,7 +6350,7 @@ void Set_Compbcd_float(void)//°ÑÉèÖÃ±È½ÏÊı¾İ×ª»»ÎªfloatÊı¾İ  °ÑÕâ¸öÊı¾İÓë±ê³ÆÖµ½
 	
 	}//ABS±È½Ï
 	if(Save_Res.Set_Data.dispvr > 2)
-		Save_Res.Set_Data.dispvr=0;
+		Save_Res.Set_Data.dispvr=1;
 
 
 
