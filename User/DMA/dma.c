@@ -58,6 +58,30 @@ void DMA_IRQHandler (void)
 												Uart_Process();
 											}
 										}break;
+										case FRAME_VRANGE_SET:
+										{
+											if(DMADest_Buffer[SETRANGELEN-1] == SUMCK(DMADest_Buffer,SETRANGELEN-1))
+											{
+												for(i = 0;i < SETRANGELEN;i ++)
+												{
+													ComBuf.rec.buf[i] = DMADest_Buffer[i];
+												}
+												ComBuf.rec.end = 1;
+												Uart_Process();
+											}
+										}break;
+										case FRAME_SPEED:
+										{
+											if(DMADest_Buffer[SETRANGELEN-1] == SUMCK(DMADest_Buffer,SETRANGELEN-1))
+											{
+												for(i = 0;i < SETRANGELEN;i ++)
+												{
+													ComBuf.rec.buf[i] = DMADest_Buffer[i];
+												}
+												ComBuf.rec.end = 1;
+												Uart_Process();
+											}
+										}break;
 										case FRAME_CLEAR:
 										{
 											

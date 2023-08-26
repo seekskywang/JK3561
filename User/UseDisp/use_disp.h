@@ -76,6 +76,8 @@ void Disp_Big_MainUnit(vu8 unit,vu8 unit1);
 void Disp_Big_SecondUnit(vu8 unit,vu8 unit1);
 void Send_Freq(Send_Ord_Typedef *ord);
 void Send_Range(void);
+void Send_Speed(void);
+void Send_Vrange(void);
 void Send_RangeCALV(void);
 void Send_RangeCALR(void);
 void Send_Clear(Send_Ord_Typedef *ord);

@@ -211,7 +211,7 @@ typedef struct
 	Sort_TypeDef	V_high;
 	vu8 openbeep;
 	vu8 dispvr;
-
+	vu8 VRange;
 }Set_Data_Typedef;
 typedef struct
 {
@@ -419,10 +419,11 @@ typedef union Rdata {      // 电阻数据
 typedef union Vdata {      // 电压数据
   uint32_t dat;
   struct {
-    uint32_t index :8;   				// 序号
-    uint32_t coefficient :3;    // 系数 3-10^(-3);4-10^(-4);4-10^(-5)
-    uint32_t sign :1;        		// 符号 0:+;1:-
-    uint32_t num :20;      		  // 正整数值
+    uint32_t index :5;   				// 序号
+		uint32_t range :2;   				// 电压量程
+		uint32_t sign :1;        		// 符号 0:+;1:-
+    uint32_t coefficient :3;    // 系数 3-10^(-3);4-10^(-4);4-10^(-5)    
+    uint32_t num :21;      		  // 正整数值
   };
 } Vdata;
 
@@ -482,6 +483,7 @@ typedef struct
 	vu8 vrange;
 	vu8 voverflag;
 	vu8 TestVDot;
+	vu8 CalMode;
 }Test_Dispvalue_TypeDef;
 extern Test_Dispvalue_TypeDef Test_Dispvalue; 
 typedef struct

@@ -68,7 +68,7 @@ double x1,y1,x2,y2;
 u8 bmpname[30];
 u8 vcalstep[6]={1,2,1,3,1,4};
 u8 clearfalg;
-u8 roffcoief[7]={1,10,100,1,10,100,1000};
+u16 roffcoief[7]={1,10,100,1,10,100,1000};
 u8 rangedot[7] = {4,3,2,4,3,2,1};
 
 const u8 DOT_POS[6]=
@@ -1191,7 +1191,7 @@ void Setup_Process(void)
 							break;
 						case 2:
 							Save_Res.Set_Data.speed=0;
-							
+							Send_Speed();
 //							Uart_Send_Flag=2;
 								
 							
@@ -1234,11 +1234,8 @@ void Setup_Process(void)
 							Save_Res.Set_Data.beep=0;
 							break;
 						case 9+1:
-//							if(Save_Res.Set_Data.Nominal_Res.Num<9000)
-//								Save_Res.Set_Data.Nominal_Res.Num+=1000;
-//							else
-//								Save_Res.Set_Data.Nominal_Res.Num-=9000;
-//							Uart_Send_Flag=2;
+							Save_Res.Set_Data.VRange=0;
+							Send_Vrange();
 							break;
 						case 10+1:
 //							if(Save_Res.Set_Data.High_Res.Num<9000)
@@ -1291,7 +1288,7 @@ void Setup_Process(void)
 							break;
 						case 2:
 							Save_Res.Set_Data.speed=1;
-							
+							Send_Speed();
 //							Uart_Send_Flag=2;
 							
 							
@@ -1334,6 +1331,11 @@ void Setup_Process(void)
 							break;
 						case 8+1:
 							Save_Res.Set_Data.beep=1;
+							break;
+						case 9+1:
+							if(Save_Res.Set_Data.VRange > 1)
+								Save_Res.Set_Data.VRange--;
+							Send_Vrange();
 							break;
 //						case 9:
 //							if(Save_Res.Set_Data.Nominal_Res.Num%1000<900)
@@ -1387,7 +1389,7 @@ void Setup_Process(void)
 							break;
 						case 2:
 							Save_Res.Set_Data.speed=2;
-							
+							Send_Speed();
 						break;
 						case 3:
 							Save_Res.Set_Data.dispvr=2;
@@ -1421,6 +1423,11 @@ void Setup_Process(void)
 							break;
 						case 8+1:
 							Save_Res.Set_Data.beep=2;
+							break;
+						case 9+1:
+							if(Save_Res.Set_Data.VRange < 3)
+								Save_Res.Set_Data.VRange++;
+							Send_Vrange();
 							break;
 //						case 9:
 //							if(Save_Res.Set_Data.Nominal_Res.Num%100<90)
@@ -1542,12 +1549,17 @@ void Setup_Process(void)
 				case Key_F5:
 					switch(Button_Page.index)
 					{
+//						case 0:
+//						{
+//							Save_Res.Set_Data.VRange=1;
+//							Send_Vrange();
+//						}break;
 						case 4+1:
 						case 9+1:
 							break;
 						case 7+1:	
-							Save_Res.Set_Data.Range=4;
-							Uart_Send_Flag=2;
+//							Save_Res.Set_Data.Range=4;
+//							Uart_Send_Flag=2;
 						break;
 						
 						default:
@@ -1571,15 +1583,15 @@ void Setup_Process(void)
 					if(Button_Page.index==0)
 						Button_Page.index=12;
 					else
-					if(Button_Page.index>7&&Button_Page.index < 10)
+					if(Button_Page.index>7&&Button_Page.index < 11)
 					{
 						Button_Page.index-=7;
-					}else if(Button_Page.index<3){
+					}else if(Button_Page.index<4){
 						Button_Page.index+=7;
-					}else if(Button_Page.index >=3 && Button_Page.index <= 7){
-						Button_Page.index+=6;
-					}else if(Button_Page.index >=10){
-						Button_Page.index-=6;
+					}else if(Button_Page.index >=4 && Button_Page.index <= 7){
+						Button_Page.index+=7;
+					}else if(Button_Page.index >=11){
+						Button_Page.index-=7;
 					}
 						
 				break;
@@ -1587,18 +1599,18 @@ void Setup_Process(void)
 					if(Button_Page.index==0)
 						Button_Page.index=1;
 					else
-					if(Button_Page.index<=2)
+					if(Button_Page.index<=3)
 						Button_Page.index+=7;
-					else if(Button_Page.index>2 && Button_Page.index<=7)
-						Button_Page.index+=6;
-					else if(Button_Page.index>7 && Button_Page.index<=9)
+					else if(Button_Page.index>3 && Button_Page.index<=7)
+						Button_Page.index+=7;
+					else if(Button_Page.index>7 && Button_Page.index<=10)
 						Button_Page.index-=7;
 					else
-						Button_Page.index-=6;
+						Button_Page.index-=7;
 						
 				break;
 				case Key_DOWN:
-					if(Button_Page.index>12)
+					if(Button_Page.index>13)
 						Button_Page.index=0;
 					else
 						Button_Page.index++;
@@ -1607,7 +1619,7 @@ void Setup_Process(void)
 				break;
 				case Key_UP:
 					if(Button_Page.index<1)
-						Button_Page.index=13;
+						Button_Page.index=14;
 					else
 						Button_Page.index--;
 					
@@ -3736,20 +3748,20 @@ void DebugHandleV(u8 step)
 	standard = ((float)Save_Res.DebugStd[step+6].Num)*coff;
 	if(step == 1 || step == 3 || step == 5)
 	{
-		x1 = (double)Vfilter.result;
+		x1 = (double)Test_Dispvalue.Vdataraw.num;
 		y1 = standard;
 	}else if(step == 2){
-		x2 = (double)Vfilter.result;
+		x2 = (double)Test_Dispvalue.Vdataraw.num;
 		y2 = standard;
 		Save_Res.VDebug_Valuek[0] = (y2 - y1)/(x2 - x1);
 		Save_Res.VDebug_Valueb[0] = (double)y2 - Save_Res.VDebug_Valuek[0]*(double)x2;
 	}else if(step == 4){
-		x2 = (double)Vfilter.result;
+		x2 = (double)Test_Dispvalue.Vdataraw.num;
 		y2 = standard;
 		Save_Res.VDebug_Valuek[1] = (y2 - y1)/(x2 - x1);
 		Save_Res.VDebug_Valueb[1] = (double)y2 - Save_Res.VDebug_Valuek[1]*(double)x2;
 	}else if(step == 6){
-		x2 = (double)Vfilter.result;
+		x2 = (double)Test_Dispvalue.Vdataraw.num;
 		y2 = standard;
 		Save_Res.VDebug_Valuek[2] = (y2 - y1)/(x2 - x1);
 		Save_Res.VDebug_Valueb[2] = (double)y2 - Save_Res.VDebug_Valuek[2]*(double)x2;
@@ -3798,6 +3810,7 @@ void Use_DebugProcess(void)
 	Disp_UserCheck_Item(&Button_Page);
 	Delay_Key();
 	DebugRInit();
+	Test_Dispvalue.CalMode = 0;
  	while(GetSystemStatus()==SYS_STATUS_USERDEBUG)
 	{
 //		Uart_Process();
@@ -3824,6 +3837,7 @@ void Use_DebugProcess(void)
 				case Key_F1:
 					Button_Page.page = 0;
 					Button_Page.index = 0;
+					Test_Dispvalue.CalMode = 0;
 //					Send_RangeCALR();
 					Disp_UserCheck_Item(&Button_Page);
 //                    if(Button_Page.page==0)
@@ -3835,6 +3849,7 @@ void Use_DebugProcess(void)
 				case Key_F2:
 					Button_Page.page = 1;
 					Button_Page.index = 0;
+					Test_Dispvalue.CalMode = 1;
 //					Send_RangeCALV();
 					Disp_UserCheck_Item(&Button_Page);
 //                    if(Button_Page.page==0)
@@ -4528,6 +4543,12 @@ u8 Uart_Process(void)
 					case FRAME_RANGE_SET:
 						
 					break;
+					case FRAME_SPEED:
+						
+					break;
+					case FRAME_VRANGE_SET:
+						
+					break;
 					case FRAME_CLEAR_OK:
 						WriteString_16(380, 92+55+55+8,(uint8_t *)"CLEAR!     ",  0);
 					break;
@@ -4542,12 +4563,14 @@ u8 Uart_Process(void)
 						Test_Dispvalue.Rdataraw.unit = (ComBuf.rec.buf[3]&0x03);
 						Test_Dispvalue.Rdataraw.num = ((u32)(ComBuf.rec.buf[4])<<8)+(ComBuf.rec.buf[5]);
 						
-						Test_Dispvalue.Vdataraw.index = ComBuf.rec.buf[6];
+						Test_Dispvalue.Vdataraw.index = (ComBuf.rec.buf[6]&0xF8)>>3;
+						Test_Dispvalue.Vdataraw.range = (ComBuf.rec.buf[6]&0x06)>>1;
+						Test_Dispvalue.Vdataraw.sign = (ComBuf.rec.buf[6]&0x01);
 						Test_Dispvalue.Vdataraw.coefficient = (ComBuf.rec.buf[7]&0xE0)>>5;
-						Test_Dispvalue.Vdataraw.sign = (ComBuf.rec.buf[7]&0x10)>>4;
-						Test_Dispvalue.Vdataraw.num = (((u32)(ComBuf.rec.buf[7])<<16)+((u32)(ComBuf.rec.buf[8])<<8)+(ComBuf.rec.buf[9]))&0XFFFFF;
-						RDATAFILTER();
-						VDATAFILTER();
+						
+						Test_Dispvalue.Vdataraw.num = (((u32)(ComBuf.rec.buf[7]&0x1fF)<<16)+((u32)(ComBuf.rec.buf[8])<<8)+(ComBuf.rec.buf[9]))&0XFFFFF;
+//						RDATAFILTER();
+//						VDATAFILTER();
 						Test_Dispvalue.Rangedisp = Test_Dispvalue.Rdataraw.range;
 						if(Save_Res.version == 0)
 						{
@@ -4560,9 +4583,10 @@ u8 Uart_Process(void)
 //						Data_Format(Test_Dispvalue.Main_valuebuff,Test_Dispvalue.Rdataraw.num,Test_Dispvalue.Rdataraw.coefficient,5,0);
 						if(Test_Dispvalue.openflag == 0)
 						{
-							Data_Format(Test_Dispvalue.Main_valuebuff,Rfilter.dispresult,Test_Dispvalue.Rdataraw.coefficient,5,0);
-//							Data_Format(Test_Dispvalue.Main_valuebuff,Test_Dispvalue.Test_R,Test_Dispvalue.Rdataraw.coefficient,5,0);
-							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Test_R,Test_Dispvalue.Rdataraw.coefficient,5,0);
+//							Data_Format(Test_Dispvalue.Main_valuebuff,Rfilter.dispresult,Test_Dispvalue.Rdataraw.coefficient,5,0);
+//							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Test_R,Test_Dispvalue.Rdataraw.coefficient,5,0);
+							
+							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Rdataraw.num,Test_Dispvalue.Rdataraw.coefficient,5,0);
 							if(Save_Res.version == 0 && Test_Dispvalue.Rdataraw.range == 1)
 								Test_Dispvalue.Main_valuebuff[5] = ' ';
 						}else{
@@ -4580,12 +4604,38 @@ u8 Uart_Process(void)
 								Test_Dispvalue.Secondvaluebuff[0] = ' ';
 								Test_Dispvalue.Vvaluebuff[0] = ' ';
 							}
-							Data_Format(&Test_Dispvalue.Secondvaluebuff[1],Vfilter.result/pow(10,5-Test_Dispvalue.Vdataraw.coefficient),Test_Dispvalue.Vdataraw.coefficient,6,0);	
-//							if((Test_Dispvalue.Vdataraw.coefficient == 4 && Test_Dispvalue.Test_V < 100000) || 
-//								(Test_Dispvalue.Vdataraw.coefficient == 3 && Test_Dispvalue.Test_V < 100000))
-//								Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V*10,Test_Dispvalue.Vdataraw.coefficient+1,6,0);	
-//							else
+							if(Save_Res.Set_Data.speed != 2)
+							{
+								Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								if(Test_Dispvalue.Test_V < 1000000)
+								{
+									Test_Dispvalue.TestVDot = 5;
+								}else if(Test_Dispvalue.Test_V >= 1000000 && Test_Dispvalue.Test_V < 10000000){
+									Test_Dispvalue.Test_V/=10;
+									Test_Dispvalue.TestVDot = 4;
+								}else if(Test_Dispvalue.Test_V >= 10000000 && Test_Dispvalue.Test_V < 100000000){
+									Test_Dispvalue.Test_V/=100;
+									Test_Dispvalue.TestVDot = 3;
+								}
+							}else{
+								Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									(Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10));
+								if(Test_Dispvalue.Test_V < 100000)
+								{
+									Test_Dispvalue.TestVDot = 4;
+								}else if(Test_Dispvalue.Test_V >= 100000 && Test_Dispvalue.Test_V < 1000000){
+									Test_Dispvalue.Test_V/=10;
+									Test_Dispvalue.TestVDot = 3;
+								}else if(Test_Dispvalue.Test_V >= 1000000 && Test_Dispvalue.Test_V < 10000000){
+									Test_Dispvalue.Test_V/=100;
+									Test_Dispvalue.TestVDot = 2;
+								}
+							}
+//							Data_Format(&Test_Dispvalue.Secondvaluebuff[1],Vfilter.result/pow(10,5-Test_Dispvalue.Vdataraw.coefficient),Test_Dispvalue.Vdataraw.coefficient,6,0);	
 							Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V,Test_Dispvalue.TestVDot,6,0);
+							
+							Data_Format(&Test_Dispvalue.Secondvaluebuff[1],Test_Dispvalue.Vdataraw.num,Test_Dispvalue.Vdataraw.coefficient,6,0);
 							if(Save_Res.version == 0)
 							{
 								Test_Dispvalue.Vvaluebuff[7] = ' ';
@@ -4598,7 +4648,7 @@ u8 Uart_Process(void)
 						string_to_float((char *)Test_Dispvalue.Vvaluebuff,&Test_Dispvalue.Vdata);
 						if(Test_Dispvalue.Vdata < 0.05 && Test_Dispvalue.Vdata > -0.05)//电压小于0.05显示0
 						{
-							strcpy(Test_Dispvalue.Secondvaluebuff,(char*)" 0.00000");
+//							strcpy(Test_Dispvalue.Secondvaluebuff,(char*)" 0.00000");
 							strcpy(Test_Dispvalue.Vvaluebuff,(char*)" 0.00000");
 						}
 						string_to_float((char *)Test_Dispvalue.Main_valuebuff,&Test_Dispvalue.Rraw);
@@ -4609,7 +4659,7 @@ u8 Uart_Process(void)
 						}else{
 							Test_Dispvalue.voverflag = 0;
 						}
-						VrangeSW();
+//						VrangeSW();
 //						Test_Dispvalue.Test_V = (u32)((Test_Dispvalue.Vdata*Save_Res.VDebug_Valuek + Save_Res.VDebug_Valueb)*pow(10,Test_Dispvalue.Vdataraw.coefficient));
 						if(GetSystemStatus() == SYS_STATUS_USERDEBUG)
 							Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V,Test_Dispvalue.Vdataraw.coefficient,6,0);						

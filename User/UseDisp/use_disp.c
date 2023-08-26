@@ -66,10 +66,9 @@ const uint8_t Roffset_Sign[][6+1]=
 
 const uint8_t Test_Speedvalue[][6+1]=
 {
-	{"快速"},
+	{"慢速"},
 	{"中速"},
-	{"慢速"}
-
+	{"快速"}
 };
 const uint8_t Test_Speedvalue_E[][6+1]=
 {
@@ -466,6 +465,14 @@ const uint8_t User_Range[][10+1]=
 		{"3000Ω "},
 };
 
+const uint8_t User_VRange[][10+1]=
+{
+    {"自动  "},
+		{"10  V "},
+    {"100 V "},
+    {"1000V "},
+};
+
 const uint8_t Debug_V[][10+1]=
 {
     {"LOW1"},
@@ -488,6 +495,13 @@ const uint8_t Auto_Range[][10+1]=
 		{"(3000Ω)"},
 };
 
+const uint8_t Auto_VRange[][10+1]=
+{
+		{"        "},
+		{"(10  V)"},
+    {"(100 V)"},
+    {"(1000V)"},
+};
 const uint8_t RangeButton_Tip[][7+1]=  //频率选择时候的下面的提示符号
 {
     {"AUTO"},
@@ -801,9 +815,9 @@ const uint8_t	Set_testitem[][9+1]=
 	{"电压下限:"},
 	{"        "},
 	
-	{"量程    :"},
+	{"电阻量程:"},
 	{"讯响    :"},
-	{"         "},
+	{"电压量程:"},
 	{"电阻标称:"},
 	{"电阻上限:"},
 	
@@ -869,31 +883,31 @@ const uint8_t Sys_Sys[][4][20+1]=
 {
 	{
 		{"仪器型号  JK3560"},
-		{"软件版本  Ver:1.3"},
+		{"软件版本  Ver:1.4"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3561"},
-		{"软件版本  Ver:1.3"},
+		{"软件版本  Ver:1.4"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3562"},
-		{"软件版本  Ver:1.3"},
+		{"软件版本  Ver:1.4"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3563"},
-		{"软件版本  Ver:1.3"},
+		{"软件版本  Ver:1.4"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3564"},
-		{"软件版本  Ver:1.3"},
+		{"软件版本  Ver:1.4"},
 		{"硬件版本  Ver:1.0"},
 		{"仪器编号"},
 	},
@@ -901,6 +915,7 @@ const uint8_t Sys_Sys[][4][20+1]=
 //1.1增加电压分档，0.05V以下显示0
 //1.2增加电阻清零开关
 //1.3增加相位角修正
+//1.4新板子，速度选择和电压分档
 };
 
 const uint8_t Sys_Sys_E[][4][20+1]=
@@ -2769,7 +2784,7 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 	WriteString_16(LIST1+88+8*9, FIRSTLINE+SPACE1*7, " V",  0);
 	
 
-//量程
+//电阻量程
 	Black_Select=(Button_Page->index==8)?1:0;
 	if(Black_Select)
 	{
@@ -2810,9 +2825,30 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 	else
 		
 		WriteString_16(LIST2+88, FIRSTLINE+SPACE1, Setup_Beep[Save_Res.Set_Data.beep],  0);
-		
-	//电阻标称
+
+//电压量程
 	Black_Select=(Button_Page->index==10)?1:0;
+	if(Black_Select)
+	{
+		Colour.black=LCD_COLOR_SELECT;
+	
+	}
+	else
+	{
+		Colour.black=LCD_COLOR_TEST_BACK;
+	}
+//	Save_Res.Set_Data.Range=1;	
+	LCD_DrawRect( LIST2+88, FIRSTLINE+SPACE1*2-2,SELECT_2END , FIRSTLINE+SPACE1*3-4 , Colour.black ) ;//SPACE1
+	
+	if(Save_Res.Sys_Setvalue.lanage && Save_Res.Set_Data.VRange == 0 )
+		
+		WriteString_16(LIST2+88, FIRSTLINE+SPACE1*2, "Auto",  0);
+	else
+		
+		WriteString_16(LIST2+88, FIRSTLINE+SPACE1*2, User_VRange[Save_Res.Set_Data.VRange],  0);
+	
+	//电阻标称
+	Black_Select=(Button_Page->index==11)?1:0;
 	if(Black_Select)
 	{
 		Colour.black=LCD_COLOR_SELECT;
@@ -2837,7 +2873,7 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 
 //电阻上限
 	
-	Black_Select=(Button_Page->index==11)?1:0;
+	Black_Select=(Button_Page->index==12)?1:0;
 	if(Black_Select)
 	{
 		Colour.black=LCD_COLOR_SELECT;
@@ -2860,7 +2896,7 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 	
 //电压标称
 	
-	Black_Select=(Button_Page->index==12)?1:0;
+	Black_Select=(Button_Page->index==13)?1:0;
 	if(Black_Select)
 	{
 		Colour.black=LCD_COLOR_SELECT;
@@ -2881,7 +2917,7 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 	
 //电压上限
 	
-	Black_Select=(Button_Page->index==13)?1:0;
+	Black_Select=(Button_Page->index==14)?1:0;
 	if(Black_Select)
 	{
 		Colour.black=LCD_COLOR_SELECT;
@@ -3030,7 +3066,18 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 			}
 			break;
 		case 9+1:
-
+			Colour.Fword=White;
+			Colour.black=LCD_COLOR_TEST_BUTON;
+			for(i=0;i<3;i++)
+			{	
+				
+				if(Save_Res.Sys_Setvalue.lanage && i == 0 )
+		
+						WriteString_16(BUTTOM_X_VALUE+i*BUTTOM_MID_VALUE, BUTTOM_Y_VALUE, "Auto",  0);
+						
+				else
+						WriteString_16(BUTTOM_X_VALUE+i*BUTTOM_MID_VALUE, BUTTOM_Y_VALUE, RangeButton_Tip[i],  0);
+			}
 			break;
 		case 10+1:
 
@@ -3039,6 +3086,9 @@ void DispSet_value(Button_Page_Typedef* Button_Page)
 
 			break;
 		case 12+1:
+
+			break;
+		case 13+1:
 
 			break;
 		
@@ -4840,14 +4890,17 @@ void Disp_Testvalue(int8_t chosen,int32_t eee )
 void Disp_Data_Debug(void)
 {
 	Colour.black=LCD_COLOR_TEST_BACK;
-	WriteString_16(LIST2+88+32+32, FIRSTLINE, Auto_Range[Test_Dispvalue.Rangedisp],  0);
+	if(Test_Dispvalue.CalMode == 0)
+		WriteString_16(LIST2+88+32+32, FIRSTLINE, Auto_Range[Test_Dispvalue.Rangedisp],  0);
+	else if(Test_Dispvalue.CalMode == 1)
+		WriteString_16(LIST2+88+32+32, FIRSTLINE, Auto_VRange[Test_Dispvalue.Vdataraw.range],  0);
 	WriteString_16(LIST1+160+24, FIRSTLINE+SPACE1*3,Test_Dispvalue.Main_valuebuff,  0);
 	WriteString_16(LIST1+160+24, FIRSTLINE+SPACE1*4,Test_Dispvalue.Secondvaluebuff,  0);
 	
 	WriteString_16(LIST1+160*2, FIRSTLINE+SPACE1*3,Test_Dispvalue.Rvaluebuff,  0);
 	WriteString_16(LIST1+160*2, FIRSTLINE+SPACE1*4,Test_Dispvalue.Vvaluebuff,  0);
 }
-void Disp_Big_MainUnit(vu8 unit,vu8 unit1)
+void Disp_Big_MainUnit(vu8 unit,vu8 unit1)	
 {
 	const vu8 nuitnum[]={12,15,16,17,22,14,13};
 	const vu8 nuit_nuit[]={18,19,20,2,11,23,22};//F,H,Ω，S r °空格
@@ -4948,6 +5001,30 @@ void Send_Range(void)
 	ComBuf.send.buf[0] = 0xAB;
 	ComBuf.send.buf[1] = FRAME_RANGE_SET;
 	ComBuf.send.buf[2] = Save_Res.Set_Data.Range;
+	ComBuf.send.buf[3] = SUMCK(ComBuf.send.buf,3);
+	DMASendRangeInit();
+	ComBuf.respondflag = 1;
+
+}
+
+void Send_Speed(void)
+{
+	
+	ComBuf.send.buf[0] = 0xAB;
+	ComBuf.send.buf[1] = FRAME_SPEED;
+	ComBuf.send.buf[2] = Save_Res.Set_Data.speed;
+	ComBuf.send.buf[3] = SUMCK(ComBuf.send.buf,3);
+	DMASendRangeInit();
+	ComBuf.respondflag = 1;
+
+}
+
+void Send_Vrange(void)
+{
+	
+	ComBuf.send.buf[0] = 0xAB;
+	ComBuf.send.buf[1] = FRAME_VRANGE_SET;
+	ComBuf.send.buf[2] = Save_Res.Set_Data.VRange;
 	ComBuf.send.buf[3] = SUMCK(ComBuf.send.buf,3);
 	DMASendRangeInit();
 	ComBuf.respondflag = 1;
