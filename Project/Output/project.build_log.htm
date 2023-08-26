@@ -27,9 +27,58 @@ Project File Date:  05/25/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 4 (build 422)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Open1788'
+compiling test.c...
+..\User\Test\test.c(262): warning:  #127-D: expected a statement
+  }
+..\User\Test\test.c(180): warning:  #177-D: variable "addr"  was declared but never referenced
+  	uint16_t addr;
+..\User\Test\test.c(181): warning:  #177-D: variable "crc1"  was declared but never referenced
+  	static uint16_t crc1;
+..\User\Test\test.c(850): warning:  #188-D: enumerated type mixed with another type
+  							res=Host_EnumDev();
+..\User\Test\test.c(473): warning:  #177-D: variable "return_flag"  was declared but never referenced
+  	vu8 return_flag=0;
+..\User\Test\test.c(479): warning:  #177-D: variable "lock_flag"  was declared but never referenced
+  	vu8 lock_flag=0;
+..\User\Test\test.c(482): warning:  #177-D: variable "Uart"  was declared but never referenced
+  	Send_Ord_Typedef Uart;
+..\User\Test\test.c(483): warning:  #177-D: variable "sendtest"  was declared but never referenced
+      vu8 sendtest[5] ={1,2,3,4,5};
+..\User\Test\test.c(485): warning:  #177-D: variable "numBlks"  was declared but never referenced
+      uint32_t  numBlks, blkSize;
+..\User\Test\test.c(485): warning:  #177-D: variable "blkSize"  was declared but never referenced
+      uint32_t  numBlks, blkSize;
+..\User\Test\test.c(486): warning:  #177-D: variable "inquiryResult"  was declared but never referenced
+  	uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
+..\User\Test\test.c(486): warning:  #177-D: variable "rc"  was declared but never referenced
+  	uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
+..\User\Test\test.c(1135): warning:  #177-D: variable "Uart"  was declared but never referenced
+  	Send_Ord_Typedef Uart;
+..\User\Test\test.c(3065): warning:  #177-D: variable "i"  was declared but never referenced
+  	u8 i;
+..\User\Test\test.c(3802): warning:  #177-D: variable "ddd"  was declared but never referenced
+  	float ddd,eee;
+..\User\Test\test.c(3802): warning:  #177-D: variable "eee"  was declared but never referenced
+  	float ddd,eee;
+..\User\Test\test.c(4528): warning:  #177-D: variable "i"  was declared but never referenced
+  	vu8 i;
+..\User\Test\test.c(4750): warning:  #177-D: variable "i"  was declared but never referenced
+  	vu8 i;
+..\User\Test\test.c(5591): warning:  #1134-D: literal treated as "long long"
+  		if(val > 3000000000){
+..\User\Test\test.c(5577): warning:  #177-D: variable "Sort_num1"  was declared but never referenced
+  	Sort_TypeDef Sort_num,Sort_num1;
+..\User\Test\test.c(5947): warning:  #177-D: variable "Sort_num1"  was declared but never referenced
+  	Sort_TypeDef Sort_num,Sort_num1;
+..\User\Test\test.c(6548): warning:  #550-D: variable "bytes_written"  was set but never used
+      uint32_t  bytes_written;
+..\User\Test\test.c: 22 warnings, 0 errors
+linking...
+Program Size: Code=83304 RO-data=36040 RW-data=588 ZI-data=25708  
+FromELF: creating hex file...
 After Build - User command #1: C:\Keil_v5\ARM\ARMCC\bin\fromelf.exe --bin  -o ..\shengji\update.bin Output\project.axf
-".\Output\project.axf" - 0 Error(s), 0 Warning(s).
-Build Time Elapsed:  00:00:00
+".\Output\project.axf" - 0 Error(s), 22 Warning(s).
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

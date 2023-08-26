@@ -620,26 +620,26 @@ void Test_Process(void)
 				stabletime = stable_counter * 20;
 			}
 			BCD_Int(ddd);//DOT_POS	
-			for(i=0;i<6;i++)
-			{
-				*(UserBuffer+i)=Test_Dispvalue.Main_valuebuff[i];
-				Send_buff2[i]=DispBuf[i];
-			}
-			if(Test_Dispvalue.Rdataraw.unit)
-			{
-				*(UserBuffer+6)=' ';
-				Send_buff2[6]=' ';
-				
-			}
-			else
-			{
-				*(UserBuffer+6)='m';
-				Send_buff2[6]='m';
-				
-			}
-			*(UserBuffer+7)=0xa6;
-			*(UserBuffer+8)=0xb8;
-			*(UserBuffer+9)='	';
+//			for(i=0;i<6;i++)
+//			{
+//				*(UserBuffer+i)=Test_Dispvalue.Main_valuebuff[i];
+//				Send_buff2[i]=DispBuf[i];
+//			}
+//			if(Test_Dispvalue.Rdataraw.unit)
+//			{
+//				*(UserBuffer+6)=' ';
+//				Send_buff2[6]=' ';
+//				
+//			}
+//			else
+//			{
+//				*(UserBuffer+6)='m';
+//				Send_buff2[6]='m';
+//				
+//			}
+//			*(UserBuffer+7)=0xa6;
+//			*(UserBuffer+8)=0xb8;
+//			*(UserBuffer+9)='	';
 			Disp_R_X();//显示单位
 			if(nodisp_v_flag == 1)
 			{
@@ -679,8 +679,8 @@ void Test_Process(void)
 			Send_buff2[7+i]=DispBuf[i];
 			
 		}
-			Send_buff2[12-10]=comp;
-			Send_buff2[13-10]=0;
+			Send_buff2[12]=comp;
+			Send_buff2[13]=0;
 			*(UserBuffer+18-10)='V';
 			*(UserBuffer+19-10)='	';
 			for(i=0;i<8;i++)
@@ -708,7 +708,7 @@ void Test_Process(void)
 					f_lseek(&fsrc,fsrc.fsize);
 		//			bytes_written = FILE_Write(fdw, buffer, num);//MAX_BUFFER_SIZE);
 
-					res = f_write(&fsrc, &send_usbbuff, 41, &br);     
+					res = f_write(&fsrc, &send_usbbuff, 41-10, &br);     
 					f_close(&fsrc); 
 		//			usb_oenflag=1;
 
@@ -869,7 +869,7 @@ void Test_Process(void)
 							if(Save_Res.Sys_Setvalue.lanage )
 								res = f_write(&fsrc,  "Times		Voltage		Sorting\r\n", sizeof( "Times		Voltage		Sorting\r\n"), &br);
 							else
-								res = f_write(&fsrc,  "时间		电压		分选\r\n", sizeof( "时间		电压		分选\r\n"), &br);							
+								res = f_write(&fsrc,  "时间 	电压	 分选\r\n", sizeof( "时间  电压  分选\r\n"), &br);							
 							
 					//        #else
 					//            res = f_open( &fsrc , "0:/ZC/ZC2683A.xls" , FA_CREATE_NEW | FA_WRITE);//FA_CREATE_NEW | FA_WRITE);
