@@ -275,7 +275,7 @@ void Power_Process(void)
     Beep_on();
     ReadSavedata();
     Set_Compbcd_float();
-	Save_Res.Set_Data.dispvr=1;//¹Ì¶¨Ö»ÏÔÊ¾µçÑ¹
+//	Save_Res.Set_Data.dispvr=1;//¹Ì¶¨Ö»ÏÔÊ¾µçÑ¹
 	Uart3_init(2/*Save_Res.Sys_Setvalue.buard*/);//²¨ÌØÂÊÄ¬ÈÏ9600
 
 	Bais_LedOff();
@@ -566,6 +566,7 @@ void Test_Process(void)
 		{
 			chosen1=R_Test_Comp(Test_Dispvalue.Rdata);
 	//			if(R_Test_Comp(ddd)==ALL_PASS)
+			
 	//				;
 		
 		}	
@@ -1198,7 +1199,7 @@ void Setup_Process(void)
 							
 							break;
 						case 3:
-//							Save_Res.Set_Data.dispvr=0;
+							Save_Res.Set_Data.dispvr=0;
 							
 								
 							
@@ -1295,7 +1296,7 @@ void Setup_Process(void)
 							
 							break;
 						case 3:
-//							Save_Res.Set_Data.dispvr=1;
+							Save_Res.Set_Data.dispvr=1;
 							
 								
 							
@@ -1393,7 +1394,7 @@ void Setup_Process(void)
 							Send_Speed();
 						break;
 						case 3:
-//							Save_Res.Set_Data.dispvr=2;
+							Save_Res.Set_Data.dispvr=2;
 							
 								
 							
@@ -4306,6 +4307,102 @@ void RoffsetHandle(void)
 	}
 }
 
+void RDATAFILTER_IRR(void)
+{
+	if(Save_Res.version == 0)//3560µç×èÁ¿³Ì×î´óÎª3¦¸
+	{
+		if(Test_Dispvalue.Rdataraw.num == 0xffff || Test_Dispvalue.Rdataraw.range > 4)//²É¼¯µ½¿ªÂ·»ò¶ÌÂ·Êı¾İ
+		{
+			trip_flag = 0;//ÊÖ¶¯´¥·¢±êÖ¾¸´Î»
+			Test_Dispvalue.openflag = 1;//¿ªÂ·±êÖ¾
+			Rfilter.initcount = 0;//½ø¶ÓÁĞÊı¾İ¼ÆÊıÇåÁã
+			Rfilter.index = 0xff;//ĞòºÅ
+		}else{
+			if(Test_Dispvalue.Rdataraw.index != Rfilter.index)//ĞòºÅÓëÉÏ´Î²»Ò»ÑùÔò½øÈë¶ÓÁĞ£¬·ñÔòÌø¹ı
+			{
+				Rfilter.index = Test_Dispvalue.Rdataraw.index;//¼ÇÂ¼±¾´ÎĞòºÅ
+				if(Rfilter.initcount < 2)//Ç°Á½¸öÊı¾İÉáÆú
+				{
+					Test_Dispvalue.openflag = 1;
+					Rfilter.initcount++;
+				}else if(Rfilter.initcount == 2){//¼ÇÂ¼µÚÒ»¸öÓĞĞ§Êı¾İ
+					Test_Dispvalue.openflag = 0;
+					Rfilter.oldres = Test_Dispvalue.Rdataraw.num;
+					Rfilter.result = Test_Dispvalue.Rdataraw.num;
+					Rfilter.initcount++;					
+				}else{
+					Test_Dispvalue.openflag = 0;
+					Rfilter.newres = Test_Dispvalue.Rdataraw.num;
+					if(Rfilter.newres >= Rfilter.oldres)
+					{
+						if(Rfilter.newres - Rfilter.oldres <=  100)
+						{
+							Rfilter.result = (u32)((double)Rfilter.oldres + ((double)Rfilter.newres - (double)Rfilter.oldres)*0.1);
+						}else{
+							Rfilter.oldres = Test_Dispvalue.Rdataraw.num;
+							Rfilter.result = Test_Dispvalue.Rdataraw.num;
+						}
+					}else{
+						if(Rfilter.oldres - Rfilter.newres <=  100)
+						{
+							Rfilter.result = (u32)((double)Rfilter.oldres + ((double)Rfilter.oldres - (double)Rfilter.newres)*0.1);
+						}else{
+							Rfilter.oldres = Test_Dispvalue.Rdataraw.num;
+							Rfilter.result = Test_Dispvalue.Rdataraw.num;
+						}
+					}
+				}
+			}
+		}			
+	}else{
+		if(Test_Dispvalue.Rdataraw.num == 0xffff)//²É¼¯µ½¿ªÂ·»ò¶ÌÂ·Êı¾İ
+		{
+			trip_flag = 0;//ÊÖ¶¯´¥·¢±êÖ¾¸´Î»
+			Test_Dispvalue.openflag = 1;//¿ªÂ·±êÖ¾
+			Rfilter.initcount = 0;//½ø¶ÓÁĞÊı¾İ¼ÆÊıÇåÁã
+			Rfilter.index = 0xff;//ĞòºÅ
+		}else{
+			if(Test_Dispvalue.Rdataraw.index != Rfilter.index)//ĞòºÅÓëÉÏ´Î²»Ò»ÑùÔò½øÈë¶ÓÁĞ£¬·ñÔòÌø¹ı
+			{
+				Rfilter.index = Test_Dispvalue.Rdataraw.index;//¼ÇÂ¼±¾´ÎĞòºÅ
+				if(Rfilter.initcount < 2)//Ç°Á½¸öÊı¾İÉáÆú
+				{
+					Test_Dispvalue.openflag = 1;
+					Rfilter.initcount++;
+				}else if(Rfilter.initcount == 2){//¼ÇÂ¼µÚÒ»¸öÓĞĞ§Êı¾İ
+					Test_Dispvalue.openflag = 0;
+					Rfilter.oldres = Test_Dispvalue.Rdataraw.num;
+					Rfilter.result = Test_Dispvalue.Rdataraw.num;
+					Rfilter.initcount++;					
+				}else{
+					Test_Dispvalue.openflag = 0;
+					Rfilter.newres = Test_Dispvalue.Rdataraw.num;
+					if(Rfilter.newres >= Rfilter.oldres)
+					{
+						if(Rfilter.newres - Rfilter.oldres <=  100)
+						{
+							Rfilter.result = (u32)((double)Rfilter.oldres + ((double)Rfilter.newres - (double)Rfilter.oldres)*0.1);
+							Rfilter.oldres = Rfilter.result;
+						}else{
+							Rfilter.oldres = Test_Dispvalue.Rdataraw.num;
+							Rfilter.result = Test_Dispvalue.Rdataraw.num;
+						}
+					}else{
+						if(Rfilter.oldres - Rfilter.newres <=  100)
+						{
+							Rfilter.result = (u32)((double)Rfilter.oldres - ((double)Rfilter.oldres - (double)Rfilter.newres)*0.1);
+							Rfilter.oldres = Rfilter.result;
+						}else{
+							Rfilter.oldres = Test_Dispvalue.Rdataraw.num;
+							Rfilter.result = Test_Dispvalue.Rdataraw.num;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void RDATAFILTER(void)
 {
 	u16 i;
@@ -4570,6 +4667,7 @@ u8 Uart_Process(void)
 						Test_Dispvalue.Vdataraw.coefficient = (ComBuf.rec.buf[7]&0xE0)>>5;
 						
 						Test_Dispvalue.Vdataraw.num = (((u32)(ComBuf.rec.buf[7]&0x1fF)<<16)+((u32)(ComBuf.rec.buf[8])<<8)+(ComBuf.rec.buf[9]))&0XFFFFF;
+						RDATAFILTER_IRR();
 //						RDATAFILTER();
 //						VDATAFILTER();
 						Test_Dispvalue.Rangedisp = Test_Dispvalue.Rdataraw.range;
@@ -4587,7 +4685,7 @@ u8 Uart_Process(void)
 //							Data_Format(Test_Dispvalue.Main_valuebuff,Rfilter.dispresult,Test_Dispvalue.Rdataraw.coefficient,5,0);
 //							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Test_R,Test_Dispvalue.Rdataraw.coefficient,5,0);
 							
-							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Rdataraw.num,Test_Dispvalue.Rdataraw.coefficient,5,0);
+							Data_Format(Test_Dispvalue.Rvaluebuff,Rfilter.result,Test_Dispvalue.Rdataraw.coefficient,5,0);
 							if(Save_Res.version == 0 && Test_Dispvalue.Rdataraw.range == 1)
 								Test_Dispvalue.Main_valuebuff[5] = ' ';
 						}else{
@@ -6350,7 +6448,7 @@ void Set_Compbcd_float(void)//°ÑÉèÖÃ±È½ÏÊı¾İ×ª»»ÎªfloatÊı¾İ  °ÑÕâ¸öÊı¾İÓë±ê³ÆÖµ½
 	
 	}//ABS±È½Ï
 	if(Save_Res.Set_Data.dispvr > 2)
-		Save_Res.Set_Data.dispvr=1;
+		Save_Res.Set_Data.dispvr=0;
 
 
 

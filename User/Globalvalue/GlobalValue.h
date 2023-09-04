@@ -441,6 +441,8 @@ typedef struct
 	u32 sum;												//滤波前求和值
 	u32 result;											//滤波后的值
 	u32 oldres;											//上次的值
+	u32 newres;											//本次的值
+	u32 resdiff;										//两次数据差
 	u16 count;											//进队列计数
 	u16 index;											//数据序号
 	u16 indexcount;									//队列初始化计数
