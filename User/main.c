@@ -138,7 +138,7 @@ int main(void)
 	
 //	Delay(200);
 //	Delay(200);
-//	Delay(200/5);
+	Delay(200/5);
     SDRAM_Init();
     GLCD_Ctrl (FALSE);
     GLCD_Init (LogoPic.pPicStream, NULL);

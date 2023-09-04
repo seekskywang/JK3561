@@ -469,6 +469,7 @@ void Test_Process(void)
 	vu8 key,i;
 
     vu8 timebuff[10];
+	
     vu8 send_usbbuff[100];
 	vu8 return_flag=0;
 //	vu8 Usb_Sendbuff[30]={"       Ω"};
@@ -621,26 +622,26 @@ void Test_Process(void)
 				stabletime = stable_counter * 20;
 			}
 			BCD_Int(ddd);//DOT_POS	
-//			for(i=0;i<6;i++)
-//			{
-//				*(UserBuffer+i)=Test_Dispvalue.Main_valuebuff[i];
-//				Send_buff2[i]=DispBuf[i];
-//			}
-//			if(Test_Dispvalue.Rdataraw.unit)
-//			{
-//				*(UserBuffer+6)=' ';
-//				Send_buff2[6]=' ';
-//				
-//			}
-//			else
-//			{
-//				*(UserBuffer+6)='m';
-//				Send_buff2[6]='m';
-//				
-//			}
-//			*(UserBuffer+7)=0xa6;
-//			*(UserBuffer+8)=0xb8;
-//			*(UserBuffer+9)='	';
+			for(i=0;i<6;i++)
+			{
+				*(UserBuffer+i)=Test_Dispvalue.Rvaluebuff[i];
+				Send_buff2[i]=DispBuf[i];
+			}
+			if(Test_Dispvalue.Rdataraw.unit)
+			{
+				*(UserBuffer+6)=' ';
+				Send_buff2[6]=' ';
+				
+			}
+			else
+			{
+				*(UserBuffer+6)='m';
+				Send_buff2[6]='m';
+				
+			}
+			*(UserBuffer+7)=0xa6;
+			*(UserBuffer+8)=0xb8;
+			*(UserBuffer+9)='	';
 			Disp_R_X();//显示单位
 			if(nodisp_v_flag == 1)
 			{
@@ -676,20 +677,20 @@ void Test_Process(void)
 			//WriteString_Big(100,92+55 ,"-");
 		for(i=0;i<8;i++)
 		{
-			*(UserBuffer+10+i-10)=Test_Dispvalue.Vvaluebuff[i];
+			*(UserBuffer+10+i)=Test_Dispvalue.Vvaluebuff[i];
 			Send_buff2[7+i]=DispBuf[i];
 			
 		}
 			Send_buff2[12]=comp;
 			Send_buff2[13]=0;
-			*(UserBuffer+18-10)='V';
-			*(UserBuffer+19-10)='	';
+			*(UserBuffer+18)='V';
+			*(UserBuffer+19)='	';
 			for(i=0;i<8;i++)
-			*(UserBuffer+20-10+i)=USB_dISPVALUE[comp][i];
+			*(UserBuffer+20+i)=USB_dISPVALUE[comp][i];
 		
-			*(UserBuffer+28-10)='\r';
-			*(UserBuffer+29-10)='\n';
-        *(UserBuffer+30-10)='\0';
+			*(UserBuffer+28)='\r';
+			*(UserBuffer+29)='\n';
+        *(UserBuffer+30)='\0';
 //			return_flag=0;
             
 			strcpy((char *)send_usbbuff,(char *)timebuff);
@@ -709,7 +710,7 @@ void Test_Process(void)
 					f_lseek(&fsrc,fsrc.fsize);
 		//			bytes_written = FILE_Write(fdw, buffer, num);//MAX_BUFFER_SIZE);
 
-					res = f_write(&fsrc, &send_usbbuff, 41-10, &br);     
+					res = f_write(&fsrc, &send_usbbuff, 41, &br);     
 					f_close(&fsrc); 
 		//			usb_oenflag=1;
 
@@ -868,9 +869,9 @@ void Test_Process(void)
 							strcat(newfile,(char*)".TXT");
 							res = f_open( &fsrc , newfile , FA_CREATE_NEW | FA_WRITE);//FA_CREATE_NEW | FA_WRITE);	
 							if(Save_Res.Sys_Setvalue.lanage )
-								res = f_write(&fsrc,  "Times		Voltage		Sorting\r\n", sizeof( "Times		Voltage		Sorting\r\n"), &br);
+								res = f_write(&fsrc,  "Times    Resistance		Voltage		Sorting\r\n", sizeof( "Times    Resistance		Voltage		Sorting\r\n"), &br);
 							else
-								res = f_write(&fsrc,  "时间 	电压	 分选\r\n", sizeof( "时间  电压  分选\r\n"), &br);							
+								res = f_write(&fsrc,  "时间   电阻  	电压	 分选\r\n", sizeof( "时间   电阻  	电压	 分选\r\n"), &br);							
 							
 					//        #else
 					//            res = f_open( &fsrc , "0:/ZC/ZC2683A.xls" , FA_CREATE_NEW | FA_WRITE);//FA_CREATE_NEW | FA_WRITE);
@@ -4667,7 +4668,24 @@ u8 Uart_Process(void)
 						Test_Dispvalue.Vdataraw.coefficient = (ComBuf.rec.buf[7]&0xE0)>>5;
 						
 						Test_Dispvalue.Vdataraw.num = (((u32)(ComBuf.rec.buf[7]&0x1fF)<<16)+((u32)(ComBuf.rec.buf[8])<<8)+(ComBuf.rec.buf[9]))&0XFFFFF;
-						RDATAFILTER_IRR();
+						if(Save_Res.version == 0)//3560电阻量程最大为3Ω
+						{
+							if(Test_Dispvalue.Rdataraw.num == 0xffff || Test_Dispvalue.Rdataraw.range > 4)//采集到开路或短路数据
+							{
+								Test_Dispvalue.openflag = 1;
+							}else{
+								Test_Dispvalue.openflag = 0;
+							}
+						}else{
+							if(Test_Dispvalue.Rdataraw.num == 0xffff)//采集到开路或短路数据
+							{
+								Test_Dispvalue.openflag = 1;
+							}else{
+								Test_Dispvalue.openflag = 0;
+							}
+						}
+						Test_Dispvalue.Test_R = (u16)(((float)Test_Dispvalue.Rdataraw.num)*Save_Res.Debug_Value[Test_Dispvalue.Rangedisp - 1]);
+//						RDATAFILTER_IRR();
 //						RDATAFILTER();
 //						VDATAFILTER();
 						Test_Dispvalue.Rangedisp = Test_Dispvalue.Rdataraw.range;
@@ -4682,10 +4700,11 @@ u8 Uart_Process(void)
 //						Data_Format(Test_Dispvalue.Main_valuebuff,Test_Dispvalue.Rdataraw.num,Test_Dispvalue.Rdataraw.coefficient,5,0);
 						if(Test_Dispvalue.openflag == 0)
 						{
-//							Data_Format(Test_Dispvalue.Main_valuebuff,Rfilter.dispresult,Test_Dispvalue.Rdataraw.coefficient,5,0);
-//							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Test_R,Test_Dispvalue.Rdataraw.coefficient,5,0);
+							Data_Format(Test_Dispvalue.Main_valuebuff,Test_Dispvalue.Rdataraw.num,Test_Dispvalue.Rdataraw.coefficient,5,0);
+							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Test_R,Test_Dispvalue.Rdataraw.coefficient,5,0);
 							
-							Data_Format(Test_Dispvalue.Rvaluebuff,Rfilter.result,Test_Dispvalue.Rdataraw.coefficient,5,0);
+//							Data_Format(Test_Dispvalue.Rvaluebuff,Rfilter.result,Test_Dispvalue.Rdataraw.coefficient,5,0);
+//							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Rdataraw.num,Test_Dispvalue.Rdataraw.coefficient,5,0);
 							if(Save_Res.version == 0 && Test_Dispvalue.Rdataraw.range == 1)
 								Test_Dispvalue.Main_valuebuff[5] = ' ';
 						}else{
