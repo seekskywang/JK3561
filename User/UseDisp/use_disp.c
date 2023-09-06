@@ -491,8 +491,8 @@ const uint8_t Auto_Range[][10+1]=
     {"(300mΩ)"},
     {"(3   Ω)"},
     {"(30  Ω)"},
-    {"(300 Ω)"},
-		{"(3000Ω)"},
+    {"(30  Ω)"},
+		{"(30  Ω)"},
 };
 
 const uint8_t Auto_VRange[][10+1]=
@@ -957,32 +957,32 @@ const uint8_t Sys_Sys1[][4][20+1]=
 {
 	{
 		{"仪器型号  3560"},
-		{"软件版本  Ver:1.0"},
-		{"硬件版本  Ver:1.0"},
+		{"软件版本  Ver:1.1"},
+		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  3561"},
-		{"软件版本  Ver:1.0"},
-		{"硬件版本  Ver:1.0"},
+		{"软件版本  Ver:1.1"},
+		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  3562"},
-		{"软件版本  Ver:1.0"},
-		{"硬件版本  Ver:1.0"},
+		{"软件版本  Ver:1.1"},
+		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  3563"},
-		{"软件版本  Ver:1.0"},
-		{"硬件版本  Ver:1.0"},
+		{"软件版本  Ver:1.1"},
+		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  3564"},
-		{"软件版本  Ver:1.0"},
-		{"硬件版本  Ver:1.0"},
+		{"软件版本  Ver:1.1"},
+		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 
@@ -993,32 +993,32 @@ const uint8_t Sys_Sys1_E[][4][20+1]=
 {
 	{
 		{"INST MODEL: 3560 "},
-		{"SOFT VER:   Ver:1.0"},
-		{"HARD VER:   Ver:1.0"},
+		{"SOFT VER:   Ver:1.1"},
+		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
 		{"INST MODEL: 3561 "},
-		{"SOFT VER:   Ver:1.0"},
-		{"HARD VER:   Ver:1.0"},
+		{"SOFT VER:   Ver:1.1"},
+		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
 		{"INST MODEL: 3562 "},
-		{"SOFT VER:   Ver:1.0"},
-		{"HARD VER:   Ver:1.0"},
+		{"SOFT VER:   Ver:1.1"},
+		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
 		{"INST MODEL: 3563 "},
-		{"SOFT VER:   Ver:1.0"},
-		{"HARD VER:   Ver:1.0"},
+		{"SOFT VER:   Ver:1.1"},
+		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
 		{"INST MODEL: 3564 "},
-		{"SOFT VER:   Ver:1.0"},
-		{"HARD VER:   Ver:1.0"},
+		{"SOFT VER:   Ver:1.1"},
+		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 

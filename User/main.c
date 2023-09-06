@@ -65,35 +65,35 @@ uint32_t color_table[]={0x000000,0xFFFFFF,0x0000FF,0x00FF00,0xFF0000};
 /* Private variables ---------------------------------------------------------*/
 extern Matrix matrix ;
 extern Coordinate  display ;
-void GPIO_IRQHandler()
-{
-	uint32_t i;
-	if(GPIO_GetIntStatus(0, 19, 1))
-	{
-		 NVIC_DisableIRQ(GPIO_IRQn);
-		for(i=0xffffff;i>0;i--)
-		;
-		if(softswitch)
-		{
-			softswitch=0;
-			SetSystemStatus(SYS_STATUS_TOOL);
-		
-		}else
-		{
-			softswitch=1;
-			
-			SetSystemStatus(SYS_STATUS_POWER);
-		
-		}
-		GPIO_ClearInt(0, 1<<19);
-//       NVIC_EnableIRQ(GPIO_IRQn);
-		
-	
-	}
+//void GPIO_IRQHandler()
+//{
+//	uint32_t i;
+//	if(GPIO_GetIntStatus(0, 19, 1))
+//	{
+//		 NVIC_DisableIRQ(GPIO_IRQn);
+//		for(i=0xffffff;i>0;i--)
+//		;
+//		if(softswitch)
+//		{
+//			softswitch=0;
+//			SetSystemStatus(SYS_STATUS_TOOL);
+//		
+//		}else
+//		{
+//			softswitch=1;
+//			
+//			SetSystemStatus(SYS_STATUS_POWER);
+//		
+//		}
+//		GPIO_ClearInt(0, 1<<19);
+////       NVIC_EnableIRQ(GPIO_IRQn);
+//		
+//	
+//	}
 //	NVIC_ClearPendingIRQ(GPIO_IRQn);
 	
 
-}
+//}
 
 
 /*-------------------------MAIN FUNCTION------------------------------*/
@@ -112,9 +112,9 @@ int main(void)
 	__enable_irq();
 	softswitch=0;
 	SysTick_Config(cclk/200 - 1); //500us定时
-	GPIO_IntCmd(0, 1<<19, 1);//p0_19 下降沿中断
-	NVIC_SetPriority(GPIO_IRQn, 1);
-	NVIC_EnableIRQ(GPIO_IRQn);
+//	GPIO_IntCmd(0, 1<<19, 1);//p0_19 下降沿中断
+//	NVIC_SetPriority(GPIO_IRQn, 1);
+//	NVIC_EnableIRQ(GPIO_IRQn);
 //    Delay(100);	
 	
 	HW_keyInt();
@@ -149,7 +149,7 @@ int main(void)
     ReadSavedata();
     Set_Compbcd_float();
 		
-	SetSystemStatus(SYS_STATUS_TOOL); //开机上电状态
+	SetSystemStatus(SYS_STATUS_POWER); //开机上电状态
 
     while(1)
     {  
@@ -203,10 +203,10 @@ int main(void)
 					
 				Use_SysSetProcess();
 				break;
-			case SYS_STATUS_TOOL://工具
-				Soft_Turnon();
-				
-			break;
+//			case SYS_STATUS_TOOL://工具
+//				Soft_Turnon();
+//				
+//			break;
 			case SYS_STATUS_SYS://系统信息显示
 				
 				Sys_Process();

@@ -132,7 +132,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>€畵w犼?€畵w犼?</Name>
+          <Name>€?w榜?€?w榜?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -511,6 +511,16 @@
           <count>67</count>
           <WinNumber>1</WinNumber>
           <ItemText>send_usbbuff</ItemText>
+        </Ww>
+        <Ww>
+          <count>68</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ComBuf.respondflag</ItemText>
+        </Ww>
+        <Ww>
+          <count>69</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ComBuf.rec.buf</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

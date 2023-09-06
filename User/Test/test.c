@@ -60,7 +60,7 @@ vu8 trip_flag=0;//手动触发标志
 u8 testtimingflag;
 u32 timing;
 uint32_t colorbuf[480];
-u8 rangenum[5] = {4,7,7,7,7};//不同版本总量程数
+u8 rangenum[5] = {4,5,5,5,5};//不同版本总量程数
 double maxv[5] = {30,100,300,600,1000};//不同版本电压上限
 double maxvdisp[5] = {300000,100000,300000,600000,100000};//不同版本电压上限
 double maxvdot[5] = {4,3,3,3,2};//不同版本电压上限小数点
@@ -485,8 +485,8 @@ void Test_Process(void)
     
     uint32_t  numBlks, blkSize;
 	uint8_t  inquiryResult[INQUIRY_LENGTH],rc;
-    GPIO_ClearInt(0, 1<<19);
-    NVIC_EnableIRQ(GPIO_IRQn);
+//    GPIO_ClearInt(0, 1<<19);
+//    NVIC_EnableIRQ(GPIO_IRQn);
 	Button_Page.page=0;
 	Button_Page.index=0;
 	Button_Page.third=0xff;
@@ -1155,6 +1155,10 @@ void Setup_Process(void)
 		{
 			lpc1788_DMA_SetInit();
 			missflag = 0;
+		}
+		if(Save_Res.Set_Data.trip == 1)
+		{
+			lpc1788_DMA_SetInit();
 		}
 		if(Disp_Flag==1)
 		{
@@ -4724,8 +4728,24 @@ u8 Uart_Process(void)
 							}
 							if(Save_Res.Set_Data.speed != 2)
 							{
-								Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+								if(Test_Dispvalue.Vdataraw.range == 1 && Test_Dispvalue.Vdataraw.coefficient == 4)
+								{
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
 									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 5){
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 3){
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else if(Test_Dispvalue.Vdataraw.range == 3 && Test_Dispvalue.Vdataraw.coefficient == 4){
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else{
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}
+								
 								if(Test_Dispvalue.Test_V < 1000000)
 								{
 									Test_Dispvalue.TestVDot = 5;
@@ -4737,8 +4757,25 @@ u8 Uart_Process(void)
 									Test_Dispvalue.TestVDot = 3;
 								}
 							}else{
-								Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									(Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10));
+								if(Test_Dispvalue.Vdataraw.range == 1 && Test_Dispvalue.Vdataraw.coefficient == 3)
+								{
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 4){
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 2){
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else if(Test_Dispvalue.Vdataraw.range == 3 && Test_Dispvalue.Vdataraw.coefficient == 3){
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else{
+									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+								}
+//								Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									(Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10));
 								if(Test_Dispvalue.Test_V < 100000)
 								{
 									Test_Dispvalue.TestVDot = 4;
