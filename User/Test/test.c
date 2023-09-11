@@ -4688,11 +4688,12 @@ u8 Uart_Process(void)
 								Test_Dispvalue.openflag = 0;
 							}
 						}
+						Test_Dispvalue.Rangedisp = Test_Dispvalue.Rdataraw.range;
 						Test_Dispvalue.Test_R = (u16)(((float)Test_Dispvalue.Rdataraw.num)*Save_Res.Debug_Value[Test_Dispvalue.Rangedisp - 1]);
 //						RDATAFILTER_IRR();
 //						RDATAFILTER();
 //						VDATAFILTER();
-						Test_Dispvalue.Rangedisp = Test_Dispvalue.Rdataraw.range;
+						
 						if(Save_Res.version == 0)
 						{
 							if(Test_Dispvalue.Rangedisp  > 4)

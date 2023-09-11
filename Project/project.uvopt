@@ -132,7 +132,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>€?w榜?€?w榜?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -521,6 +520,11 @@
           <count>69</count>
           <WinNumber>1</WinNumber>
           <ItemText>ComBuf.rec.buf</ItemText>
+        </Ww>
+        <Ww>
+          <count>70</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Save_Res.Debug_Value</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
