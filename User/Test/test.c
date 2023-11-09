@@ -4693,7 +4693,7 @@ u8 Uart_Process(void)
 //						RDATAFILTER_IRR();
 //						RDATAFILTER();
 //						VDATAFILTER();
-						
+						RoffsetHandle();
 						if(Save_Res.version == 0)
 						{
 							if(Test_Dispvalue.Rangedisp  > 4)
