@@ -4190,9 +4190,16 @@ void VDATAFILTER(void)
 				Vfilter.initcount++;
 				if(Test_Dispvalue.openflag == 0)
 				{
-					Test_Dispvalue.Test_V = (Test_Dispvalue.Vdataraw.num * 
-					pow(10,5-Test_Dispvalue.Vdataraw.coefficient))*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
-					Save_Res.VDebug_Valueb[Test_Dispvalue.vrange];
+					if(Test_Dispvalue.Vdataraw.sign)
+					{
+						Test_Dispvalue.Test_V = (Test_Dispvalue.Vdataraw.num * 
+						pow(10,5-Test_Dispvalue.Vdataraw.coefficient))*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]-
+						Save_Res.VDebug_Valueb[Test_Dispvalue.vrange];
+					}else{
+						Test_Dispvalue.Test_V = (Test_Dispvalue.Vdataraw.num * 
+						pow(10,5-Test_Dispvalue.Vdataraw.coefficient))*Save_Res.VDebug_Valuek[Test_Dispvalue.vrange]+
+						Save_Res.VDebug_Valueb[Test_Dispvalue.vrange];
+					}
 					
 					if(Test_Dispvalue.Test_V < 1000000)
 					{
@@ -4731,20 +4738,60 @@ u8 Uart_Process(void)
 							{
 								if(Test_Dispvalue.Vdataraw.range == 1 && Test_Dispvalue.Vdataraw.coefficient == 4)
 								{
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
-								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 5){
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
-								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 3){
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
-								}else if(Test_Dispvalue.Vdataraw.range == 3 && Test_Dispvalue.Vdataraw.coefficient == 4){
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
-								}else{
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
 										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 5){
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 3){
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else if(Test_Dispvalue.Vdataraw.range == 3 && Test_Dispvalue.Vdataraw.coefficient == 4){
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else{
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
 								}
 								
 								if(Test_Dispvalue.Test_V < 1000000)
@@ -4760,20 +4807,60 @@ u8 Uart_Process(void)
 							}else{
 								if(Test_Dispvalue.Vdataraw.range == 1 && Test_Dispvalue.Vdataraw.coefficient == 3)
 								{
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
-								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 4){
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
-								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 2){
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
-								}else if(Test_Dispvalue.Vdataraw.range == 3 && Test_Dispvalue.Vdataraw.coefficient == 3){
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
-									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
-								}else{
-									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
 										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 4){
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+								}else if(Test_Dispvalue.Vdataraw.range == 2 && Test_Dispvalue.Vdataraw.coefficient == 2){
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num*10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else if(Test_Dispvalue.Vdataraw.range == 3 && Test_Dispvalue.Vdataraw.coefficient == 3){
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num/10)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//									Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]);
+								}else{
+									if(Test_Dispvalue.Vdataraw.sign)
+									{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]-
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+									}else{
+										Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
+									}
+//									Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
+//										Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10);
 								}
 //								Test_Dispvalue.Test_V = (u32)(((float)Test_Dispvalue.Vdataraw.num)*Save_Res.VDebug_Valuek[Test_Dispvalue.Vdataraw.range-1]+
 //									(Save_Res.VDebug_Valueb[Test_Dispvalue.Vdataraw.range-1]/10));
