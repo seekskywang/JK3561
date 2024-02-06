@@ -60,10 +60,10 @@ vu8 trip_flag=0;//手动触发标志
 u8 testtimingflag;
 u32 timing;
 uint32_t colorbuf[480];
-u8 rangenum[5] = {4,5,5,5,5};//不同版本总量程数
-double maxv[5] = {30,100,300,600,1000};//不同版本电压上限
-double maxvdisp[5] = {300000,100000,300000,600000,100000};//不同版本电压上限
-double maxvdot[5] = {4,3,3,3,2};//不同版本电压上限小数点
+u8 rangenum[6] = {4,5,5,5,5,4};//不同版本总量程数
+double maxv[6] = {30,100,300,600,1000,30};//不同版本电压上限
+double maxvdisp[6] = {300000,100000,300000,600000,100000,300000};//不同版本电压上限
+double maxvdot[6] = {4,3,3,3,2,4};//不同版本电压上限小数点
 double x1,y1,x2,y2;
 u8 bmpname[30];
 u8 vcalstep[6]={1,2,1,3,1,4};
@@ -3873,7 +3873,7 @@ void Use_DebugProcess(void)
 //						SetSystemStatus(SYS_STATUS_TOOL);
 				break;
 				case Key_F4:
-					if(Save_Res.version < 4)
+					if(Save_Res.version < 5)
 						Save_Res.version ++;
 					else
 						Save_Res.version = 0;
@@ -4321,7 +4321,7 @@ void RoffsetHandle(void)
 
 void RDATAFILTER_IRR(void)
 {
-	if(Save_Res.version == 0)//3560电阻量程最大为3Ω
+	if(Save_Res.version == 0 || Save_Res.version == 5)//3560和2520B电阻量程最大为3Ω
 	{
 		if(Test_Dispvalue.Rdataraw.num == 0xffff || Test_Dispvalue.Rdataraw.range > 4)//采集到开路或短路数据
 		{
@@ -4418,7 +4418,7 @@ void RDATAFILTER_IRR(void)
 void RDATAFILTER(void)
 {
 	u16 i;
-	if(Save_Res.version == 0)//3560电阻量程最大为3Ω
+	if(Save_Res.version == 0 || Save_Res.version == 5)//3560和2520B电阻量程最大为3Ω
 	{
 		if(Test_Dispvalue.Rdataraw.num == 0xffff || Test_Dispvalue.Rdataraw.range > 4)//采集到开路或短路数据
 		{
@@ -4679,7 +4679,7 @@ u8 Uart_Process(void)
 						Test_Dispvalue.Vdataraw.coefficient = (ComBuf.rec.buf[7]&0xE0)>>5;
 						
 						Test_Dispvalue.Vdataraw.num = (((u32)(ComBuf.rec.buf[7]&0x1fF)<<16)+((u32)(ComBuf.rec.buf[8])<<8)+(ComBuf.rec.buf[9]))&0XFFFFF;
-						if(Save_Res.version == 0)//3560电阻量程最大为3Ω
+						if(Save_Res.version == 0 || Save_Res.version == 5)//3560和2520B电阻量程最大为3Ω
 						{
 							if(Test_Dispvalue.Rdataraw.num == 0xffff || Test_Dispvalue.Rdataraw.range > 4)//采集到开路或短路数据
 							{
@@ -4701,7 +4701,7 @@ u8 Uart_Process(void)
 //						RDATAFILTER();
 //						VDATAFILTER();
 						RoffsetHandle();
-						if(Save_Res.version == 0)
+						if(Save_Res.version == 0 || Save_Res.version == 5)//3560和2520B电阻量程最大为3Ω
 						{
 							if(Test_Dispvalue.Rangedisp  > 4)
 								Test_Dispvalue.Rangedisp = 4;
@@ -4717,7 +4717,7 @@ u8 Uart_Process(void)
 							
 //							Data_Format(Test_Dispvalue.Rvaluebuff,Rfilter.result,Test_Dispvalue.Rdataraw.coefficient,5,0);
 //							Data_Format(Test_Dispvalue.Rvaluebuff,Test_Dispvalue.Rdataraw.num,Test_Dispvalue.Rdataraw.coefficient,5,0);
-							if(Save_Res.version == 0 && Test_Dispvalue.Rdataraw.range == 1)
+							if((Save_Res.version == 0 || Save_Res.version == 5)&& Test_Dispvalue.Rdataraw.range == 1)
 								Test_Dispvalue.Main_valuebuff[5] = ' ';
 						}else{
 							strcpy(Test_Dispvalue.Main_valuebuff,(char*)"------");
@@ -4879,7 +4879,7 @@ u8 Uart_Process(void)
 							Data_Format(&Test_Dispvalue.Vvaluebuff[1],Test_Dispvalue.Test_V,Test_Dispvalue.TestVDot,6,0);
 							
 							Data_Format(&Test_Dispvalue.Secondvaluebuff[1],Test_Dispvalue.Vdataraw.num,Test_Dispvalue.Vdataraw.coefficient,6,0);
-							if(Save_Res.version == 0)
+							if(Save_Res.version == 0 || Save_Res.version == 5)
 							{
 								Test_Dispvalue.Vvaluebuff[7] = ' ';
 							}
@@ -5822,7 +5822,7 @@ Sort_TypeDef Disp_Set_Num(Disp_Coordinates_Typedef *Coordinates)
 	Sort_num.Dot = 5- Sort_num.Dot;
 	val = (((double)Sort_num.Num)/((double)pow(10,Sort_num.Dot)))
 		*1000*((double)pow(1000,Sort_num.Unit));
-	if(Save_Res.version == 0)
+	if(Save_Res.version == 0 || Save_Res.version == 5)
 	{
 		if(val > 3000000){
 			Sort_num.Num = 30000;

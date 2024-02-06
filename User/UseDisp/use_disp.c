@@ -876,6 +876,7 @@ const uint8_t VERITEM[][6]=
 	{"3562"},
 	{"3563"},
 	{"3564"},
+	{"2520B"},
 };
 
 
@@ -883,31 +884,37 @@ const uint8_t Sys_Sys[][4][20+1]=
 {
 	{
 		{"仪器型号  JK3560"},
-		{"软件版本  Ver:1.7"},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3561"},
-		{"软件版本  Ver:1.7"},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3562"},
-		{"软件版本  Ver:1.7"},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3563"},
-		{"软件版本  Ver:1.7"},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
 		{"仪器型号  JK3564"},
-		{"软件版本  Ver:1.7"},
+		{"软件版本  Ver:1.8"},
+		{"硬件版本  Ver:1.1"},
+		{"仪器编号"},
+	},
+	{
+		{"仪器型号  JK2520B"},
+		{"软件版本  Ver:3.0"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
@@ -918,113 +925,130 @@ const uint8_t Sys_Sys[][4][20+1]=
 //1.4新板子，速度选择和电压分档
 //1.5新板子，不需要滤波直接显示，修复部分bug
 //1.6新板子开放相位角修正
-//1.7负电压计算修正
+//1.8负电压计算修正
 };
 
 const uint8_t Sys_Sys_E[][4][20+1]=
 {
 	{
 		{"INST MODEL: JK3560 "},
-		{"SOFT VER:   Ver:1.7"},
+		{"SOFT VER:   Ver:1.8"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
 		{"INST MODEL: JK3561 "},
-		{"SOFT VER:   Ver:1.7"},
+		{"SOFT VER:   Ver:1.8"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
 		{"INST MODEL: JK3562 "},
-		{"SOFT VER:   Ver:1.7"},
+		{"SOFT VER:   Ver:1.8"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
 		{"INST MODEL: JK3563 "},
-		{"SOFT VER:   Ver:1.7"},
+		{"SOFT VER:   Ver:1.8"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
 		{"INST MODEL: JK3564 "},
-		{"SOFT VER:   Ver:1.7"},
+		{"SOFT VER:   Ver:1.8"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
+	{
+		{"INST MODEL: JK2520B"},
+		{"SOFT VER:   Ver:3.0"},
+		{"HARD VER:   Ver:1.1"},
+		{"SERIALNO:"},
+	},
+
 
 };
 
 const uint8_t Sys_Sys1[][4][20+1]=
 {
 	{
-		{"仪器型号  3560"},
-		{"软件版本  Ver:1.7"},
+		{"仪器型号   "},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
-		{"仪器型号  3561"},
-		{"软件版本  Ver:1.7"},
+		{"仪器型号   "},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
-		{"仪器型号  3562"},
-		{"软件版本  Ver:1.7"},
+		{"仪器型号   "},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
-		{"仪器型号  3563"},
-		{"软件版本  Ver:1.7"},
+		{"仪器型号   "},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
 	{
-		{"仪器型号  3564"},
-		{"软件版本  Ver:1.7"},
+		{"仪器型号   "},
+		{"软件版本  Ver:1.8"},
 		{"硬件版本  Ver:1.1"},
 		{"仪器编号"},
 	},
-
+	{
+		{"仪器型号   "},
+		{"软件版本  Ver:3.0"},
+		{"硬件版本  Ver:1.1"},
+		{"仪器编号"},
+	},
 
 };
 
 const uint8_t Sys_Sys1_E[][4][20+1]=
 {
 	{
-		{"INST MODEL: 3560 "},
+		{"INST MODEL:   "},
 		{"SOFT VER:   Ver:1.6"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
-		{"INST MODEL: 3561 "},
+		{"INST MODEL:   "},
 		{"SOFT VER:   Ver:1.6"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
-		{"INST MODEL: 3562 "},
+		{"INST MODEL:   "},
 		{"SOFT VER:   Ver:1.6"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
-		{"INST MODEL: 3563 "},
+		{"INST MODEL:   "},
 		{"SOFT VER:   Ver:1.6"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
 	{
-		{"INST MODEL: 3564 "},
+		{"INST MODEL:   "},
 		{"SOFT VER:   Ver:1.6"},
 		{"HARD VER:   Ver:1.1"},
 		{"SERIALNO:"},
 	},
-
+	{
+		{"INST MODEL:  "},
+		{"SOFT VER:   Ver:3.0"},
+		{"HARD VER:   Ver:1.1"},
+		{"SERIALNO:"},
+	},
 };
 
 const uint8_t Sys_Setitem[][10+1]=
